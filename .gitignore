@@ -1,0 +1,46 @@
+# Credentials and secrets
+.env
+credentials.local.json
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+.next/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Downloaded content
+downloads/
+temp/
+
+# Data files (generated)
+data/*.json
+data/*.csv
+data/reports/
