@@ -7,7 +7,8 @@ load_dotenv()
 
 # Gemini API
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_MODEL = "gemini-2.5-pro"
+GEMINI_MODEL_FAST = "gemini-2.5-flash"  # For metadata analysis (faster, cheaper)
 
 # Database
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://localhost:5432/proper_mkt")

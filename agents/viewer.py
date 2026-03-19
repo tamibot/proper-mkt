@@ -2,7 +2,7 @@
 
 import os
 import google.generativeai as genai
-from config.settings import GEMINI_API_KEY, GEMINI_MODEL
+from config.settings import GEMINI_API_KEY, GEMINI_MODEL, GEMINI_MODEL_FAST
 
 
 class ViewerAgent:
@@ -10,7 +10,8 @@ class ViewerAgent:
 
     def __init__(self):
         genai.configure(api_key=GEMINI_API_KEY)
-        self.model = genai.GenerativeModel(GEMINI_MODEL)
+        self.model = genai.GenerativeModel(GEMINI_MODEL)  # Pro for video analysis
+        self.model_fast = genai.GenerativeModel(GEMINI_MODEL_FAST)  # Flash for metadata
 
     def analyze_video(self, video_path, context=""):
         """Analiza un video local usando Gemini multimodal."""
@@ -111,7 +112,7 @@ Analiza:
 5. **Replicabilidad**: Cómo podría Proper adaptar este estilo de copy
 """
         try:
-            response = self.model.generate_content(prompt)
+            response = self.model_fast.generate_content(prompt)
             return {"analysis": response.text, "status": "success"}
         except Exception as e:
             return {"error": str(e)}
