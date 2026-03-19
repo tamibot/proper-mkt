@@ -127,6 +127,27 @@ def api_runs():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/best-practices")
+def api_best_practices():
+    try:
+        conn = __import__('database').get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM best_practices ORDER BY relevance_score DESC;")
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
+        result = []
+        for r in rows:
+            row = dict(r)
+            for k, v in row.items():
+                if isinstance(v, datetime):
+                    row[k] = v.isoformat()
+            result.append(row)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/trigger-pipeline", methods=["POST"])
 def api_trigger():
     """Manually trigger the pipeline."""

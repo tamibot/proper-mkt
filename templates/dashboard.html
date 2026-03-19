@@ -84,6 +84,9 @@
             <button onclick="showTab('runs')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200" data-tab="runs">
                 <i class="fas fa-history mr-1"></i> Historial Pipeline
             </button>
+            <button onclick="showTab('practices')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200" data-tab="practices">
+                <i class="fas fa-book mr-1"></i> Best Practices
+            </button>
         </div>
 
         <!-- Tab Content: Posts -->
@@ -178,6 +181,13 @@
                         <tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">Cargando...</td></tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Tab Content: Best Practices -->
+        <div id="tab-practices" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="practicesGrid">
+                <div class="text-center text-gray-500 col-span-2 py-8">Cargando mejores practicas...</div>
             </div>
         </div>
     </main>
@@ -404,6 +414,60 @@
             }
         }
 
+        // --- Load Best Practices ---
+        async function loadPractices() {
+            try {
+                const res = await fetch(API + '/api/best-practices');
+                const practices = await res.json();
+                const grid = document.getElementById('practicesGrid');
+
+                if (!practices.length) {
+                    grid.innerHTML = '<div class="text-center text-gray-500 col-span-2 py-8">No hay best practices cargadas.</div>';
+                    return;
+                }
+
+                const categoryColors = {
+                    content_mix: 'border-blue-500', hooks: 'border-purple-500',
+                    posting_frequency: 'border-green-500', posting_times: 'border-yellow-500',
+                    hashtags: 'border-pink-500', production: 'border-cyan-500',
+                    engagement: 'border-red-500', compliance: 'border-orange-500',
+                    competitors: 'border-indigo-500'
+                };
+                const categoryIcons = {
+                    content_mix: 'fa-layer-group', hooks: 'fa-bolt',
+                    posting_frequency: 'fa-calendar', posting_times: 'fa-clock',
+                    hashtags: 'fa-hashtag', production: 'fa-video',
+                    engagement: 'fa-chart-line', compliance: 'fa-shield-alt',
+                    competitors: 'fa-users'
+                };
+
+                grid.innerHTML = practices.map(bp => {
+                    const borderColor = categoryColors[bp.category] || 'border-gray-500';
+                    const icon = categoryIcons[bp.category] || 'fa-info-circle';
+                    const relevance = Math.round((bp.relevance_score || 0) * 100);
+                    const platformBadge = bp.platform === 'all'
+                        ? '<span class="bg-gray-700 text-gray-300 text-xs px-2 py-0.5 rounded">Multi</span>'
+                        : bp.platform === 'instagram'
+                        ? '<span class="badge-ig text-white text-xs px-2 py-0.5 rounded-full">IG</span>'
+                        : '<span class="badge-tk text-cyan-400 text-xs px-2 py-0.5 rounded-full">TK</span>';
+
+                    return `<div class="glass rounded-xl p-5 border-l-4 ${borderColor}">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-gray-400 uppercase"><i class="fas ${icon} mr-1"></i>${bp.category.replace('_', ' ')}</span>
+                            <div class="flex items-center gap-2">
+                                ${platformBadge}
+                                <span class="text-xs text-green-400">${relevance}%</span>
+                            </div>
+                        </div>
+                        <h3 class="font-semibold text-white mb-2">${bp.title}</h3>
+                        <p class="text-sm text-gray-300">${bp.description}</p>
+                    </div>`;
+                }).join('');
+            } catch (e) {
+                console.error('Error loading practices:', e);
+            }
+        }
+
         // --- Init ---
         document.addEventListener('DOMContentLoaded', () => {
             loadStats();
@@ -411,6 +475,7 @@
             loadPosts();
             loadIdeas();
             loadRuns();
+            loadPractices();
             // Auto-refresh every 30 seconds
             setInterval(() => { loadStats(); }, 30000);
         });
