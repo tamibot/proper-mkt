@@ -6,261 +6,473 @@
     <title>Proper MKT — Dashboard de Inteligencia de Contenido</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif; }
-        .glass { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.1); }
-        .stat-card { transition: transform 0.2s; }
-        .stat-card:hover { transform: translateY(-2px); }
-        .gradient-text { background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
-        .gradient-btn:hover { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
-        .tab-active { border-bottom: 2px solid #818cf8; color: #818cf8; }
-        .badge-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
-        .badge-tk { background: #000; border: 1px solid #25f4ee; }
-        table th { position: sticky; top: 0; background: #1e293b; z-index: 10; }
+        * { box-sizing: border-box; }
+        body { background: #F8F9FC; color: #333333; font-family: 'Inter', system-ui, -apple-system, sans-serif; margin: 0; }
+
+        /* Sidebar */
+        .sidebar { width: 240px; background: #FFFFFF; border-right: 1px solid #E5E7EB; height: 100vh; position: fixed; top: 0; left: 0; z-index: 40; display: flex; flex-direction: column; }
+        .sidebar-logo { padding: 20px 20px 16px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; gap: 10px; }
+        .sidebar-logo .logo-icon { width: 36px; height: 36px; background: #FF7B0F; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .sidebar-logo .logo-icon svg { width: 20px; height: 20px; }
+        .sidebar-logo .logo-text { font-size: 18px; font-weight: 700; color: #1B2A4A; }
+        .sidebar-logo .logo-sub { font-size: 11px; color: #999; font-weight: 400; }
+        .sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 13.5px; font-weight: 500; color: #666666; transition: all 0.15s; margin-bottom: 2px; border: none; background: none; width: 100%; text-align: left; }
+        .nav-item:hover { background: #F3F4F6; color: #333; }
+        .nav-item.active { background: #FFF3E8; color: #FF7B0F; font-weight: 600; }
+        .nav-item i { width: 18px; text-align: center; font-size: 14px; }
+        .nav-divider { height: 1px; background: #E5E7EB; margin: 8px 14px; }
+
+        /* Main area */
+        .main-area { margin-left: 240px; min-height: 100vh; }
+
+        /* Top bar */
+        .topbar { background: #FFFFFF; border-bottom: 1px solid #E5E7EB; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 30; }
+        .topbar-title { font-size: 16px; font-weight: 600; color: #1B2A4A; }
+        .topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+        /* Buttons */
+        .btn-primary { background: #FF7B0F; color: #fff; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s; }
+        .btn-primary:hover { background: #E86D00; }
+        .btn-secondary { background: #FFFFFF; color: #1B2A4A; border: 1px solid #E5E7EB; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s; }
+        .btn-secondary:hover { background: #F8F9FC; border-color: #D1D5DB; }
+
+        /* Content */
+        .content-area { padding: 24px 28px; }
+
+        /* Stat cards */
+        .stat-card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 18px 20px; transition: all 0.2s; }
+        .stat-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); transform: translateY(-1px); }
+        .stat-card .stat-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .stat-card .stat-value { font-size: 24px; font-weight: 700; color: #1B2A4A; margin-top: 10px; }
+        .stat-card .stat-label { font-size: 12px; color: #999; margin-top: 2px; font-weight: 500; }
+
+        /* Cards */
+        .card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 12px; }
+        .card-header { padding: 16px 20px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between; }
+        .card-header h3 { font-size: 14px; font-weight: 600; color: #1B2A4A; }
+        .card-body { padding: 20px; }
+
+        /* Table */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .data-table thead th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.5px; background: #FAFBFC; border-bottom: 1px solid #E5E7EB; position: sticky; top: 0; z-index: 5; }
+        .data-table tbody td { padding: 12px 14px; border-bottom: 1px solid #F3F4F6; color: #333; }
+        .data-table tbody tr { transition: background 0.1s; }
+        .data-table tbody tr:hover { background: #FAFBFC; }
+        .data-table tbody tr.clickable { cursor: pointer; }
+
+        /* Badges */
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .badge-ig { background: linear-gradient(135deg, #F56040, #C13584); color: #fff; }
+        .badge-tk { background: #000; color: #fff; }
+        .badge-video { background: #FEE2E2; color: #DC2626; }
+        .badge-img { background: #DBEAFE; color: #2563EB; }
+        .badge-carousel { background: #E0E7FF; color: #4F46E5; }
+        .badge-alta { background: #FEE2E2; color: #DC2626; }
+        .badge-media { background: #FEF3C7; color: #D97706; }
+        .badge-baja { background: #D1FAE5; color: #059669; }
+        .badge-ok { background: #D1FAE5; color: #059669; }
+        .badge-run { background: #FEF3C7; color: #D97706; }
+        .badge-err { background: #FEE2E2; color: #DC2626; }
+        .badge-propio { background: #D1FAE5; color: #059669; }
+        .badge-competidor { background: #FEE2E2; color: #DC2626; }
+
+        /* Tag pills */
+        .tag-pill { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; background: #F3F4F6; color: #666; font-weight: 500; }
+
+        /* Filters bar */
+        .filter-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+        .filter-select, .filter-input { background: #fff; border: 1px solid #E5E7EB; border-radius: 8px; padding: 7px 12px; font-size: 13px; color: #333; font-family: inherit; outline: none; transition: border-color 0.15s; }
+        .filter-select:focus, .filter-input:focus { border-color: #FF7B0F; }
+        .filter-label { font-size: 12px; color: #999; font-weight: 500; }
+        .filter-clear { font-size: 12px; color: #FF7B0F; cursor: pointer; font-weight: 500; border: none; background: none; }
+        .filter-clear:hover { text-decoration: underline; }
+
+        /* Modal */
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: #FFFFFF; border-radius: 16px; max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: #fff; border-radius: 16px 16px 0 0; z-index: 5; }
+        .modal-header h2 { font-size: 16px; font-weight: 700; color: #1B2A4A; }
+        .modal-close { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #E5E7EB; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #999; transition: all 0.15s; }
+        .modal-close:hover { background: #F3F4F6; color: #333; }
+        .modal-body { padding: 24px; }
+
+        /* Section blocks (for generated content detail) */
+        .section-block { border-left: 3px solid #FF7B0F; padding: 12px 16px; background: #FFF8F2; border-radius: 0 8px 8px 0; margin-bottom: 12px; }
+        .section-block.hook { border-left-color: #8B5CF6; background: #F5F3FF; }
+        .section-block.cta { border-left-color: #22C55E; background: #F0FDF4; }
+        .section-block.dev { border-left-color: #3B82F6; background: #EFF6FF; }
+
+        /* Idea cards */
+        .idea-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; transition: all 0.2s; display: flex; flex-direction: column; }
+        .idea-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); border-color: #D1D5DB; }
+
+        /* Generated content cards */
+        .gen-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; }
+        .gen-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); border-color: #FF7B0F; }
+
+        /* Practice cards */
+        .practice-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; border-left: 4px solid #E5E7EB; }
+
+        /* Slide preview cards */
+        .slide-preview { background: #F8F9FC; border: 1px solid #E5E7EB; border-radius: 8px; padding: 10px 12px; min-width: 140px; flex-shrink: 0; }
+
+        /* Info grid for modal */
+        .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .info-cell { background: #F8F9FC; border-radius: 8px; padding: 12px; }
+        .info-cell .label { font-size: 11px; color: #999; font-weight: 500; text-transform: uppercase; }
+        .info-cell .value { font-size: 14px; font-weight: 600; color: #1B2A4A; margin-top: 2px; }
+
+        /* Slide card in modal */
+        .slide-card { background: #F8F9FC; border: 1px solid #E5E7EB; border-radius: 10px; padding: 16px; transition: all 0.2s; border-left: 3px solid transparent; }
+        .slide-card:hover { border-left-color: #FF7B0F; }
+
+        /* Scrollbar */
+        .scroll-area { overflow-y: auto; }
+        .scroll-area::-webkit-scrollbar { width: 5px; }
+        .scroll-area::-webkit-scrollbar-track { background: transparent; }
+        .scroll-area::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+
+        /* Loading shimmer */
+        .generating { animation: shimmer 1.5s infinite; background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%); background-size: 200% 100%; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
         .pulse { animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .scrollbar-thin::-webkit-scrollbar { width: 6px; }
-        .scrollbar-thin::-webkit-scrollbar-track { background: #1e293b; }
-        .scrollbar-thin::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-        .slide-card { transition: all 0.3s; border-left: 3px solid transparent; }
-        .slide-card:hover { border-left-color: #818cf8; transform: translateX(4px); }
-        .modal-backdrop { background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
-        .script-section { border-left: 3px solid #6366f1; padding-left: 1rem; margin-bottom: 1rem; }
-        .carousel-slide { min-width: 200px; }
-        .generating { animation: shimmer 1.5s infinite; background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%); background-size: 200% 100%; }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* Overview quick action cards */
+        .quick-action { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .quick-action:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-color: #FF7B0F; }
+        .quick-action .qa-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 20px; }
+
+        /* Hidden utility */
+        .hidden { display: none !important; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar { width: 64px; }
+            .sidebar-logo .logo-text, .sidebar-logo .logo-sub, .nav-item span { display: none; }
+            .sidebar-logo { padding: 16px 14px; justify-content: center; }
+            .nav-item { justify-content: center; padding: 10px; }
+            .nav-item i { margin: 0; }
+            .main-area { margin-left: 64px; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-area { margin-left: 0; }
+            .info-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
-<body class="min-h-screen">
-    <!-- Header -->
-    <header class="glass border-b border-gray-700 px-6 py-4 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold text-lg">P</div>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L21.5 7.5V16.5L12 22L2.5 16.5V7.5L12 2Z" fill="white" opacity="0.3"/>
+                    <text x="7.5" y="17" fill="white" font-size="14" font-weight="bold" font-family="Inter, sans-serif">P</text>
+                </svg>
+            </div>
             <div>
-                <h1 class="text-xl font-bold gradient-text">Proper MKT</h1>
-                <p class="text-xs text-gray-400">Sistema de Inteligencia de Contenido</p>
+                <div class="logo-text">Proper</div>
+                <div class="logo-sub">Content Intelligence</div>
             </div>
         </div>
-        <div class="flex items-center gap-3">
-            <span id="lastUpdate" class="text-xs text-gray-400"></span>
-            <button onclick="generateContent()" class="px-4 py-2 gradient-btn rounded-lg text-sm font-medium transition flex items-center gap-2">
-                <i class="fas fa-magic"></i> Generar Contenido
+        <nav class="sidebar-nav">
+            <button class="nav-item active" data-tab="overview" onclick="showTab('overview')">
+                <i class="fas fa-th-large"></i> <span>Dashboard</span>
             </button>
-            <button onclick="triggerPipeline()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                <i class="fas fa-sync-alt"></i> Ejecutar Pipeline
+            <button class="nav-item" data-tab="posts" onclick="showTab('posts')">
+                <i class="fas fa-table"></i> <span>Contenido Analizado</span>
             </button>
+            <button class="nav-item" data-tab="generated" onclick="showTab('generated')">
+                <i class="fas fa-wand-magic-sparkles"></i> <span>Contenido Generado</span>
+            </button>
+            <button class="nav-item" data-tab="ideas" onclick="showTab('ideas')">
+                <i class="fas fa-lightbulb"></i> <span>Ideas de Contenido</span>
+            </button>
+            <div class="nav-divider"></div>
+            <button class="nav-item" data-tab="profiles" onclick="showTab('profiles')">
+                <i class="fas fa-users"></i> <span>Perfiles</span>
+            </button>
+            <button class="nav-item" data-tab="practices" onclick="showTab('practices')">
+                <i class="fas fa-book-open"></i> <span>Best Practices</span>
+            </button>
+            <button class="nav-item" data-tab="runs" onclick="showTab('runs')">
+                <i class="fas fa-history"></i> <span>Pipeline</span>
+            </button>
+        </nav>
+        <div style="padding: 14px; border-top: 1px solid #E5E7EB;">
+            <div style="font-size: 11px; color: #999;" id="lastUpdate"></div>
         </div>
-    </header>
+    </aside>
 
-    <main class="p-6 max-w-7xl mx-auto">
-        <!-- Stats Cards -->
-        <div id="statsGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-8">
-            <div class="stat-card glass rounded-xl p-4">
-                <div class="text-2xl font-bold text-blue-400" id="statProfiles">-</div>
-                <div class="text-xs text-gray-400 mt-1">Perfiles</div>
-            </div>
-            <div class="stat-card glass rounded-xl p-4">
-                <div class="text-2xl font-bold text-green-400" id="statPosts">-</div>
-                <div class="text-xs text-gray-400 mt-1">Posts</div>
-            </div>
-            <div class="stat-card glass rounded-xl p-4">
-                <div class="text-2xl font-bold text-purple-400" id="statVideos">-</div>
-                <div class="text-xs text-gray-400 mt-1">Videos</div>
-            </div>
-            <div class="stat-card glass rounded-xl p-4">
-                <div class="text-2xl font-bold text-yellow-400" id="statAnalyses">-</div>
-                <div class="text-xs text-gray-400 mt-1">Analisis</div>
-            </div>
-            <div class="stat-card glass rounded-xl p-4">
-                <div class="text-2xl font-bold text-pink-400" id="statIdeas">-</div>
-                <div class="text-xs text-gray-400 mt-1">Ideas</div>
-            </div>
-            <div class="stat-card glass rounded-xl p-4">
-                <div class="text-2xl font-bold text-red-400" id="statScripts">-</div>
-                <div class="text-xs text-gray-400 mt-1">Guiones</div>
-            </div>
-            <div class="stat-card glass rounded-xl p-4">
-                <div class="text-2xl font-bold text-indigo-400" id="statCarousels">-</div>
-                <div class="text-xs text-gray-400 mt-1">Carruseles</div>
-            </div>
-            <div class="stat-card glass rounded-xl p-4">
-                <div class="text-2xl font-bold text-cyan-400" id="statEngagement">-</div>
-                <div class="text-xs text-gray-400 mt-1">Avg Eng.</div>
-            </div>
-        </div>
-
-        <!-- Tabs -->
-        <div class="flex gap-4 mb-6 border-b border-gray-700 overflow-x-auto">
-            <button onclick="showTab('posts')" class="tab-btn pb-3 text-sm font-medium tab-active whitespace-nowrap" data-tab="posts">
-                <i class="fas fa-table mr-1"></i> Contenido Analizado
-            </button>
-            <button onclick="showTab('generated')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200 whitespace-nowrap" data-tab="generated">
-                <i class="fas fa-wand-magic-sparkles mr-1"></i> Contenido Generado
-            </button>
-            <button onclick="showTab('profiles')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200 whitespace-nowrap" data-tab="profiles">
-                <i class="fas fa-users mr-1"></i> Perfiles
-            </button>
-            <button onclick="showTab('ideas')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200 whitespace-nowrap" data-tab="ideas">
-                <i class="fas fa-lightbulb mr-1"></i> Ideas
-            </button>
-            <button onclick="showTab('runs')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200 whitespace-nowrap" data-tab="runs">
-                <i class="fas fa-history mr-1"></i> Pipeline
-            </button>
-            <button onclick="showTab('practices')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200 whitespace-nowrap" data-tab="practices">
-                <i class="fas fa-book mr-1"></i> Best Practices
-            </button>
-        </div>
-
-        <!-- Tab: Contenido Analizado -->
-        <div id="tab-posts" class="tab-content">
-            <div class="flex flex-wrap gap-3 mb-4 items-center">
-                <select id="filterPlatform" onchange="loadPosts()" class="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm">
-                    <option value="">Todas las plataformas</option>
-                    <option value="instagram">Instagram</option>
-                    <option value="tiktok">TikTok</option>
-                </select>
-                <select id="filterProfile" onchange="loadPosts()" class="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm">
-                    <option value="">Todos los perfiles</option>
-                </select>
-                <div class="flex items-center gap-2">
-                    <label class="text-xs text-gray-400">Desde:</label>
-                    <input type="date" id="filterDateFrom" onchange="loadPosts()" class="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm">
-                </div>
-                <div class="flex items-center gap-2">
-                    <label class="text-xs text-gray-400">Hasta:</label>
-                    <input type="date" id="filterDateTo" onchange="loadPosts()" class="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm">
-                </div>
-                <button onclick="clearDateFilters()" class="text-xs text-gray-400 hover:text-white underline">Limpiar fechas</button>
-            </div>
-            <div class="glass rounded-xl overflow-hidden">
-                <div class="overflow-x-auto scrollbar-thin" style="max-height: 600px; overflow-y: auto;">
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr class="text-left text-gray-400 text-xs uppercase">
-                                <th class="px-4 py-3">Perfil</th>
-                                <th class="px-4 py-3">Plataforma</th>
-                                <th class="px-4 py-3">Link</th>
-                                <th class="px-4 py-3">Tipo</th>
-                                <th class="px-4 py-3">Descripcion</th>
-                                <th class="px-4 py-3">Resumen AI</th>
-                                <th class="px-4 py-3"><i class="fas fa-heart text-red-400"></i></th>
-                                <th class="px-4 py-3"><i class="fas fa-comment text-blue-400"></i></th>
-                                <th class="px-4 py-3"><i class="fas fa-eye text-green-400"></i></th>
-                                <th class="px-4 py-3">Hook</th>
-                                <th class="px-4 py-3">Eng.</th>
-                                <th class="px-4 py-3">Rep.</th>
-                                <th class="px-4 py-3">Fecha</th>
-                            </tr>
-                        </thead>
-                        <tbody id="postsTable" class="divide-y divide-gray-700">
-                            <tr><td colspan="13" class="px-4 py-8 text-center text-gray-500">Cargando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tab: Contenido Generado -->
-        <div id="tab-generated" class="tab-content hidden">
-            <div class="flex gap-3 mb-4 items-center">
-                <select id="filterContentType" onchange="loadGenerated()" class="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm">
-                    <option value="">Todo el contenido</option>
-                    <option value="video_script">Guiones de Video</option>
-                    <option value="carousel_plan">Planes de Carrusel</option>
-                </select>
-                <button onclick="generateContent()" class="px-4 py-2 gradient-btn rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <i class="fas fa-magic"></i> Generar Nuevo
+    <!-- Main Content -->
+    <div class="main-area">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="topbar-title" id="topbarTitle">Dashboard</div>
+            <div class="topbar-actions">
+                <button onclick="generateContent()" class="btn-primary" id="btnGenerate">
+                    <i class="fas fa-sparkles"></i> Generar Contenido
+                </button>
+                <button onclick="triggerPipeline()" class="btn-secondary">
+                    <i class="fas fa-rotate"></i> Ejecutar Pipeline
                 </button>
             </div>
-            <div id="generatedGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div class="text-center text-gray-500 col-span-2 py-8">Cargando contenido generado...</div>
-            </div>
         </div>
 
-        <!-- Tab: Profiles -->
-        <div id="tab-profiles" class="tab-content hidden">
-            <div class="glass rounded-xl overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr class="text-left text-gray-400 text-xs uppercase">
-                                <th class="px-4 py-3">Username</th>
-                                <th class="px-4 py-3">Plataforma</th>
-                                <th class="px-4 py-3">Nombre</th>
-                                <th class="px-4 py-3">Bio</th>
-                                <th class="px-4 py-3">Seguidores</th>
-                                <th class="px-4 py-3">Posts</th>
-                                <th class="px-4 py-3">Tipo</th>
-                                <th class="px-4 py-3">Actualizado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="profilesTable" class="divide-y divide-gray-700"></tbody>
-                    </table>
+        <!-- Content Area -->
+        <div class="content-area">
+
+            <!-- Tab: Overview (Dashboard) -->
+            <div id="tab-overview" class="tab-content">
+                <!-- Stats Grid -->
+                <div id="statsGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #EFF6FF; color: #3B82F6;"><i class="fas fa-users"></i></div>
+                        <div class="stat-value" id="statProfiles">-</div>
+                        <div class="stat-label">Perfiles</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #F0FDF4; color: #22C55E;"><i class="fas fa-newspaper"></i></div>
+                        <div class="stat-value" id="statPosts">-</div>
+                        <div class="stat-label">Posts Analizados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #FEF3C7; color: #D97706;"><i class="fas fa-video"></i></div>
+                        <div class="stat-value" id="statVideos">-</div>
+                        <div class="stat-label">Videos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #F5F3FF; color: #8B5CF6;"><i class="fas fa-brain"></i></div>
+                        <div class="stat-value" id="statAnalyses">-</div>
+                        <div class="stat-label">Analisis AI</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #FFF3E8; color: #FF7B0F;"><i class="fas fa-lightbulb"></i></div>
+                        <div class="stat-value" id="statIdeas">-</div>
+                        <div class="stat-label">Ideas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #FEE2E2; color: #EF4444;"><i class="fas fa-film"></i></div>
+                        <div class="stat-value" id="statScripts">-</div>
+                        <div class="stat-label">Guiones</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #E0E7FF; color: #6366F1;"><i class="fas fa-images"></i></div>
+                        <div class="stat-value" id="statCarousels">-</div>
+                        <div class="stat-label">Carruseles</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #D1FAE5; color: #059669;"><i class="fas fa-chart-line"></i></div>
+                        <div class="stat-value" id="statEngagement">-</div>
+                        <div class="stat-label">Avg Engagement</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="quick-action" onclick="generateContent()">
+                        <div class="qa-icon" style="background: #FFF3E8; color: #FF7B0F;"><i class="fas fa-sparkles"></i></div>
+                        <div style="font-weight: 600; color: #1B2A4A; font-size: 14px;">Generar Contenido</div>
+                        <div style="font-size: 12px; color: #999; margin-top: 4px;">Crear guiones y carruseles con IA</div>
+                    </div>
+                    <div class="quick-action" onclick="triggerPipeline()">
+                        <div class="qa-icon" style="background: #EFF6FF; color: #3B82F6;"><i class="fas fa-rotate"></i></div>
+                        <div style="font-weight: 600; color: #1B2A4A; font-size: 14px;">Ejecutar Pipeline</div>
+                        <div style="font-size: 12px; color: #999; margin-top: 4px;">Analizar perfiles y contenido nuevo</div>
+                    </div>
+                </div>
+
+                <!-- Recent Content + Generated Preview -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-clock" style="color: #FF7B0F; margin-right: 6px;"></i>Contenido Reciente</h3>
+                            <button onclick="showTab('posts')" style="font-size: 12px; color: #FF7B0F; background: none; border: none; cursor: pointer; font-weight: 500;">Ver todo &rarr;</button>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <div id="recentPostsList" style="max-height: 320px; overflow-y: auto;" class="scroll-area">
+                                <div style="padding: 40px 20px; text-align: center; color: #999; font-size: 13px;">Cargando...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-sparkles" style="color: #FF7B0F; margin-right: 6px;"></i>Contenido Generado</h3>
+                            <button onclick="showTab('generated')" style="font-size: 12px; color: #FF7B0F; background: none; border: none; cursor: pointer; font-weight: 500;">Ver todo &rarr;</button>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <div id="recentGeneratedList" style="max-height: 320px; overflow-y: auto;" class="scroll-area">
+                                <div style="padding: 40px 20px; text-align: center; color: #999; font-size: 13px;">Cargando...</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Tab: Ideas -->
-        <div id="tab-ideas" class="tab-content hidden">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="ideasGrid"></div>
-        </div>
-
-        <!-- Tab: Pipeline Runs -->
-        <div id="tab-runs" class="tab-content hidden">
-            <div class="glass rounded-xl overflow-hidden">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="text-left text-gray-400 text-xs uppercase">
-                            <th class="px-4 py-3">#</th>
-                            <th class="px-4 py-3">Inicio</th>
-                            <th class="px-4 py-3">Fin</th>
-                            <th class="px-4 py-3">Estado</th>
-                            <th class="px-4 py-3">Perfiles</th>
-                            <th class="px-4 py-3">Posts</th>
-                            <th class="px-4 py-3">Videos</th>
-                            <th class="px-4 py-3">Errores</th>
-                        </tr>
-                    </thead>
-                    <tbody id="runsTable" class="divide-y divide-gray-700"></tbody>
-                </table>
+            <!-- Tab: Contenido Analizado -->
+            <div id="tab-posts" class="tab-content hidden">
+                <div class="filter-bar">
+                    <select id="filterPlatform" onchange="loadPosts()" class="filter-select">
+                        <option value="">Todas las plataformas</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="tiktok">TikTok</option>
+                    </select>
+                    <select id="filterProfile" onchange="loadPosts()" class="filter-select">
+                        <option value="">Todos los perfiles</option>
+                    </select>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span class="filter-label">Desde:</span>
+                        <input type="date" id="filterDateFrom" onchange="loadPosts()" class="filter-input">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span class="filter-label">Hasta:</span>
+                        <input type="date" id="filterDateTo" onchange="loadPosts()" class="filter-input">
+                    </div>
+                    <button onclick="clearDateFilters()" class="filter-clear">Limpiar fechas</button>
+                </div>
+                <div class="card">
+                    <div class="scroll-area" style="max-height: 640px; overflow-y: auto; overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Perfil</th>
+                                    <th>Plataforma</th>
+                                    <th>Link</th>
+                                    <th>Tipo</th>
+                                    <th>Descripcion</th>
+                                    <th>Resumen AI</th>
+                                    <th><i class="fas fa-heart" style="color: #EF4444;"></i></th>
+                                    <th><i class="fas fa-comment" style="color: #3B82F6;"></i></th>
+                                    <th><i class="fas fa-eye" style="color: #22C55E;"></i></th>
+                                    <th>Hook</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody id="postsTable">
+                                <tr><td colspan="11" style="padding: 40px 14px; text-align: center; color: #999;">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- Tab: Best Practices -->
-        <div id="tab-practices" class="tab-content hidden">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="practicesGrid"></div>
-        </div>
-    </main>
-
-    <!-- Detail Modal -->
-    <div id="detailModal" class="fixed inset-0 modal-backdrop z-50 hidden flex items-center justify-center p-4">
-        <div class="glass rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto scrollbar-thin p-6">
-            <div class="flex justify-between items-start mb-4">
-                <h2 id="modalTitle" class="text-xl font-bold gradient-text">Detalle</h2>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-xl"><i class="fas fa-times"></i></button>
+            <!-- Tab: Contenido Generado -->
+            <div id="tab-generated" class="tab-content hidden">
+                <div class="filter-bar">
+                    <select id="filterContentType" onchange="loadGenerated()" class="filter-select">
+                        <option value="">Todo el contenido</option>
+                        <option value="video_script">Guiones de Video</option>
+                        <option value="carousel_plan">Planes de Carrusel</option>
+                    </select>
+                    <button onclick="generateContent()" class="btn-primary" style="margin-left: auto;">
+                        <i class="fas fa-sparkles"></i> Generar Nuevo
+                    </button>
+                </div>
+                <div id="generatedGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div style="text-align: center; color: #999; grid-column: 1/-1; padding: 40px;">Cargando contenido generado...</div>
+                </div>
             </div>
-            <div id="modalContent"></div>
+
+            <!-- Tab: Ideas de Contenido -->
+            <div id="tab-ideas" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="ideasGrid"></div>
+            </div>
+
+            <!-- Tab: Perfiles -->
+            <div id="tab-profiles" class="tab-content hidden">
+                <div class="card">
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Plataforma</th>
+                                    <th>Nombre</th>
+                                    <th>Bio</th>
+                                    <th>Seguidores</th>
+                                    <th>Posts</th>
+                                    <th>Tipo</th>
+                                    <th>Actualizado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="profilesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Best Practices -->
+            <div id="tab-practices" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="practicesGrid"></div>
+            </div>
+
+            <!-- Tab: Pipeline Runs -->
+            <div id="tab-runs" class="tab-content hidden">
+                <div class="card">
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Inicio</th>
+                                    <th>Fin</th>
+                                    <th>Estado</th>
+                                    <th>Perfiles</th>
+                                    <th>Posts</th>
+                                    <th>Videos</th>
+                                    <th>Errores</th>
+                                </tr>
+                            </thead>
+                            <tbody id="runsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <footer class="text-center text-gray-500 text-xs py-6">
-        Proper MKT &copy; 2026 — Sistema de Inteligencia de Contenido | Pipeline diario a las 7:00 AM
-    </footer>
+    <!-- Detail Modal -->
+    <div id="detailModal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Detalle</h2>
+                <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modalContent"></div>
+        </div>
+    </div>
 
     <script>
         const API = '';
+        const tabTitles = {
+            overview: 'Dashboard',
+            posts: 'Contenido Analizado',
+            generated: 'Contenido Generado',
+            ideas: 'Ideas de Contenido',
+            profiles: 'Perfiles',
+            practices: 'Best Practices',
+            runs: 'Pipeline'
+        };
 
         // --- Utilities ---
         function showTab(tab) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('tab-active');
-                el.classList.add('text-gray-400');
-            });
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + tab).classList.remove('hidden');
-            const btn = document.querySelector(`[data-tab="${tab}"]`);
-            if (btn) { btn.classList.add('tab-active'); btn.classList.remove('text-gray-400'); }
+            const btn = document.querySelector(`.nav-item[data-tab="${tab}"]`);
+            if (btn) btn.classList.add('active');
+            document.getElementById('topbarTitle').textContent = tabTitles[tab] || 'Dashboard';
         }
 
         function clearDateFilters() {
@@ -275,6 +487,9 @@
             document.getElementById('detailModal').classList.remove('hidden');
         }
         function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
 
         function fmt(n) { return n ? Number(n).toLocaleString() : '0'; }
         function fmtDate(d) { return d ? new Date(d).toLocaleDateString('es-MX', {day:'2-digit', month:'short', year:'numeric'}) : '-'; }
@@ -316,60 +531,82 @@
                 const tbody = document.getElementById('postsTable');
 
                 if (!posts.length) {
-                    tbody.innerHTML = '<tr><td colspan="13" class="px-4 py-8 text-center text-gray-500">No hay posts. Ejecuta el pipeline o ajusta los filtros.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="11" style="padding: 40px 14px; text-align: center; color: #999;">No hay posts. Ejecuta el pipeline o ajusta los filtros.</td></tr>';
                     return;
                 }
 
                 tbody.innerHTML = posts.map(p => {
                     const pb = p.platform === 'instagram'
-                        ? '<span class="badge-ig text-white text-xs px-2 py-0.5 rounded-full">IG</span>'
-                        : '<span class="badge-tk text-cyan-400 text-xs px-2 py-0.5 rounded-full">TK</span>';
+                        ? '<span class="badge badge-ig">IG</span>'
+                        : '<span class="badge badge-tk">TK</span>';
                     const tb = p.is_video
-                        ? '<span class="bg-red-900 text-red-300 text-xs px-2 py-0.5 rounded">Video</span>'
-                        : '<span class="bg-blue-900 text-blue-300 text-xs px-2 py-0.5 rounded">Img</span>';
+                        ? '<span class="badge badge-video">Video</span>'
+                        : '<span class="badge badge-img">Img</span>';
                     const caption = (p.caption || '').substring(0, 80) + ((p.caption||'').length > 80 ? '...' : '');
                     const summary = (p.summary || '-').substring(0, 100) + ((p.summary||'').length > 100 ? '...' : '');
-                    const es = p.engagement_score ? `<span class="text-green-400">${Number(p.engagement_score).toFixed(1)}</span>` : '-';
-                    const rs = p.replicability_score ? `<span class="text-purple-400">${Number(p.replicability_score).toFixed(1)}</span>` : '-';
-                    const link = p.post_url ? `<a href="${p.post_url}" target="_blank" class="text-blue-400 hover:underline"><i class="fas fa-external-link-alt"></i></a>` : '-';
+                    const link = p.post_url ? `<a href="${p.post_url}" target="_blank" style="color: #FF7B0F;"><i class="fas fa-external-link-alt"></i></a>` : '-';
 
-                    return `<tr class="hover:bg-gray-800 transition cursor-pointer" onclick="showPostDetail(${JSON.stringify(p).replace(/"/g, '&quot;')})">
-                        <td class="px-4 py-3 font-medium">@${p.username || ''}</td>
-                        <td class="px-4 py-3">${pb}</td>
-                        <td class="px-4 py-3">${link}</td>
-                        <td class="px-4 py-3">${tb}</td>
-                        <td class="px-4 py-3 text-gray-300 text-xs max-w-xs truncate">${caption}</td>
-                        <td class="px-4 py-3 text-gray-300 text-xs max-w-xs truncate">${summary}</td>
-                        <td class="px-4 py-3">${fmt(p.likes)}</td>
-                        <td class="px-4 py-3">${fmt(p.comments)}</td>
-                        <td class="px-4 py-3">${fmt(p.views)}</td>
-                        <td class="px-4 py-3 text-xs">${p.hook_type || '-'}</td>
-                        <td class="px-4 py-3">${es}</td>
-                        <td class="px-4 py-3">${rs}</td>
-                        <td class="px-4 py-3 text-xs text-gray-400">${fmtDate(p.published_at || p.scraped_at)}</td>
+                    return `<tr class="clickable" onclick="showPostDetail(${JSON.stringify(p).replace(/"/g, '&quot;')})">
+                        <td style="font-weight: 600; color: #1B2A4A;">@${p.username || ''}</td>
+                        <td>${pb}</td>
+                        <td>${link}</td>
+                        <td>${tb}</td>
+                        <td style="color: #666; font-size: 12px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${caption}</td>
+                        <td style="color: #666; font-size: 12px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${summary}</td>
+                        <td>${fmt(p.likes)}</td>
+                        <td>${fmt(p.comments)}</td>
+                        <td>${fmt(p.views)}</td>
+                        <td style="font-size: 12px;">${p.hook_type || '-'}</td>
+                        <td style="font-size: 12px; color: #999;">${fmtDate(p.published_at || p.scraped_at)}</td>
                     </tr>`;
                 }).join('');
+
+                // Update recent posts on overview
+                updateRecentPosts(posts.slice(0, 6));
             } catch (e) { console.error('Posts error:', e); }
+        }
+
+        function updateRecentPosts(posts) {
+            const container = document.getElementById('recentPostsList');
+            if (!posts.length) {
+                container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: #999; font-size: 13px;">No hay posts recientes.</div>';
+                return;
+            }
+            container.innerHTML = posts.map(p => {
+                const pb = p.platform === 'instagram'
+                    ? '<span class="badge badge-ig" style="font-size: 10px; padding: 1px 6px;">IG</span>'
+                    : '<span class="badge badge-tk" style="font-size: 10px; padding: 1px 6px;">TK</span>';
+                return `<div style="display: flex; align-items: center; gap: 12px; padding: 10px 20px; border-bottom: 1px solid #F3F4F6; cursor: pointer;" onclick="showPostDetail(${JSON.stringify(p).replace(/"/g, '&quot;')})">
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-size: 13px; font-weight: 600; color: #1B2A4A;">@${p.username || ''} ${pb}</div>
+                        <div style="font-size: 12px; color: #666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${(p.caption || p.summary || 'Sin caption').substring(0, 60)}</div>
+                    </div>
+                    <div style="text-align: right; flex-shrink: 0;">
+                        <div style="font-size: 11px; color: #999;">${fmtDate(p.published_at || p.scraped_at)}</div>
+                        <div style="font-size: 11px; color: #666;"><i class="fas fa-heart" style="color: #EF4444; font-size: 10px;"></i> ${fmt(p.likes)}</div>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
         function showPostDetail(p) {
             const html = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
                     <div>
-                        <h3 class="font-semibold text-white mb-2">Informacion del Post</h3>
-                        <div class="space-y-2 text-sm">
-                            <p><span class="text-gray-400">Perfil:</span> @${p.username || ''} (${p.platform})</p>
-                            <p><span class="text-gray-400">Tipo:</span> ${p.is_video ? 'Video' : 'Imagen'}</p>
-                            <p><span class="text-gray-400">Fecha:</span> ${fmtDate(p.published_at || p.scraped_at)}</p>
-                            <p><span class="text-gray-400">Likes:</span> ${fmt(p.likes)} | <span class="text-gray-400">Comments:</span> ${fmt(p.comments)} | <span class="text-gray-400">Views:</span> ${fmt(p.views)}</p>
-                            ${p.post_url ? `<p><a href="${p.post_url}" target="_blank" class="text-blue-400 hover:underline">Ver post original <i class="fas fa-external-link-alt"></i></a></p>` : ''}
+                        <h3 style="font-size: 14px; font-weight: 600; color: #1B2A4A; margin-bottom: 12px;">Informacion del Post</h3>
+                        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                            <p><span style="color: #999;">Perfil:</span> <strong>@${p.username || ''}</strong> (${p.platform})</p>
+                            <p><span style="color: #999;">Tipo:</span> ${p.is_video ? 'Video' : 'Imagen'}</p>
+                            <p><span style="color: #999;">Fecha:</span> ${fmtDate(p.published_at || p.scraped_at)}</p>
+                            <p><span style="color: #999;">Likes:</span> ${fmt(p.likes)} &nbsp; <span style="color: #999;">Comments:</span> ${fmt(p.comments)} &nbsp; <span style="color: #999;">Views:</span> ${fmt(p.views)}</p>
+                            ${p.post_url ? `<p><a href="${p.post_url}" target="_blank" style="color: #FF7B0F; text-decoration: none; font-weight: 500;">Ver post original <i class="fas fa-external-link-alt" style="font-size: 11px;"></i></a></p>` : ''}
                         </div>
-                        <h3 class="font-semibold text-white mt-4 mb-2">Caption</h3>
-                        <p class="text-sm text-gray-300 bg-gray-800 rounded-lg p-3">${p.caption || 'Sin caption'}</p>
+                        <h3 style="font-size: 14px; font-weight: 600; color: #1B2A4A; margin: 16px 0 8px;">Caption</h3>
+                        <div style="font-size: 13px; color: #666; background: #F8F9FC; border-radius: 8px; padding: 12px; border: 1px solid #E5E7EB;">${p.caption || 'Sin caption'}</div>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-white mb-2">Analisis AI</h3>
-                        <div class="text-sm text-gray-300 bg-gray-800 rounded-lg p-3 max-h-96 overflow-y-auto scrollbar-thin whitespace-pre-wrap">${p.full_analysis || p.summary || 'Sin analisis disponible'}</div>
+                        <h3 style="font-size: 14px; font-weight: 600; color: #1B2A4A; margin-bottom: 12px;">Analisis AI</h3>
+                        <div style="font-size: 13px; color: #666; background: #F8F9FC; border-radius: 8px; padding: 12px; border: 1px solid #E5E7EB; max-height: 400px; overflow-y: auto; white-space: pre-wrap;" class="scroll-area">${p.full_analysis || p.summary || 'Sin analisis disponible'}</div>
                     </div>
                 </div>`;
             openModal(`Post de @${p.username}`, html);
@@ -386,19 +623,21 @@
                 const grid = document.getElementById('generatedGrid');
 
                 if (!items.length) {
-                    grid.innerHTML = '<div class="text-center text-gray-500 col-span-2 py-12"><i class="fas fa-wand-magic-sparkles text-4xl mb-4 block"></i><p>No hay contenido generado aun.</p><p class="text-xs mt-2">Haz clic en "Generar Contenido" para crear guiones y carruseles.</p></div>';
+                    grid.innerHTML = `<div style="text-align: center; color: #999; grid-column: 1/-1; padding: 60px 20px;">
+                        <i class="fas fa-sparkles" style="font-size: 36px; color: #E5E7EB; display: block; margin-bottom: 16px;"></i>
+                        <p style="font-size: 14px; font-weight: 500;">No hay contenido generado aun.</p>
+                        <p style="font-size: 12px; margin-top: 6px;">Haz clic en "Generar Contenido" para crear guiones y carruseles.</p>
+                    </div>`;
                     return;
                 }
 
                 grid.innerHTML = items.map(item => {
                     const isScript = item.content_type === 'video_script';
-                    const icon = isScript ? 'fa-video' : 'fa-images';
-                    const color = isScript ? 'red' : 'indigo';
                     const badge = isScript
-                        ? '<span class="bg-red-900 text-red-300 text-xs px-2 py-0.5 rounded"><i class="fas fa-video mr-1"></i>Guion Video</span>'
-                        : '<span class="bg-indigo-900 text-indigo-300 text-xs px-2 py-0.5 rounded"><i class="fas fa-images mr-1"></i>Carrusel</span>';
+                        ? '<span class="badge badge-video"><i class="fas fa-video" style="margin-right: 3px;"></i>Guion Video</span>'
+                        : '<span class="badge badge-carousel"><i class="fas fa-images" style="margin-right: 3px;"></i>Carrusel</span>';
                     const diffBadge = item.difficulty
-                        ? `<span class="bg-gray-700 text-gray-300 text-xs px-2 py-0.5 rounded">${item.difficulty}</span>`
+                        ? `<span class="tag-pill">${item.difficulty}</span>`
                         : '';
                     const source = item.source_username ? `Inspirado en @${item.source_username}` : '';
 
@@ -406,39 +645,63 @@
                     if (isScript && item.script_json) {
                         const s = typeof item.script_json === 'string' ? JSON.parse(item.script_json) : item.script_json;
                         preview = `
-                            <div class="mt-3 space-y-2">
-                                ${s.hook ? `<div class="script-section"><span class="text-purple-400 text-xs font-bold">HOOK:</span><p class="text-sm">${s.hook.texto_exacto || ''}</p></div>` : ''}
-                                ${s.duracion_estimada ? `<p class="text-xs text-gray-400"><i class="fas fa-clock mr-1"></i>${s.duracion_estimada}</p>` : ''}
-                                ${s.tomas_necesarias ? `<div class="mt-2"><span class="text-xs text-gray-400">Tomas:</span><ul class="text-xs text-gray-300 list-disc ml-4 mt-1">${s.tomas_necesarias.slice(0,3).map(t => `<li>${t}</li>`).join('')}</ul></div>` : ''}
+                            <div style="margin-top: 12px;">
+                                ${s.hook ? `<div class="section-block hook"><span style="font-size: 11px; font-weight: 700; color: #8B5CF6;">HOOK:</span><p style="font-size: 13px; color: #333; margin-top: 4px;">${s.hook.texto_exacto || ''}</p></div>` : ''}
+                                ${s.duracion_estimada ? `<p style="font-size: 12px; color: #999; margin-top: 6px;"><i class="fas fa-clock" style="margin-right: 4px;"></i>${s.duracion_estimada}</p>` : ''}
                             </div>`;
                     } else if (!isScript && item.carousel_json) {
                         const c = typeof item.carousel_json === 'string' ? JSON.parse(item.carousel_json) : item.carousel_json;
                         preview = `
-                            <div class="mt-3">
-                                <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
-                                    ${(c.slides || []).slice(0, 5).map(sl => `
-                                        <div class="carousel-slide flex-shrink-0 bg-gray-800 rounded-lg p-3 w-40">
-                                            <span class="text-xs text-gray-400">${sl.numero || ''}. ${sl.tipo || ''}</span>
-                                            <p class="text-xs font-medium mt-1">${sl.titulo_principal || ''}</p>
+                            <div style="margin-top: 12px;">
+                                <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;" class="scroll-area">
+                                    ${(c.slides || []).slice(0, 4).map(sl => `
+                                        <div class="slide-preview">
+                                            <span style="font-size: 10px; color: #999;">${sl.numero || ''}. ${sl.tipo || ''}</span>
+                                            <p style="font-size: 11px; font-weight: 600; color: #1B2A4A; margin-top: 2px;">${sl.titulo_principal || ''}</p>
                                         </div>
                                     `).join('')}
-                                    ${(c.slides || []).length > 5 ? `<div class="carousel-slide flex-shrink-0 bg-gray-800 rounded-lg p-3 w-40 flex items-center justify-center text-gray-400 text-xs">+${(c.slides||[]).length - 5} mas</div>` : ''}
+                                    ${(c.slides || []).length > 4 ? `<div class="slide-preview" style="display: flex; align-items: center; justify-content: center; color: #999; font-size: 11px;">+${(c.slides||[]).length - 4} mas</div>` : ''}
                                 </div>
-                                <p class="text-xs text-gray-400 mt-2"><i class="fas fa-layer-group mr-1"></i>${(c.slides||[]).length} slides</p>
+                                <p style="font-size: 11px; color: #999; margin-top: 4px;"><i class="fas fa-layer-group" style="margin-right: 4px;"></i>${(c.slides||[]).length} slides</p>
                             </div>`;
                     }
 
-                    return `<div class="glass rounded-xl p-5 cursor-pointer hover:border-${color}-500 transition" onclick='showGeneratedDetail(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
-                        <div class="flex items-center justify-between mb-2">
+                    return `<div class="gen-card" onclick='showGeneratedDetail(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             ${badge} ${diffBadge}
                         </div>
-                        <h3 class="font-semibold text-white mt-2">${item.title || 'Sin titulo'}</h3>
-                        <p class="text-xs text-gray-400 mt-1">${source}</p>
-                        <p class="text-xs text-gray-500 mt-1">${fmtDate(item.created_at)}</p>
+                        <h3 style="font-size: 14px; font-weight: 600; color: #1B2A4A; margin-top: 4px;">${item.title || 'Sin titulo'}</h3>
+                        <p style="font-size: 12px; color: #999; margin-top: 4px;">${source}</p>
+                        <p style="font-size: 11px; color: #BBB; margin-top: 2px;">${fmtDate(item.created_at)}</p>
                         ${preview}
                     </div>`;
                 }).join('');
+
+                // Update recent generated on overview
+                updateRecentGenerated(items.slice(0, 5));
             } catch (e) { console.error('Generated error:', e); }
+        }
+
+        function updateRecentGenerated(items) {
+            const container = document.getElementById('recentGeneratedList');
+            if (!items.length) {
+                container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: #999; font-size: 13px;">No hay contenido generado.</div>';
+                return;
+            }
+            container.innerHTML = items.map(item => {
+                const isScript = item.content_type === 'video_script';
+                const icon = isScript ? 'fa-video' : 'fa-images';
+                const iconColor = isScript ? '#EF4444' : '#6366F1';
+                return `<div style="display: flex; align-items: center; gap: 12px; padding: 10px 20px; border-bottom: 1px solid #F3F4F6; cursor: pointer;" onclick='showGeneratedDetail(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: ${isScript ? '#FEE2E2' : '#E0E7FF'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas ${icon}" style="color: ${iconColor}; font-size: 12px;"></i>
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-size: 13px; font-weight: 600; color: #1B2A4A; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title || 'Sin titulo'}</div>
+                        <div style="font-size: 11px; color: #999;">${isScript ? 'Guion de Video' : 'Plan de Carrusel'} &middot; ${fmtDate(item.created_at)}</div>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
         function showGeneratedDetail(item) {
@@ -449,96 +712,96 @@
                 const s = item.script_json ? (typeof item.script_json === 'string' ? JSON.parse(item.script_json) : item.script_json) : null;
                 if (s) {
                     html = `
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-3 gap-3">
-                            <div class="glass rounded-lg p-3"><span class="text-xs text-gray-400">Plataforma</span><p class="font-medium">${s.plataforma || item.platform || '-'}</p></div>
-                            <div class="glass rounded-lg p-3"><span class="text-xs text-gray-400">Duracion</span><p class="font-medium">${s.duracion_estimada || '-'}</p></div>
-                            <div class="glass rounded-lg p-3"><span class="text-xs text-gray-400">Dificultad</span><p class="font-medium">${s.nivel_dificultad || '-'}</p></div>
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div class="info-grid">
+                            <div class="info-cell"><div class="label">Plataforma</div><div class="value">${s.plataforma || item.platform || '-'}</div></div>
+                            <div class="info-cell"><div class="label">Duracion</div><div class="value">${s.duracion_estimada || '-'}</div></div>
+                            <div class="info-cell"><div class="label">Dificultad</div><div class="value">${s.nivel_dificultad || '-'}</div></div>
                         </div>
 
-                        <div class="script-section bg-purple-900 bg-opacity-20 rounded-lg p-4">
-                            <h4 class="text-purple-400 font-bold mb-2"><i class="fas fa-bolt mr-1"></i>HOOK (0-3 seg)</h4>
-                            <p class="text-white font-medium text-lg">"${s.hook?.texto_exacto || ''}"</p>
-                            <p class="text-xs text-gray-400 mt-2">Tipo: ${s.hook?.tipo || '-'} | Visual: ${s.hook?.visual || '-'}</p>
+                        <div class="section-block hook" style="padding: 16px 20px;">
+                            <h4 style="font-size: 12px; font-weight: 700; color: #8B5CF6; margin-bottom: 8px;"><i class="fas fa-bolt" style="margin-right: 4px;"></i>HOOK (0-3 seg)</h4>
+                            <p style="font-size: 16px; font-weight: 600; color: #1B2A4A;">"${s.hook?.texto_exacto || ''}"</p>
+                            <p style="font-size: 12px; color: #999; margin-top: 6px;">Tipo: ${s.hook?.tipo || '-'} | Visual: ${s.hook?.visual || '-'}</p>
                         </div>
 
                         <div>
-                            <h4 class="text-blue-400 font-bold mb-3"><i class="fas fa-film mr-1"></i>DESARROLLO</h4>
+                            <h4 style="font-size: 12px; font-weight: 700; color: #3B82F6; margin-bottom: 12px;"><i class="fas fa-film" style="margin-right: 4px;"></i>DESARROLLO</h4>
                             ${(s.desarrollo || []).map(d => `
-                                <div class="script-section mb-3">
-                                    <span class="text-xs text-yellow-400 font-bold">${d.segundo || ''} seg</span>
-                                    <p class="text-sm text-white mt-1"><i class="fas fa-microphone mr-1 text-gray-500"></i>${d.texto || ''}</p>
-                                    <p class="text-xs text-gray-400 mt-1"><i class="fas fa-camera mr-1"></i>${d.visual || ''}</p>
-                                    ${d.texto_overlay ? `<p class="text-xs text-cyan-400 mt-1"><i class="fas fa-closed-captioning mr-1"></i>${d.texto_overlay}</p>` : ''}
+                                <div class="section-block dev" style="margin-bottom: 10px;">
+                                    <span style="font-size: 11px; font-weight: 700; color: #D97706;">${d.segundo || ''} seg</span>
+                                    <p style="font-size: 13px; color: #333; margin-top: 4px;"><i class="fas fa-microphone" style="color: #999; margin-right: 4px; font-size: 11px;"></i>${d.texto || ''}</p>
+                                    <p style="font-size: 12px; color: #999; margin-top: 4px;"><i class="fas fa-camera" style="margin-right: 4px; font-size: 11px;"></i>${d.visual || ''}</p>
+                                    ${d.texto_overlay ? `<p style="font-size: 12px; color: #3B82F6; margin-top: 4px;"><i class="fas fa-closed-captioning" style="margin-right: 4px; font-size: 11px;"></i>${d.texto_overlay}</p>` : ''}
                                 </div>
                             `).join('')}
                         </div>
 
-                        <div class="script-section bg-green-900 bg-opacity-20 rounded-lg p-4">
-                            <h4 class="text-green-400 font-bold mb-2"><i class="fas fa-bullhorn mr-1"></i>CTA</h4>
-                            <p class="text-white">"${s.cta?.texto || ''}"</p>
-                            <p class="text-xs text-gray-400 mt-1">Accion: ${s.cta?.accion || '-'}</p>
+                        <div class="section-block cta" style="padding: 16px 20px;">
+                            <h4 style="font-size: 12px; font-weight: 700; color: #22C55E; margin-bottom: 8px;"><i class="fas fa-bullhorn" style="margin-right: 4px;"></i>CTA</h4>
+                            <p style="font-size: 14px; font-weight: 600; color: #1B2A4A;">"${s.cta?.texto || ''}"</p>
+                            <p style="font-size: 12px; color: #999; margin-top: 4px;">Accion: ${s.cta?.accion || '-'}</p>
                         </div>
 
-                        <div class="glass rounded-lg p-4">
-                            <h4 class="text-yellow-400 font-bold mb-2"><i class="fas fa-camera mr-1"></i>TOMAS NECESARIAS</h4>
-                            <ul class="space-y-1">${(s.tomas_necesarias || []).map(t => `<li class="text-sm flex items-start gap-2"><i class="fas fa-check text-green-400 mt-1 text-xs"></i>${t}</li>`).join('')}</ul>
+                        <div style="background: #F8F9FC; border: 1px solid #E5E7EB; border-radius: 8px; padding: 16px;">
+                            <h4 style="font-size: 12px; font-weight: 700; color: #D97706; margin-bottom: 8px;"><i class="fas fa-camera" style="margin-right: 4px;"></i>TOMAS NECESARIAS</h4>
+                            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;">${(s.tomas_necesarias || []).map(t => `<li style="font-size: 13px; display: flex; align-items: flex-start; gap: 8px;"><i class="fas fa-check" style="color: #22C55E; margin-top: 3px; font-size: 11px;"></i>${t}</li>`).join('')}</ul>
                         </div>
 
-                        ${s.equipamiento ? `<p class="text-sm"><span class="text-gray-400">Equipamiento:</span> ${s.equipamiento}</p>` : ''}
-                        ${s.musica_sugerida ? `<p class="text-sm"><span class="text-gray-400">Musica:</span> ${s.musica_sugerida}</p>` : ''}
-                        ${s.tips_produccion ? `<p class="text-sm"><span class="text-gray-400">Tips:</span> ${s.tips_produccion}</p>` : ''}
+                        ${s.equipamiento ? `<p style="font-size: 13px;"><span style="color: #999;">Equipamiento:</span> ${s.equipamiento}</p>` : ''}
+                        ${s.musica_sugerida ? `<p style="font-size: 13px;"><span style="color: #999;">Musica:</span> ${s.musica_sugerida}</p>` : ''}
+                        ${s.tips_produccion ? `<p style="font-size: 13px;"><span style="color: #999;">Tips:</span> ${s.tips_produccion}</p>` : ''}
 
-                        <div class="glass rounded-lg p-4">
-                            <h4 class="text-pink-400 font-bold mb-2"><i class="fas fa-pen mr-1"></i>CAPTION</h4>
-                            <p class="text-sm whitespace-pre-wrap">${s.caption || ''}</p>
-                            <div class="flex flex-wrap gap-1 mt-2">${(s.hashtags || []).map(h => `<span class="text-blue-400 text-xs">#${h}</span>`).join(' ')}</div>
+                        <div style="background: #F8F9FC; border: 1px solid #E5E7EB; border-radius: 8px; padding: 16px;">
+                            <h4 style="font-size: 12px; font-weight: 700; color: #EC4899; margin-bottom: 8px;"><i class="fas fa-pen" style="margin-right: 4px;"></i>CAPTION</h4>
+                            <p style="font-size: 13px; white-space: pre-wrap; color: #333;">${s.caption || ''}</p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px;">${(s.hashtags || []).map(h => `<span style="color: #3B82F6; font-size: 12px;">#${h}</span>`).join(' ')}</div>
                         </div>
                     </div>`;
                 } else {
-                    html = `<div class="whitespace-pre-wrap text-sm">${item.raw_text || 'Sin contenido'}</div>`;
+                    html = `<div style="white-space: pre-wrap; font-size: 13px; color: #333;">${item.raw_text || 'Sin contenido'}</div>`;
                 }
             } else {
                 const c = item.carousel_json ? (typeof item.carousel_json === 'string' ? JSON.parse(item.carousel_json) : item.carousel_json) : null;
                 if (c) {
                     html = `
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-3 gap-3">
-                            <div class="glass rounded-lg p-3"><span class="text-xs text-gray-400">Tema</span><p class="font-medium">${c.tema || '-'}</p></div>
-                            <div class="glass rounded-lg p-3"><span class="text-xs text-gray-400">Objetivo</span><p class="font-medium">${c.objetivo || '-'}</p></div>
-                            <div class="glass rounded-lg p-3"><span class="text-xs text-gray-400">Slides</span><p class="font-medium">${c.total_slides || (c.slides||[]).length}</p></div>
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div class="info-grid">
+                            <div class="info-cell"><div class="label">Tema</div><div class="value">${c.tema || '-'}</div></div>
+                            <div class="info-cell"><div class="label">Objetivo</div><div class="value">${c.objetivo || '-'}</div></div>
+                            <div class="info-cell"><div class="label">Slides</div><div class="value">${c.total_slides || (c.slides||[]).length}</div></div>
                         </div>
 
-                        <h4 class="text-indigo-400 font-bold"><i class="fas fa-images mr-1"></i>SLIDES DEL CARRUSEL</h4>
-                        <div class="space-y-3">
+                        <h4 style="font-size: 12px; font-weight: 700; color: #6366F1;"><i class="fas fa-images" style="margin-right: 4px;"></i>SLIDES DEL CARRUSEL</h4>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
                             ${(c.slides || []).map(sl => `
-                                <div class="slide-card glass rounded-lg p-4">
-                                    <div class="flex items-center gap-3 mb-2">
-                                        <span class="bg-indigo-600 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center">${sl.numero || ''}</span>
-                                        <span class="text-xs text-gray-400 uppercase">${sl.tipo || ''}</span>
+                                <div class="slide-card">
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                        <span style="background: #FF7B0F; color: #fff; font-size: 11px; font-weight: 700; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">${sl.numero || ''}</span>
+                                        <span style="font-size: 11px; color: #999; text-transform: uppercase; font-weight: 500;">${sl.tipo || ''}</span>
                                     </div>
-                                    <p class="font-bold text-white text-lg">${sl.titulo_principal || ''}</p>
-                                    ${sl.subtitulo ? `<p class="text-sm text-gray-300 mt-1">${sl.subtitulo}</p>` : ''}
-                                    ${sl.cuerpo ? `<p class="text-sm text-gray-300 mt-2">${sl.cuerpo}</p>` : ''}
-                                    ${sl.dato_clave ? `<p class="text-xs text-yellow-400 mt-2"><i class="fas fa-chart-bar mr-1"></i>${sl.dato_clave}</p>` : ''}
-                                    ${sl.puntos_clave ? `<ul class="text-sm mt-2 space-y-1">${sl.puntos_clave.map(pc => `<li class="flex items-start gap-2"><i class="fas fa-check text-green-400 mt-1 text-xs"></i>${pc}</li>`).join('')}</ul>` : ''}
-                                    ${sl.visual ? `<p class="text-xs text-gray-500 mt-2"><i class="fas fa-palette mr-1"></i>${sl.visual}</p>` : ''}
-                                    ${sl.accion ? `<p class="text-xs text-green-400 mt-1"><i class="fas fa-hand-pointer mr-1"></i>${sl.accion}</p>` : ''}
+                                    <p style="font-size: 15px; font-weight: 700; color: #1B2A4A;">${sl.titulo_principal || ''}</p>
+                                    ${sl.subtitulo ? `<p style="font-size: 13px; color: #666; margin-top: 4px;">${sl.subtitulo}</p>` : ''}
+                                    ${sl.cuerpo ? `<p style="font-size: 13px; color: #666; margin-top: 6px;">${sl.cuerpo}</p>` : ''}
+                                    ${sl.dato_clave ? `<p style="font-size: 12px; color: #D97706; margin-top: 6px;"><i class="fas fa-chart-bar" style="margin-right: 4px;"></i>${sl.dato_clave}</p>` : ''}
+                                    ${sl.puntos_clave ? `<ul style="font-size: 13px; margin-top: 6px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px;">${sl.puntos_clave.map(pc => `<li style="display: flex; align-items: flex-start; gap: 6px;"><i class="fas fa-check" style="color: #22C55E; margin-top: 3px; font-size: 11px;"></i>${pc}</li>`).join('')}</ul>` : ''}
+                                    ${sl.visual ? `<p style="font-size: 11px; color: #999; margin-top: 6px;"><i class="fas fa-palette" style="margin-right: 4px;"></i>${sl.visual}</p>` : ''}
+                                    ${sl.accion ? `<p style="font-size: 11px; color: #22C55E; margin-top: 4px;"><i class="fas fa-hand-pointer" style="margin-right: 4px;"></i>${sl.accion}</p>` : ''}
                                 </div>
                             `).join('')}
                         </div>
 
-                        <div class="glass rounded-lg p-4">
-                            <h4 class="text-pink-400 font-bold mb-2"><i class="fas fa-pen mr-1"></i>CAPTION</h4>
-                            <p class="text-sm whitespace-pre-wrap">${c.caption || ''}</p>
-                            <div class="flex flex-wrap gap-1 mt-2">${(c.hashtags || []).map(h => `<span class="text-blue-400 text-xs">#${h}</span>`).join(' ')}</div>
+                        <div style="background: #F8F9FC; border: 1px solid #E5E7EB; border-radius: 8px; padding: 16px;">
+                            <h4 style="font-size: 12px; font-weight: 700; color: #EC4899; margin-bottom: 8px;"><i class="fas fa-pen" style="margin-right: 4px;"></i>CAPTION</h4>
+                            <p style="font-size: 13px; white-space: pre-wrap; color: #333;">${c.caption || ''}</p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px;">${(c.hashtags || []).map(h => `<span style="color: #3B82F6; font-size: 12px;">#${h}</span>`).join(' ')}</div>
                         </div>
 
-                        ${c.mejor_hora ? `<p class="text-sm"><span class="text-gray-400">Mejor hora:</span> ${c.mejor_hora}</p>` : ''}
-                        ${c.tips_diseno ? `<p class="text-sm"><span class="text-gray-400">Tips diseno:</span> ${c.tips_diseno}</p>` : ''}
+                        ${c.mejor_hora ? `<p style="font-size: 13px;"><span style="color: #999;">Mejor hora:</span> ${c.mejor_hora}</p>` : ''}
+                        ${c.tips_diseno ? `<p style="font-size: 13px;"><span style="color: #999;">Tips diseno:</span> ${c.tips_diseno}</p>` : ''}
                     </div>`;
                 } else {
-                    html = `<div class="whitespace-pre-wrap text-sm">${item.raw_text || 'Sin contenido'}</div>`;
+                    html = `<div style="white-space: pre-wrap; font-size: 13px; color: #333;">${item.raw_text || 'Sin contenido'}</div>`;
                 }
             }
 
@@ -548,10 +811,11 @@
         // --- Generate Content ---
         async function generateContent() {
             const topic = prompt('Tema especifico? (dejar vacio para auto-generar basado en analisis):');
-            const btn = document.querySelector('.gradient-btn');
+            const btn = document.getElementById('btnGenerate');
             const origHTML = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
             btn.disabled = true;
+            btn.style.opacity = '0.7';
 
             try {
                 const body = { type: 'both', limit: 3 };
@@ -575,6 +839,7 @@
             } finally {
                 btn.innerHTML = origHTML;
                 btn.disabled = false;
+                btn.style.opacity = '1';
             }
         }
 
@@ -592,25 +857,25 @@
                 });
 
                 if (!profiles.length) {
-                    tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">No hay perfiles.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8" style="padding: 40px 14px; text-align: center; color: #999;">No hay perfiles.</td></tr>';
                     return;
                 }
                 tbody.innerHTML = profiles.map(p => {
                     const pb = p.platform === 'instagram'
-                        ? '<span class="badge-ig text-white text-xs px-2 py-0.5 rounded-full">Instagram</span>'
-                        : '<span class="badge-tk text-cyan-400 text-xs px-2 py-0.5 rounded-full">TikTok</span>';
+                        ? '<span class="badge badge-ig">Instagram</span>'
+                        : '<span class="badge badge-tk">TikTok</span>';
                     const tb = p.is_competitor
-                        ? '<span class="bg-red-900 text-red-300 text-xs px-2 py-0.5 rounded">Competidor</span>'
-                        : '<span class="bg-green-900 text-green-300 text-xs px-2 py-0.5 rounded">Propio</span>';
-                    return `<tr class="hover:bg-gray-800 transition">
-                        <td class="px-4 py-3 font-medium text-blue-400"><a href="${p.profile_url || '#'}" target="_blank">@${p.username}</a></td>
-                        <td class="px-4 py-3">${pb}</td>
-                        <td class="px-4 py-3">${p.full_name || '-'}</td>
-                        <td class="px-4 py-3 text-xs text-gray-400 max-w-xs truncate">${(p.bio || '').substring(0, 60)}</td>
-                        <td class="px-4 py-3 font-medium">${fmt(p.followers)}</td>
-                        <td class="px-4 py-3">${fmt(p.posts_count)}</td>
-                        <td class="px-4 py-3">${tb}</td>
-                        <td class="px-4 py-3 text-xs text-gray-400">${fmtDate(p.updated_at)}</td>
+                        ? '<span class="badge badge-competidor">Competidor</span>'
+                        : '<span class="badge badge-propio">Propio</span>';
+                    return `<tr>
+                        <td><a href="${p.profile_url || '#'}" target="_blank" style="color: #FF7B0F; text-decoration: none; font-weight: 600;">@${p.username}</a></td>
+                        <td>${pb}</td>
+                        <td style="font-weight: 500;">${p.full_name || '-'}</td>
+                        <td style="font-size: 12px; color: #666; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${(p.bio || '').substring(0, 60)}</td>
+                        <td style="font-weight: 600;">${fmt(p.followers)}</td>
+                        <td>${fmt(p.posts_count)}</td>
+                        <td>${tb}</td>
+                        <td style="font-size: 12px; color: #999;">${fmtDate(p.updated_at)}</td>
                     </tr>`;
                 }).join('');
             } catch (e) { console.error('Profiles error:', e); }
@@ -623,22 +888,46 @@
                 const ideas = await res.json();
                 const grid = document.getElementById('ideasGrid');
                 if (!ideas.length) {
-                    grid.innerHTML = '<div class="text-center text-gray-500 col-span-3 py-8">No hay ideas aun.</div>';
+                    grid.innerHTML = '<div style="text-align: center; color: #999; grid-column: 1/-1; padding: 60px 20px;">No hay ideas aun.</div>';
                     return;
                 }
                 grid.innerHTML = ideas.map(idea => {
-                    const pc = { high: 'text-red-400 bg-red-900', medium: 'text-yellow-400 bg-yellow-900', low: 'text-green-400 bg-green-900' }[idea.priority] || 'text-yellow-400 bg-yellow-900';
-                    const tags = (idea.tags || []).map(t => `<span class="bg-gray-700 text-gray-300 text-xs px-2 py-0.5 rounded">${t}</span>`).join(' ');
-                    return `<div class="glass rounded-xl p-5 flex flex-col gap-3">
-                        <div class="flex items-center justify-between">
-                            <span class="${pc} text-xs px-2 py-0.5 rounded">${idea.priority}</span>
-                            <span class="text-xs text-gray-400">${idea.platform || 'multi'}</span>
+                    const priorityMap = {
+                        high: { label: 'Alta', cls: 'badge-alta' },
+                        medium: { label: 'Media', cls: 'badge-media' },
+                        low: { label: 'Baja', cls: 'badge-baja' }
+                    };
+                    const pr = priorityMap[idea.priority] || priorityMap.medium;
+                    const platformBadge = idea.platform === 'instagram'
+                        ? '<span class="badge badge-ig" style="font-size: 10px; padding: 2px 8px;">IG</span>'
+                        : idea.platform === 'tiktok'
+                        ? '<span class="badge badge-tk" style="font-size: 10px; padding: 2px 8px;">TK</span>'
+                        : '<span class="tag-pill">Multi</span>';
+                    const contentType = idea.content_type === 'video'
+                        ? '<span class="badge badge-video" style="font-size: 10px;">Video</span>'
+                        : idea.content_type === 'carousel'
+                        ? '<span class="badge badge-carousel" style="font-size: 10px;">Carousel</span>'
+                        : '';
+                    const tags = (idea.tags || []).map(t => `<span class="tag-pill">${t}</span>`).join(' ');
+
+                    return `<div class="idea-card">
+                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap;">
+                            ${platformBadge}
+                            ${contentType}
+                            <span class="badge ${pr.cls}">${pr.label}</span>
+                            ${idea.status ? `<span class="tag-pill" style="margin-left: auto;">${idea.status}</span>` : ''}
                         </div>
-                        <h3 class="font-semibold text-white">${idea.title}</h3>
-                        <p class="text-xs text-gray-400">${idea.description || ''}</p>
-                        ${idea.hook_suggestion ? `<div class="text-xs"><span class="text-purple-400 font-medium">Hook:</span> ${idea.hook_suggestion}</div>` : ''}
-                        ${idea.cta_suggestion ? `<div class="text-xs"><span class="text-blue-400 font-medium">CTA:</span> ${idea.cta_suggestion}</div>` : ''}
-                        <div class="flex gap-1 flex-wrap mt-auto">${tags}</div>
+                        <h3 style="font-size: 15px; font-weight: 700; color: #1B2A4A; margin-bottom: 6px;">${idea.title}</h3>
+                        <p style="font-size: 12px; color: #666; line-height: 1.5; margin-bottom: 10px;">${idea.description || ''}</p>
+                        ${idea.hook_suggestion ? `<div style="background: #F5F3FF; border-left: 3px solid #8B5CF6; padding: 8px 12px; border-radius: 0 6px 6px 0; margin-bottom: 8px;">
+                            <span style="font-size: 11px; font-weight: 600; color: #8B5CF6;">Hook:</span>
+                            <p style="font-size: 12px; color: #333; margin-top: 2px;">${idea.hook_suggestion}</p>
+                        </div>` : ''}
+                        ${idea.cta_suggestion ? `<div style="background: #EFF6FF; border-left: 3px solid #3B82F6; padding: 8px 12px; border-radius: 0 6px 6px 0; margin-bottom: 10px;">
+                            <span style="font-size: 11px; font-weight: 600; color: #3B82F6;">CTA:</span>
+                            <p style="font-size: 12px; color: #333; margin-top: 2px;">${idea.cta_suggestion}</p>
+                        </div>` : ''}
+                        <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: auto;">${tags}</div>
                     </div>`;
                 }).join('');
             } catch (e) { console.error('Ideas error:', e); }
@@ -651,24 +940,24 @@
                 const runs = await res.json();
                 const tbody = document.getElementById('runsTable');
                 if (!runs.length) {
-                    tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">No hay ejecuciones.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8" style="padding: 40px 14px; text-align: center; color: #999;">No hay ejecuciones.</td></tr>';
                     return;
                 }
                 tbody.innerHTML = runs.map(r => {
                     const sb = r.status === 'completed'
-                        ? '<span class="bg-green-900 text-green-300 text-xs px-2 py-0.5 rounded">OK</span>'
+                        ? '<span class="badge badge-ok">OK</span>'
                         : r.status === 'running'
-                        ? '<span class="bg-yellow-900 text-yellow-300 text-xs px-2 py-0.5 rounded pulse">Run</span>'
-                        : '<span class="bg-red-900 text-red-300 text-xs px-2 py-0.5 rounded">Err</span>';
-                    return `<tr class="hover:bg-gray-800 transition">
-                        <td class="px-4 py-3">${r.id}</td>
-                        <td class="px-4 py-3 text-xs">${fmtDate(r.started_at)}</td>
-                        <td class="px-4 py-3 text-xs">${fmtDate(r.completed_at)}</td>
-                        <td class="px-4 py-3">${sb}</td>
-                        <td class="px-4 py-3">${r.profiles_scraped || 0}</td>
-                        <td class="px-4 py-3">${r.posts_found || 0}</td>
-                        <td class="px-4 py-3">${r.videos_analyzed || 0}</td>
-                        <td class="px-4 py-3 text-xs text-red-400 max-w-xs truncate">${r.errors || '-'}</td>
+                        ? '<span class="badge badge-run pulse">Run</span>'
+                        : '<span class="badge badge-err">Err</span>';
+                    return `<tr>
+                        <td style="font-weight: 600;">${r.id}</td>
+                        <td style="font-size: 12px;">${fmtDate(r.started_at)}</td>
+                        <td style="font-size: 12px;">${fmtDate(r.completed_at)}</td>
+                        <td>${sb}</td>
+                        <td>${r.profiles_scraped || 0}</td>
+                        <td>${r.posts_found || 0}</td>
+                        <td>${r.videos_analyzed || 0}</td>
+                        <td style="font-size: 12px; color: #EF4444; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${r.errors || '-'}</td>
                     </tr>`;
                 }).join('');
             } catch (e) { console.error('Runs error:', e); }
@@ -681,22 +970,22 @@
                 const practices = await res.json();
                 const grid = document.getElementById('practicesGrid');
                 if (!practices.length) {
-                    grid.innerHTML = '<div class="text-center text-gray-500 col-span-2 py-8">No hay best practices.</div>';
+                    grid.innerHTML = '<div style="text-align: center; color: #999; grid-column: 1/-1; padding: 60px 20px;">No hay best practices.</div>';
                     return;
                 }
-                const colors = { content_mix:'border-blue-500', hooks:'border-purple-500', posting_frequency:'border-green-500', posting_times:'border-yellow-500', hashtags:'border-pink-500', production:'border-cyan-500', engagement:'border-red-500', compliance:'border-orange-500', competitors:'border-indigo-500' };
+                const colors = { content_mix:'#3B82F6', hooks:'#8B5CF6', posting_frequency:'#22C55E', posting_times:'#D97706', hashtags:'#EC4899', production:'#06B6D4', engagement:'#EF4444', compliance:'#FF7B0F', competitors:'#6366F1' };
                 const icons = { content_mix:'fa-layer-group', hooks:'fa-bolt', posting_frequency:'fa-calendar', posting_times:'fa-clock', hashtags:'fa-hashtag', production:'fa-video', engagement:'fa-chart-line', compliance:'fa-shield-alt', competitors:'fa-users' };
                 grid.innerHTML = practices.map(bp => {
-                    const bc = colors[bp.category] || 'border-gray-500';
+                    const bc = colors[bp.category] || '#999';
                     const ic = icons[bp.category] || 'fa-info-circle';
                     const rel = Math.round((bp.relevance_score || 0) * 100);
-                    return `<div class="glass rounded-xl p-5 border-l-4 ${bc}">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs text-gray-400 uppercase"><i class="fas ${ic} mr-1"></i>${(bp.category||'').replace('_',' ')}</span>
-                            <span class="text-xs text-green-400">${rel}%</span>
+                    return `<div class="practice-card" style="border-left-color: ${bc};">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="font-size: 11px; color: #999; text-transform: uppercase; font-weight: 600;"><i class="fas ${ic}" style="color: ${bc}; margin-right: 4px;"></i>${(bp.category||'').replace('_',' ')}</span>
+                            <span style="font-size: 12px; font-weight: 600; color: #22C55E;">${rel}%</span>
                         </div>
-                        <h3 class="font-semibold text-white mb-2">${bp.title}</h3>
-                        <p class="text-sm text-gray-300">${bp.description}</p>
+                        <h3 style="font-size: 14px; font-weight: 700; color: #1B2A4A; margin-bottom: 6px;">${bp.title}</h3>
+                        <p style="font-size: 13px; color: #666; line-height: 1.5;">${bp.description}</p>
                     </div>`;
                 }).join('');
             } catch (e) { console.error('Practices error:', e); }
