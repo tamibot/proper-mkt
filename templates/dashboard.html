@@ -12,6 +12,8 @@
         .stat-card { transition: transform 0.2s; }
         .stat-card:hover { transform: translateY(-2px); }
         .gradient-text { background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .gradient-btn:hover { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
         .tab-active { border-bottom: 2px solid #818cf8; color: #818cf8; }
         .badge-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
         .badge-tk { background: #000; border: 1px solid #25f4ee; }
@@ -21,6 +23,13 @@
         .scrollbar-thin::-webkit-scrollbar { width: 6px; }
         .scrollbar-thin::-webkit-scrollbar-track { background: #1e293b; }
         .scrollbar-thin::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+        .slide-card { transition: all 0.3s; border-left: 3px solid transparent; }
+        .slide-card:hover { border-left-color: #818cf8; transform: translateX(4px); }
+        .modal-backdrop { background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+        .script-section { border-left: 3px solid #6366f1; padding-left: 1rem; margin-bottom: 1rem; }
+        .carousel-slide { min-width: 200px; }
+        .generating { animation: shimmer 1.5s infinite; background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%); background-size: 200% 100%; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     </style>
 </head>
 <body class="min-h-screen">
@@ -33,9 +42,12 @@
                 <p class="text-xs text-gray-400">Sistema de Inteligencia de Contenido</p>
             </div>
         </div>
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3">
             <span id="lastUpdate" class="text-xs text-gray-400"></span>
-            <button onclick="triggerPipeline()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm font-medium transition flex items-center gap-2">
+            <button onclick="generateContent()" class="px-4 py-2 gradient-btn rounded-lg text-sm font-medium transition flex items-center gap-2">
+                <i class="fas fa-magic"></i> Generar Contenido
+            </button>
+            <button onclick="triggerPipeline()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium transition flex items-center gap-2">
                 <i class="fas fa-sync-alt"></i> Ejecutar Pipeline
             </button>
         </div>
@@ -43,14 +55,14 @@
 
     <main class="p-6 max-w-7xl mx-auto">
         <!-- Stats Cards -->
-        <div id="statsGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div id="statsGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-8">
             <div class="stat-card glass rounded-xl p-4">
                 <div class="text-2xl font-bold text-blue-400" id="statProfiles">-</div>
                 <div class="text-xs text-gray-400 mt-1">Perfiles</div>
             </div>
             <div class="stat-card glass rounded-xl p-4">
                 <div class="text-2xl font-bold text-green-400" id="statPosts">-</div>
-                <div class="text-xs text-gray-400 mt-1">Posts Analizados</div>
+                <div class="text-xs text-gray-400 mt-1">Posts</div>
             </div>
             <div class="stat-card glass rounded-xl p-4">
                 <div class="text-2xl font-bold text-purple-400" id="statVideos">-</div>
@@ -62,36 +74,47 @@
             </div>
             <div class="stat-card glass rounded-xl p-4">
                 <div class="text-2xl font-bold text-pink-400" id="statIdeas">-</div>
-                <div class="text-xs text-gray-400 mt-1">Ideas de Contenido</div>
+                <div class="text-xs text-gray-400 mt-1">Ideas</div>
+            </div>
+            <div class="stat-card glass rounded-xl p-4">
+                <div class="text-2xl font-bold text-red-400" id="statScripts">-</div>
+                <div class="text-xs text-gray-400 mt-1">Guiones</div>
+            </div>
+            <div class="stat-card glass rounded-xl p-4">
+                <div class="text-2xl font-bold text-indigo-400" id="statCarousels">-</div>
+                <div class="text-xs text-gray-400 mt-1">Carruseles</div>
             </div>
             <div class="stat-card glass rounded-xl p-4">
                 <div class="text-2xl font-bold text-cyan-400" id="statEngagement">-</div>
-                <div class="text-xs text-gray-400 mt-1">Avg Engagement</div>
+                <div class="text-xs text-gray-400 mt-1">Avg Eng.</div>
             </div>
         </div>
 
         <!-- Tabs -->
-        <div class="flex gap-6 mb-6 border-b border-gray-700">
-            <button onclick="showTab('posts')" class="tab-btn pb-3 text-sm font-medium tab-active" data-tab="posts">
+        <div class="flex gap-4 mb-6 border-b border-gray-700 overflow-x-auto">
+            <button onclick="showTab('posts')" class="tab-btn pb-3 text-sm font-medium tab-active whitespace-nowrap" data-tab="posts">
                 <i class="fas fa-table mr-1"></i> Contenido Analizado
             </button>
-            <button onclick="showTab('profiles')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200" data-tab="profiles">
+            <button onclick="showTab('generated')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200 whitespace-nowrap" data-tab="generated">
+                <i class="fas fa-wand-magic-sparkles mr-1"></i> Contenido Generado
+            </button>
+            <button onclick="showTab('profiles')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200 whitespace-nowrap" data-tab="profiles">
                 <i class="fas fa-users mr-1"></i> Perfiles
             </button>
-            <button onclick="showTab('ideas')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200" data-tab="ideas">
-                <i class="fas fa-lightbulb mr-1"></i> Ideas de Contenido
+            <button onclick="showTab('ideas')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200 whitespace-nowrap" data-tab="ideas">
+                <i class="fas fa-lightbulb mr-1"></i> Ideas
             </button>
-            <button onclick="showTab('runs')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200" data-tab="runs">
-                <i class="fas fa-history mr-1"></i> Historial Pipeline
+            <button onclick="showTab('runs')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200 whitespace-nowrap" data-tab="runs">
+                <i class="fas fa-history mr-1"></i> Pipeline
             </button>
-            <button onclick="showTab('practices')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200" data-tab="practices">
+            <button onclick="showTab('practices')" class="tab-btn pb-3 text-sm font-medium text-gray-400 hover:text-gray-200 whitespace-nowrap" data-tab="practices">
                 <i class="fas fa-book mr-1"></i> Best Practices
             </button>
         </div>
 
-        <!-- Tab Content: Posts -->
+        <!-- Tab: Contenido Analizado -->
         <div id="tab-posts" class="tab-content">
-            <div class="flex gap-3 mb-4">
+            <div class="flex flex-wrap gap-3 mb-4 items-center">
                 <select id="filterPlatform" onchange="loadPosts()" class="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm">
                     <option value="">Todas las plataformas</option>
                     <option value="instagram">Instagram</option>
@@ -100,6 +123,15 @@
                 <select id="filterProfile" onchange="loadPosts()" class="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm">
                     <option value="">Todos los perfiles</option>
                 </select>
+                <div class="flex items-center gap-2">
+                    <label class="text-xs text-gray-400">Desde:</label>
+                    <input type="date" id="filterDateFrom" onchange="loadPosts()" class="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-xs text-gray-400">Hasta:</label>
+                    <input type="date" id="filterDateTo" onchange="loadPosts()" class="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm">
+                </div>
+                <button onclick="clearDateFilters()" class="text-xs text-gray-400 hover:text-white underline">Limpiar fechas</button>
             </div>
             <div class="glass rounded-xl overflow-hidden">
                 <div class="overflow-x-auto scrollbar-thin" style="max-height: 600px; overflow-y: auto;">
@@ -108,16 +140,16 @@
                             <tr class="text-left text-gray-400 text-xs uppercase">
                                 <th class="px-4 py-3">Perfil</th>
                                 <th class="px-4 py-3">Plataforma</th>
-                                <th class="px-4 py-3">Post</th>
+                                <th class="px-4 py-3">Link</th>
                                 <th class="px-4 py-3">Tipo</th>
                                 <th class="px-4 py-3">Descripcion</th>
-                                <th class="px-4 py-3">Resumen</th>
-                                <th class="px-4 py-3">Likes</th>
-                                <th class="px-4 py-3">Comments</th>
-                                <th class="px-4 py-3">Views</th>
+                                <th class="px-4 py-3">Resumen AI</th>
+                                <th class="px-4 py-3"><i class="fas fa-heart text-red-400"></i></th>
+                                <th class="px-4 py-3"><i class="fas fa-comment text-blue-400"></i></th>
+                                <th class="px-4 py-3"><i class="fas fa-eye text-green-400"></i></th>
                                 <th class="px-4 py-3">Hook</th>
-                                <th class="px-4 py-3">Engagement</th>
-                                <th class="px-4 py-3">Replicable</th>
+                                <th class="px-4 py-3">Eng.</th>
+                                <th class="px-4 py-3">Rep.</th>
                                 <th class="px-4 py-3">Fecha</th>
                             </tr>
                         </thead>
@@ -129,7 +161,24 @@
             </div>
         </div>
 
-        <!-- Tab Content: Profiles -->
+        <!-- Tab: Contenido Generado -->
+        <div id="tab-generated" class="tab-content hidden">
+            <div class="flex gap-3 mb-4 items-center">
+                <select id="filterContentType" onchange="loadGenerated()" class="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm">
+                    <option value="">Todo el contenido</option>
+                    <option value="video_script">Guiones de Video</option>
+                    <option value="carousel_plan">Planes de Carrusel</option>
+                </select>
+                <button onclick="generateContent()" class="px-4 py-2 gradient-btn rounded-lg text-sm font-medium transition flex items-center gap-2">
+                    <i class="fas fa-magic"></i> Generar Nuevo
+                </button>
+            </div>
+            <div id="generatedGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div class="text-center text-gray-500 col-span-2 py-8">Cargando contenido generado...</div>
+            </div>
+        </div>
+
+        <!-- Tab: Profiles -->
         <div id="tab-profiles" class="tab-content hidden">
             <div class="glass rounded-xl overflow-hidden">
                 <div class="overflow-x-auto">
@@ -146,22 +195,18 @@
                                 <th class="px-4 py-3">Actualizado</th>
                             </tr>
                         </thead>
-                        <tbody id="profilesTable" class="divide-y divide-gray-700">
-                            <tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">Cargando...</td></tr>
-                        </tbody>
+                        <tbody id="profilesTable" class="divide-y divide-gray-700"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- Tab Content: Ideas -->
+        <!-- Tab: Ideas -->
         <div id="tab-ideas" class="tab-content hidden">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="ideasGrid">
-                <div class="text-center text-gray-500 col-span-3 py-8">Cargando ideas...</div>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="ideasGrid"></div>
         </div>
 
-        <!-- Tab Content: Pipeline Runs -->
+        <!-- Tab: Pipeline Runs -->
         <div id="tab-runs" class="tab-content hidden">
             <div class="glass rounded-xl overflow-hidden">
                 <table class="w-full text-sm">
@@ -177,30 +222,36 @@
                             <th class="px-4 py-3">Errores</th>
                         </tr>
                     </thead>
-                    <tbody id="runsTable" class="divide-y divide-gray-700">
-                        <tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">Cargando...</td></tr>
-                    </tbody>
+                    <tbody id="runsTable" class="divide-y divide-gray-700"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Tab Content: Best Practices -->
+        <!-- Tab: Best Practices -->
         <div id="tab-practices" class="tab-content hidden">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="practicesGrid">
-                <div class="text-center text-gray-500 col-span-2 py-8">Cargando mejores practicas...</div>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="practicesGrid"></div>
         </div>
     </main>
 
-    <!-- Footer -->
+    <!-- Detail Modal -->
+    <div id="detailModal" class="fixed inset-0 modal-backdrop z-50 hidden flex items-center justify-center p-4">
+        <div class="glass rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto scrollbar-thin p-6">
+            <div class="flex justify-between items-start mb-4">
+                <h2 id="modalTitle" class="text-xl font-bold gradient-text">Detalle</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-xl"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
     <footer class="text-center text-gray-500 text-xs py-6">
-        Proper MKT &copy; 2026 — Sistema de Inteligencia de Contenido | Pipeline ejecuta diario a las 7:00 AM
+        Proper MKT &copy; 2026 — Sistema de Inteligencia de Contenido | Pipeline diario a las 7:00 AM
     </footer>
 
     <script>
         const API = '';
 
-        // --- Tab Navigation ---
+        // --- Utilities ---
         function showTab(tab) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(el => {
@@ -209,79 +260,321 @@
             });
             document.getElementById('tab-' + tab).classList.remove('hidden');
             const btn = document.querySelector(`[data-tab="${tab}"]`);
-            btn.classList.add('tab-active');
-            btn.classList.remove('text-gray-400');
+            if (btn) { btn.classList.add('tab-active'); btn.classList.remove('text-gray-400'); }
         }
+
+        function clearDateFilters() {
+            document.getElementById('filterDateFrom').value = '';
+            document.getElementById('filterDateTo').value = '';
+            loadPosts();
+        }
+
+        function openModal(title, html) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalContent').innerHTML = html;
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+        function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
+
+        function fmt(n) { return n ? Number(n).toLocaleString() : '0'; }
+        function fmtDate(d) { return d ? new Date(d).toLocaleDateString('es-MX', {day:'2-digit', month:'short', year:'numeric'}) : '-'; }
 
         // --- Load Stats ---
         async function loadStats() {
             try {
                 const res = await fetch(API + '/api/stats');
-                const data = await res.json();
-                document.getElementById('statProfiles').textContent = data.total_profiles || 0;
-                document.getElementById('statPosts').textContent = data.total_posts || 0;
-                document.getElementById('statVideos').textContent = data.total_videos || 0;
-                document.getElementById('statAnalyses').textContent = data.total_analyses || 0;
-                document.getElementById('statIdeas').textContent = data.total_ideas || 0;
-                document.getElementById('statEngagement').textContent = data.avg_engagement || '-';
-                if (data.last_run) {
-                    const d = new Date(data.last_run.started_at);
-                    document.getElementById('lastUpdate').textContent = 'Ultimo run: ' + d.toLocaleString('es-MX');
+                const d = await res.json();
+                document.getElementById('statProfiles').textContent = d.total_profiles || 0;
+                document.getElementById('statPosts').textContent = d.total_posts || 0;
+                document.getElementById('statVideos').textContent = d.total_videos || 0;
+                document.getElementById('statAnalyses').textContent = d.total_analyses || 0;
+                document.getElementById('statIdeas').textContent = d.total_ideas || 0;
+                document.getElementById('statScripts').textContent = d.total_scripts || 0;
+                document.getElementById('statCarousels').textContent = d.total_carousels || 0;
+                document.getElementById('statEngagement').textContent = d.avg_engagement || '-';
+                if (d.last_run) {
+                    document.getElementById('lastUpdate').textContent = 'Ultimo: ' + new Date(d.last_run.started_at).toLocaleString('es-MX');
                 }
-            } catch (e) {
-                console.error('Error loading stats:', e);
-            }
+            } catch (e) { console.error('Stats error:', e); }
         }
 
-        // --- Load Posts ---
+        // --- Load Posts with Date Filter ---
         async function loadPosts() {
             try {
                 const platform = document.getElementById('filterPlatform').value;
                 const profileId = document.getElementById('filterProfile').value;
+                const dateFrom = document.getElementById('filterDateFrom').value;
+                const dateTo = document.getElementById('filterDateTo').value;
                 let url = API + '/api/posts?limit=100';
                 if (platform) url += '&platform=' + platform;
                 if (profileId) url += '&profile_id=' + profileId;
+                if (dateFrom) url += '&date_from=' + dateFrom;
+                if (dateTo) url += '&date_to=' + dateTo;
+
                 const res = await fetch(url);
                 const posts = await res.json();
                 const tbody = document.getElementById('postsTable');
 
                 if (!posts.length) {
-                    tbody.innerHTML = '<tr><td colspan="13" class="px-4 py-8 text-center text-gray-500">No hay posts aun. Ejecuta el pipeline para comenzar.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="13" class="px-4 py-8 text-center text-gray-500">No hay posts. Ejecuta el pipeline o ajusta los filtros.</td></tr>';
                     return;
                 }
 
                 tbody.innerHTML = posts.map(p => {
-                    const platformBadge = p.platform === 'instagram'
+                    const pb = p.platform === 'instagram'
                         ? '<span class="badge-ig text-white text-xs px-2 py-0.5 rounded-full">IG</span>'
                         : '<span class="badge-tk text-cyan-400 text-xs px-2 py-0.5 rounded-full">TK</span>';
-                    const typeBadge = p.is_video
+                    const tb = p.is_video
                         ? '<span class="bg-red-900 text-red-300 text-xs px-2 py-0.5 rounded">Video</span>'
-                        : '<span class="bg-blue-900 text-blue-300 text-xs px-2 py-0.5 rounded">Imagen</span>';
-                    const caption = (p.caption || '').substring(0, 80) + ((p.caption || '').length > 80 ? '...' : '');
-                    const summary = (p.summary || '-').substring(0, 100) + ((p.summary || '').length > 100 ? '...' : '');
-                    const engScore = p.engagement_score ? `<span class="text-green-400">${p.engagement_score.toFixed(1)}</span>` : '-';
-                    const repScore = p.replicability_score ? `<span class="text-purple-400">${p.replicability_score.toFixed(1)}</span>` : '-';
-                    const date = p.published_at ? new Date(p.published_at).toLocaleDateString('es-MX') : '-';
-                    const link = p.post_url ? `<a href="${p.post_url}" target="_blank" class="text-blue-400 hover:underline">Ver</a>` : '-';
+                        : '<span class="bg-blue-900 text-blue-300 text-xs px-2 py-0.5 rounded">Img</span>';
+                    const caption = (p.caption || '').substring(0, 80) + ((p.caption||'').length > 80 ? '...' : '');
+                    const summary = (p.summary || '-').substring(0, 100) + ((p.summary||'').length > 100 ? '...' : '');
+                    const es = p.engagement_score ? `<span class="text-green-400">${Number(p.engagement_score).toFixed(1)}</span>` : '-';
+                    const rs = p.replicability_score ? `<span class="text-purple-400">${Number(p.replicability_score).toFixed(1)}</span>` : '-';
+                    const link = p.post_url ? `<a href="${p.post_url}" target="_blank" class="text-blue-400 hover:underline"><i class="fas fa-external-link-alt"></i></a>` : '-';
 
-                    return `<tr class="hover:bg-gray-800 transition">
+                    return `<tr class="hover:bg-gray-800 transition cursor-pointer" onclick="showPostDetail(${JSON.stringify(p).replace(/"/g, '&quot;')})">
                         <td class="px-4 py-3 font-medium">@${p.username || ''}</td>
-                        <td class="px-4 py-3">${platformBadge}</td>
+                        <td class="px-4 py-3">${pb}</td>
                         <td class="px-4 py-3">${link}</td>
-                        <td class="px-4 py-3">${typeBadge}</td>
-                        <td class="px-4 py-3 text-gray-300 text-xs max-w-xs">${caption}</td>
-                        <td class="px-4 py-3 text-gray-300 text-xs max-w-xs">${summary}</td>
-                        <td class="px-4 py-3">${(p.likes || 0).toLocaleString()}</td>
-                        <td class="px-4 py-3">${(p.comments || 0).toLocaleString()}</td>
-                        <td class="px-4 py-3">${(p.views || 0).toLocaleString()}</td>
+                        <td class="px-4 py-3">${tb}</td>
+                        <td class="px-4 py-3 text-gray-300 text-xs max-w-xs truncate">${caption}</td>
+                        <td class="px-4 py-3 text-gray-300 text-xs max-w-xs truncate">${summary}</td>
+                        <td class="px-4 py-3">${fmt(p.likes)}</td>
+                        <td class="px-4 py-3">${fmt(p.comments)}</td>
+                        <td class="px-4 py-3">${fmt(p.views)}</td>
                         <td class="px-4 py-3 text-xs">${p.hook_type || '-'}</td>
-                        <td class="px-4 py-3">${engScore}</td>
-                        <td class="px-4 py-3">${repScore}</td>
-                        <td class="px-4 py-3 text-xs text-gray-400">${date}</td>
+                        <td class="px-4 py-3">${es}</td>
+                        <td class="px-4 py-3">${rs}</td>
+                        <td class="px-4 py-3 text-xs text-gray-400">${fmtDate(p.published_at || p.scraped_at)}</td>
                     </tr>`;
                 }).join('');
+            } catch (e) { console.error('Posts error:', e); }
+        }
+
+        function showPostDetail(p) {
+            const html = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-semibold text-white mb-2">Informacion del Post</h3>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="text-gray-400">Perfil:</span> @${p.username || ''} (${p.platform})</p>
+                            <p><span class="text-gray-400">Tipo:</span> ${p.is_video ? 'Video' : 'Imagen'}</p>
+                            <p><span class="text-gray-400">Fecha:</span> ${fmtDate(p.published_at || p.scraped_at)}</p>
+                            <p><span class="text-gray-400">Likes:</span> ${fmt(p.likes)} | <span class="text-gray-400">Comments:</span> ${fmt(p.comments)} | <span class="text-gray-400">Views:</span> ${fmt(p.views)}</p>
+                            ${p.post_url ? `<p><a href="${p.post_url}" target="_blank" class="text-blue-400 hover:underline">Ver post original <i class="fas fa-external-link-alt"></i></a></p>` : ''}
+                        </div>
+                        <h3 class="font-semibold text-white mt-4 mb-2">Caption</h3>
+                        <p class="text-sm text-gray-300 bg-gray-800 rounded-lg p-3">${p.caption || 'Sin caption'}</p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-white mb-2">Analisis AI</h3>
+                        <div class="text-sm text-gray-300 bg-gray-800 rounded-lg p-3 max-h-96 overflow-y-auto scrollbar-thin whitespace-pre-wrap">${p.full_analysis || p.summary || 'Sin analisis disponible'}</div>
+                    </div>
+                </div>`;
+            openModal(`Post de @${p.username}`, html);
+        }
+
+        // --- Load Generated Content ---
+        async function loadGenerated() {
+            try {
+                const type = document.getElementById('filterContentType').value;
+                let url = API + '/api/generated-content?limit=50';
+                if (type) url += '&type=' + type;
+                const res = await fetch(url);
+                const items = await res.json();
+                const grid = document.getElementById('generatedGrid');
+
+                if (!items.length) {
+                    grid.innerHTML = '<div class="text-center text-gray-500 col-span-2 py-12"><i class="fas fa-wand-magic-sparkles text-4xl mb-4 block"></i><p>No hay contenido generado aun.</p><p class="text-xs mt-2">Haz clic en "Generar Contenido" para crear guiones y carruseles.</p></div>';
+                    return;
+                }
+
+                grid.innerHTML = items.map(item => {
+                    const isScript = item.content_type === 'video_script';
+                    const icon = isScript ? 'fa-video' : 'fa-images';
+                    const color = isScript ? 'red' : 'indigo';
+                    const badge = isScript
+                        ? '<span class="bg-red-900 text-red-300 text-xs px-2 py-0.5 rounded"><i class="fas fa-video mr-1"></i>Guion Video</span>'
+                        : '<span class="bg-indigo-900 text-indigo-300 text-xs px-2 py-0.5 rounded"><i class="fas fa-images mr-1"></i>Carrusel</span>';
+                    const diffBadge = item.difficulty
+                        ? `<span class="bg-gray-700 text-gray-300 text-xs px-2 py-0.5 rounded">${item.difficulty}</span>`
+                        : '';
+                    const source = item.source_username ? `Inspirado en @${item.source_username}` : '';
+
+                    let preview = '';
+                    if (isScript && item.script_json) {
+                        const s = typeof item.script_json === 'string' ? JSON.parse(item.script_json) : item.script_json;
+                        preview = `
+                            <div class="mt-3 space-y-2">
+                                ${s.hook ? `<div class="script-section"><span class="text-purple-400 text-xs font-bold">HOOK:</span><p class="text-sm">${s.hook.texto_exacto || ''}</p></div>` : ''}
+                                ${s.duracion_estimada ? `<p class="text-xs text-gray-400"><i class="fas fa-clock mr-1"></i>${s.duracion_estimada}</p>` : ''}
+                                ${s.tomas_necesarias ? `<div class="mt-2"><span class="text-xs text-gray-400">Tomas:</span><ul class="text-xs text-gray-300 list-disc ml-4 mt-1">${s.tomas_necesarias.slice(0,3).map(t => `<li>${t}</li>`).join('')}</ul></div>` : ''}
+                            </div>`;
+                    } else if (!isScript && item.carousel_json) {
+                        const c = typeof item.carousel_json === 'string' ? JSON.parse(item.carousel_json) : item.carousel_json;
+                        preview = `
+                            <div class="mt-3">
+                                <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
+                                    ${(c.slides || []).slice(0, 5).map(sl => `
+                                        <div class="carousel-slide flex-shrink-0 bg-gray-800 rounded-lg p-3 w-40">
+                                            <span class="text-xs text-gray-400">${sl.numero || ''}. ${sl.tipo || ''}</span>
+                                            <p class="text-xs font-medium mt-1">${sl.titulo_principal || ''}</p>
+                                        </div>
+                                    `).join('')}
+                                    ${(c.slides || []).length > 5 ? `<div class="carousel-slide flex-shrink-0 bg-gray-800 rounded-lg p-3 w-40 flex items-center justify-center text-gray-400 text-xs">+${(c.slides||[]).length - 5} mas</div>` : ''}
+                                </div>
+                                <p class="text-xs text-gray-400 mt-2"><i class="fas fa-layer-group mr-1"></i>${(c.slides||[]).length} slides</p>
+                            </div>`;
+                    }
+
+                    return `<div class="glass rounded-xl p-5 cursor-pointer hover:border-${color}-500 transition" onclick='showGeneratedDetail(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
+                        <div class="flex items-center justify-between mb-2">
+                            ${badge} ${diffBadge}
+                        </div>
+                        <h3 class="font-semibold text-white mt-2">${item.title || 'Sin titulo'}</h3>
+                        <p class="text-xs text-gray-400 mt-1">${source}</p>
+                        <p class="text-xs text-gray-500 mt-1">${fmtDate(item.created_at)}</p>
+                        ${preview}
+                    </div>`;
+                }).join('');
+            } catch (e) { console.error('Generated error:', e); }
+        }
+
+        function showGeneratedDetail(item) {
+            const isScript = item.content_type === 'video_script';
+            let html = '';
+
+            if (isScript) {
+                const s = item.script_json ? (typeof item.script_json === 'string' ? JSON.parse(item.script_json) : item.script_json) : null;
+                if (s) {
+                    html = `
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="glass rounded-lg p-3"><span class="text-xs text-gray-400">Plataforma</span><p class="font-medium">${s.plataforma || item.platform || '-'}</p></div>
+                            <div class="glass rounded-lg p-3"><span class="text-xs text-gray-400">Duracion</span><p class="font-medium">${s.duracion_estimada || '-'}</p></div>
+                            <div class="glass rounded-lg p-3"><span class="text-xs text-gray-400">Dificultad</span><p class="font-medium">${s.nivel_dificultad || '-'}</p></div>
+                        </div>
+
+                        <div class="script-section bg-purple-900 bg-opacity-20 rounded-lg p-4">
+                            <h4 class="text-purple-400 font-bold mb-2"><i class="fas fa-bolt mr-1"></i>HOOK (0-3 seg)</h4>
+                            <p class="text-white font-medium text-lg">"${s.hook?.texto_exacto || ''}"</p>
+                            <p class="text-xs text-gray-400 mt-2">Tipo: ${s.hook?.tipo || '-'} | Visual: ${s.hook?.visual || '-'}</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-blue-400 font-bold mb-3"><i class="fas fa-film mr-1"></i>DESARROLLO</h4>
+                            ${(s.desarrollo || []).map(d => `
+                                <div class="script-section mb-3">
+                                    <span class="text-xs text-yellow-400 font-bold">${d.segundo || ''} seg</span>
+                                    <p class="text-sm text-white mt-1"><i class="fas fa-microphone mr-1 text-gray-500"></i>${d.texto || ''}</p>
+                                    <p class="text-xs text-gray-400 mt-1"><i class="fas fa-camera mr-1"></i>${d.visual || ''}</p>
+                                    ${d.texto_overlay ? `<p class="text-xs text-cyan-400 mt-1"><i class="fas fa-closed-captioning mr-1"></i>${d.texto_overlay}</p>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="script-section bg-green-900 bg-opacity-20 rounded-lg p-4">
+                            <h4 class="text-green-400 font-bold mb-2"><i class="fas fa-bullhorn mr-1"></i>CTA</h4>
+                            <p class="text-white">"${s.cta?.texto || ''}"</p>
+                            <p class="text-xs text-gray-400 mt-1">Accion: ${s.cta?.accion || '-'}</p>
+                        </div>
+
+                        <div class="glass rounded-lg p-4">
+                            <h4 class="text-yellow-400 font-bold mb-2"><i class="fas fa-camera mr-1"></i>TOMAS NECESARIAS</h4>
+                            <ul class="space-y-1">${(s.tomas_necesarias || []).map(t => `<li class="text-sm flex items-start gap-2"><i class="fas fa-check text-green-400 mt-1 text-xs"></i>${t}</li>`).join('')}</ul>
+                        </div>
+
+                        ${s.equipamiento ? `<p class="text-sm"><span class="text-gray-400">Equipamiento:</span> ${s.equipamiento}</p>` : ''}
+                        ${s.musica_sugerida ? `<p class="text-sm"><span class="text-gray-400">Musica:</span> ${s.musica_sugerida}</p>` : ''}
+                        ${s.tips_produccion ? `<p class="text-sm"><span class="text-gray-400">Tips:</span> ${s.tips_produccion}</p>` : ''}
+
+                        <div class="glass rounded-lg p-4">
+                            <h4 class="text-pink-400 font-bold mb-2"><i class="fas fa-pen mr-1"></i>CAPTION</h4>
+                            <p class="text-sm whitespace-pre-wrap">${s.caption || ''}</p>
+                            <div class="flex flex-wrap gap-1 mt-2">${(s.hashtags || []).map(h => `<span class="text-blue-400 text-xs">#${h}</span>`).join(' ')}</div>
+                        </div>
+                    </div>`;
+                } else {
+                    html = `<div class="whitespace-pre-wrap text-sm">${item.raw_text || 'Sin contenido'}</div>`;
+                }
+            } else {
+                const c = item.carousel_json ? (typeof item.carousel_json === 'string' ? JSON.parse(item.carousel_json) : item.carousel_json) : null;
+                if (c) {
+                    html = `
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="glass rounded-lg p-3"><span class="text-xs text-gray-400">Tema</span><p class="font-medium">${c.tema || '-'}</p></div>
+                            <div class="glass rounded-lg p-3"><span class="text-xs text-gray-400">Objetivo</span><p class="font-medium">${c.objetivo || '-'}</p></div>
+                            <div class="glass rounded-lg p-3"><span class="text-xs text-gray-400">Slides</span><p class="font-medium">${c.total_slides || (c.slides||[]).length}</p></div>
+                        </div>
+
+                        <h4 class="text-indigo-400 font-bold"><i class="fas fa-images mr-1"></i>SLIDES DEL CARRUSEL</h4>
+                        <div class="space-y-3">
+                            ${(c.slides || []).map(sl => `
+                                <div class="slide-card glass rounded-lg p-4">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="bg-indigo-600 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center">${sl.numero || ''}</span>
+                                        <span class="text-xs text-gray-400 uppercase">${sl.tipo || ''}</span>
+                                    </div>
+                                    <p class="font-bold text-white text-lg">${sl.titulo_principal || ''}</p>
+                                    ${sl.subtitulo ? `<p class="text-sm text-gray-300 mt-1">${sl.subtitulo}</p>` : ''}
+                                    ${sl.cuerpo ? `<p class="text-sm text-gray-300 mt-2">${sl.cuerpo}</p>` : ''}
+                                    ${sl.dato_clave ? `<p class="text-xs text-yellow-400 mt-2"><i class="fas fa-chart-bar mr-1"></i>${sl.dato_clave}</p>` : ''}
+                                    ${sl.puntos_clave ? `<ul class="text-sm mt-2 space-y-1">${sl.puntos_clave.map(pc => `<li class="flex items-start gap-2"><i class="fas fa-check text-green-400 mt-1 text-xs"></i>${pc}</li>`).join('')}</ul>` : ''}
+                                    ${sl.visual ? `<p class="text-xs text-gray-500 mt-2"><i class="fas fa-palette mr-1"></i>${sl.visual}</p>` : ''}
+                                    ${sl.accion ? `<p class="text-xs text-green-400 mt-1"><i class="fas fa-hand-pointer mr-1"></i>${sl.accion}</p>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="glass rounded-lg p-4">
+                            <h4 class="text-pink-400 font-bold mb-2"><i class="fas fa-pen mr-1"></i>CAPTION</h4>
+                            <p class="text-sm whitespace-pre-wrap">${c.caption || ''}</p>
+                            <div class="flex flex-wrap gap-1 mt-2">${(c.hashtags || []).map(h => `<span class="text-blue-400 text-xs">#${h}</span>`).join(' ')}</div>
+                        </div>
+
+                        ${c.mejor_hora ? `<p class="text-sm"><span class="text-gray-400">Mejor hora:</span> ${c.mejor_hora}</p>` : ''}
+                        ${c.tips_diseno ? `<p class="text-sm"><span class="text-gray-400">Tips diseno:</span> ${c.tips_diseno}</p>` : ''}
+                    </div>`;
+                } else {
+                    html = `<div class="whitespace-pre-wrap text-sm">${item.raw_text || 'Sin contenido'}</div>`;
+                }
+            }
+
+            openModal(item.title || 'Contenido Generado', html);
+        }
+
+        // --- Generate Content ---
+        async function generateContent() {
+            const topic = prompt('Tema especifico? (dejar vacio para auto-generar basado en analisis):');
+            const btn = document.querySelector('.gradient-btn');
+            const origHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+            btn.disabled = true;
+
+            try {
+                const body = { type: 'both', limit: 3 };
+                if (topic) body.topic = topic;
+                const res = await fetch(API + '/api/generate-content', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                const data = await res.json();
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                } else {
+                    alert(data.message || 'Contenido generado!');
+                    loadGenerated();
+                    loadStats();
+                    showTab('generated');
+                }
             } catch (e) {
-                console.error('Error loading posts:', e);
+                alert('Error: ' + e.message);
+            } finally {
+                btn.innerHTML = origHTML;
+                btn.disabled = false;
             }
         }
 
@@ -293,41 +586,34 @@
                 const tbody = document.getElementById('profilesTable');
                 const select = document.getElementById('filterProfile');
 
-                // Populate filter dropdown
                 select.innerHTML = '<option value="">Todos los perfiles</option>';
                 profiles.forEach(p => {
                     select.innerHTML += `<option value="${p.id}">@${p.username} (${p.platform})</option>`;
                 });
 
                 if (!profiles.length) {
-                    tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">No hay perfiles aun.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">No hay perfiles.</td></tr>';
                     return;
                 }
-
                 tbody.innerHTML = profiles.map(p => {
-                    const platformBadge = p.platform === 'instagram'
+                    const pb = p.platform === 'instagram'
                         ? '<span class="badge-ig text-white text-xs px-2 py-0.5 rounded-full">Instagram</span>'
                         : '<span class="badge-tk text-cyan-400 text-xs px-2 py-0.5 rounded-full">TikTok</span>';
-                    const typeBadge = p.is_competitor
+                    const tb = p.is_competitor
                         ? '<span class="bg-red-900 text-red-300 text-xs px-2 py-0.5 rounded">Competidor</span>'
                         : '<span class="bg-green-900 text-green-300 text-xs px-2 py-0.5 rounded">Propio</span>';
-                    const bio = (p.bio || '').substring(0, 60) + ((p.bio || '').length > 60 ? '...' : '');
-                    const updated = p.updated_at ? new Date(p.updated_at).toLocaleDateString('es-MX') : '-';
-
                     return `<tr class="hover:bg-gray-800 transition">
-                        <td class="px-4 py-3 font-medium text-blue-400">@${p.username}</td>
-                        <td class="px-4 py-3">${platformBadge}</td>
+                        <td class="px-4 py-3 font-medium text-blue-400"><a href="${p.profile_url || '#'}" target="_blank">@${p.username}</a></td>
+                        <td class="px-4 py-3">${pb}</td>
                         <td class="px-4 py-3">${p.full_name || '-'}</td>
-                        <td class="px-4 py-3 text-xs text-gray-400 max-w-xs">${bio}</td>
-                        <td class="px-4 py-3 font-medium">${(p.followers || 0).toLocaleString()}</td>
-                        <td class="px-4 py-3">${(p.posts_count || 0).toLocaleString()}</td>
-                        <td class="px-4 py-3">${typeBadge}</td>
-                        <td class="px-4 py-3 text-xs text-gray-400">${updated}</td>
+                        <td class="px-4 py-3 text-xs text-gray-400 max-w-xs truncate">${(p.bio || '').substring(0, 60)}</td>
+                        <td class="px-4 py-3 font-medium">${fmt(p.followers)}</td>
+                        <td class="px-4 py-3">${fmt(p.posts_count)}</td>
+                        <td class="px-4 py-3">${tb}</td>
+                        <td class="px-4 py-3 text-xs text-gray-400">${fmtDate(p.updated_at)}</td>
                     </tr>`;
                 }).join('');
-            } catch (e) {
-                console.error('Error loading profiles:', e);
-            }
+            } catch (e) { console.error('Profiles error:', e); }
         }
 
         // --- Load Ideas ---
@@ -336,17 +622,13 @@
                 const res = await fetch(API + '/api/ideas');
                 const ideas = await res.json();
                 const grid = document.getElementById('ideasGrid');
-
                 if (!ideas.length) {
-                    grid.innerHTML = '<div class="text-center text-gray-500 col-span-3 py-8">No hay ideas aun. Ejecuta el pipeline para generar ideas.</div>';
+                    grid.innerHTML = '<div class="text-center text-gray-500 col-span-3 py-8">No hay ideas aun.</div>';
                     return;
                 }
-
                 grid.innerHTML = ideas.map(idea => {
-                    const priorityColors = { high: 'text-red-400 bg-red-900', medium: 'text-yellow-400 bg-yellow-900', low: 'text-green-400 bg-green-900' };
-                    const pc = priorityColors[idea.priority] || priorityColors.medium;
+                    const pc = { high: 'text-red-400 bg-red-900', medium: 'text-yellow-400 bg-yellow-900', low: 'text-green-400 bg-green-900' }[idea.priority] || 'text-yellow-400 bg-yellow-900';
                     const tags = (idea.tags || []).map(t => `<span class="bg-gray-700 text-gray-300 text-xs px-2 py-0.5 rounded">${t}</span>`).join(' ');
-
                     return `<div class="glass rounded-xl p-5 flex flex-col gap-3">
                         <div class="flex items-center justify-between">
                             <span class="${pc} text-xs px-2 py-0.5 rounded">${idea.priority}</span>
@@ -359,9 +641,7 @@
                         <div class="flex gap-1 flex-wrap mt-auto">${tags}</div>
                     </div>`;
                 }).join('');
-            } catch (e) {
-                console.error('Error loading ideas:', e);
-            }
+            } catch (e) { console.error('Ideas error:', e); }
         }
 
         // --- Load Runs ---
@@ -370,48 +650,28 @@
                 const res = await fetch(API + '/api/runs');
                 const runs = await res.json();
                 const tbody = document.getElementById('runsTable');
-
                 if (!runs.length) {
-                    tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">No hay ejecuciones aun.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">No hay ejecuciones.</td></tr>';
                     return;
                 }
-
                 tbody.innerHTML = runs.map(r => {
-                    const statusBadge = r.status === 'completed'
-                        ? '<span class="bg-green-900 text-green-300 text-xs px-2 py-0.5 rounded">Completado</span>'
+                    const sb = r.status === 'completed'
+                        ? '<span class="bg-green-900 text-green-300 text-xs px-2 py-0.5 rounded">OK</span>'
                         : r.status === 'running'
-                        ? '<span class="bg-yellow-900 text-yellow-300 text-xs px-2 py-0.5 rounded pulse">Ejecutando</span>'
-                        : '<span class="bg-red-900 text-red-300 text-xs px-2 py-0.5 rounded">Error</span>';
-                    const start = r.started_at ? new Date(r.started_at).toLocaleString('es-MX') : '-';
-                    const end = r.completed_at ? new Date(r.completed_at).toLocaleString('es-MX') : '-';
-
+                        ? '<span class="bg-yellow-900 text-yellow-300 text-xs px-2 py-0.5 rounded pulse">Run</span>'
+                        : '<span class="bg-red-900 text-red-300 text-xs px-2 py-0.5 rounded">Err</span>';
                     return `<tr class="hover:bg-gray-800 transition">
                         <td class="px-4 py-3">${r.id}</td>
-                        <td class="px-4 py-3 text-xs">${start}</td>
-                        <td class="px-4 py-3 text-xs">${end}</td>
-                        <td class="px-4 py-3">${statusBadge}</td>
+                        <td class="px-4 py-3 text-xs">${fmtDate(r.started_at)}</td>
+                        <td class="px-4 py-3 text-xs">${fmtDate(r.completed_at)}</td>
+                        <td class="px-4 py-3">${sb}</td>
                         <td class="px-4 py-3">${r.profiles_scraped || 0}</td>
                         <td class="px-4 py-3">${r.posts_found || 0}</td>
                         <td class="px-4 py-3">${r.videos_analyzed || 0}</td>
-                        <td class="px-4 py-3 text-xs text-red-400">${r.errors || '-'}</td>
+                        <td class="px-4 py-3 text-xs text-red-400 max-w-xs truncate">${r.errors || '-'}</td>
                     </tr>`;
                 }).join('');
-            } catch (e) {
-                console.error('Error loading runs:', e);
-            }
-        }
-
-        // --- Trigger Pipeline ---
-        async function triggerPipeline() {
-            if (!confirm('Ejecutar el pipeline de analisis? Esto puede tomar varios minutos.')) return;
-            try {
-                const res = await fetch(API + '/api/trigger-pipeline', { method: 'POST' });
-                const data = await res.json();
-                alert(data.message || 'Pipeline iniciado');
-                setTimeout(() => { loadStats(); loadRuns(); }, 3000);
-            } catch (e) {
-                alert('Error: ' + e.message);
-            }
+            } catch (e) { console.error('Runs error:', e); }
         }
 
         // --- Load Best Practices ---
@@ -420,52 +680,37 @@
                 const res = await fetch(API + '/api/best-practices');
                 const practices = await res.json();
                 const grid = document.getElementById('practicesGrid');
-
                 if (!practices.length) {
-                    grid.innerHTML = '<div class="text-center text-gray-500 col-span-2 py-8">No hay best practices cargadas.</div>';
+                    grid.innerHTML = '<div class="text-center text-gray-500 col-span-2 py-8">No hay best practices.</div>';
                     return;
                 }
-
-                const categoryColors = {
-                    content_mix: 'border-blue-500', hooks: 'border-purple-500',
-                    posting_frequency: 'border-green-500', posting_times: 'border-yellow-500',
-                    hashtags: 'border-pink-500', production: 'border-cyan-500',
-                    engagement: 'border-red-500', compliance: 'border-orange-500',
-                    competitors: 'border-indigo-500'
-                };
-                const categoryIcons = {
-                    content_mix: 'fa-layer-group', hooks: 'fa-bolt',
-                    posting_frequency: 'fa-calendar', posting_times: 'fa-clock',
-                    hashtags: 'fa-hashtag', production: 'fa-video',
-                    engagement: 'fa-chart-line', compliance: 'fa-shield-alt',
-                    competitors: 'fa-users'
-                };
-
+                const colors = { content_mix:'border-blue-500', hooks:'border-purple-500', posting_frequency:'border-green-500', posting_times:'border-yellow-500', hashtags:'border-pink-500', production:'border-cyan-500', engagement:'border-red-500', compliance:'border-orange-500', competitors:'border-indigo-500' };
+                const icons = { content_mix:'fa-layer-group', hooks:'fa-bolt', posting_frequency:'fa-calendar', posting_times:'fa-clock', hashtags:'fa-hashtag', production:'fa-video', engagement:'fa-chart-line', compliance:'fa-shield-alt', competitors:'fa-users' };
                 grid.innerHTML = practices.map(bp => {
-                    const borderColor = categoryColors[bp.category] || 'border-gray-500';
-                    const icon = categoryIcons[bp.category] || 'fa-info-circle';
-                    const relevance = Math.round((bp.relevance_score || 0) * 100);
-                    const platformBadge = bp.platform === 'all'
-                        ? '<span class="bg-gray-700 text-gray-300 text-xs px-2 py-0.5 rounded">Multi</span>'
-                        : bp.platform === 'instagram'
-                        ? '<span class="badge-ig text-white text-xs px-2 py-0.5 rounded-full">IG</span>'
-                        : '<span class="badge-tk text-cyan-400 text-xs px-2 py-0.5 rounded-full">TK</span>';
-
-                    return `<div class="glass rounded-xl p-5 border-l-4 ${borderColor}">
+                    const bc = colors[bp.category] || 'border-gray-500';
+                    const ic = icons[bp.category] || 'fa-info-circle';
+                    const rel = Math.round((bp.relevance_score || 0) * 100);
+                    return `<div class="glass rounded-xl p-5 border-l-4 ${bc}">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs text-gray-400 uppercase"><i class="fas ${icon} mr-1"></i>${bp.category.replace('_', ' ')}</span>
-                            <div class="flex items-center gap-2">
-                                ${platformBadge}
-                                <span class="text-xs text-green-400">${relevance}%</span>
-                            </div>
+                            <span class="text-xs text-gray-400 uppercase"><i class="fas ${ic} mr-1"></i>${(bp.category||'').replace('_',' ')}</span>
+                            <span class="text-xs text-green-400">${rel}%</span>
                         </div>
                         <h3 class="font-semibold text-white mb-2">${bp.title}</h3>
                         <p class="text-sm text-gray-300">${bp.description}</p>
                     </div>`;
                 }).join('');
-            } catch (e) {
-                console.error('Error loading practices:', e);
-            }
+            } catch (e) { console.error('Practices error:', e); }
+        }
+
+        // --- Trigger Pipeline ---
+        async function triggerPipeline() {
+            if (!confirm('Ejecutar el pipeline de analisis?')) return;
+            try {
+                const res = await fetch(API + '/api/trigger-pipeline', { method: 'POST' });
+                const data = await res.json();
+                alert(data.message || 'Pipeline iniciado');
+                setTimeout(() => { loadStats(); loadRuns(); }, 5000);
+            } catch (e) { alert('Error: ' + e.message); }
         }
 
         // --- Init ---
@@ -476,8 +721,8 @@
             loadIdeas();
             loadRuns();
             loadPractices();
-            // Auto-refresh every 30 seconds
-            setInterval(() => { loadStats(); }, 30000);
+            loadGenerated();
+            setInterval(loadStats, 30000);
         });
     </script>
 </body>

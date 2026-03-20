@@ -129,6 +129,22 @@ def init_db():
         );
     """)
 
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS generated_content (
+            id SERIAL PRIMARY KEY,
+            content_type VARCHAR(50) NOT NULL,
+            title VARCHAR(255),
+            platform VARCHAR(20),
+            source_post_id INTEGER REFERENCES posts(id) ON DELETE SET NULL,
+            script_json JSONB,
+            carousel_json JSONB,
+            raw_text TEXT,
+            status VARCHAR(20) DEFAULT 'draft',
+            difficulty VARCHAR(20),
+            created_at TIMESTAMP DEFAULT NOW()
+        );
+    """)
+
     conn.commit()
     cur.close()
     conn.close()
@@ -322,6 +338,104 @@ def get_pipeline_runs(limit=10):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM pipeline_runs ORDER BY started_at DESC LIMIT %s;", (limit,))
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return rows
+
+
+def insert_generated_content(data):
+    """Insert a generated content piece (video script or carousel plan)."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO generated_content (content_type, title, platform, source_post_id,
+                                       script_json, carousel_json, raw_text, difficulty)
+        VALUES (%(content_type)s, %(title)s, %(platform)s, %(source_post_id)s,
+                %(script_json)s, %(carousel_json)s, %(raw_text)s, %(difficulty)s)
+        RETURNING id;
+    """, data)
+    content_id = cur.fetchone()["id"]
+    conn.commit()
+    cur.close()
+    conn.close()
+    return content_id
+
+
+def get_generated_content(content_type=None, limit=50):
+    """Get generated content pieces."""
+    conn = get_connection()
+    cur = conn.cursor()
+    query = """
+        SELECT gc.*, p.post_url, p.caption, pr.username as source_username
+        FROM generated_content gc
+        LEFT JOIN posts p ON gc.source_post_id = p.id
+        LEFT JOIN profiles pr ON p.profile_id = pr.id
+        WHERE 1=1
+    """
+    params = []
+    if content_type:
+        query += " AND gc.content_type = %s"
+        params.append(content_type)
+    query += " ORDER BY gc.created_at DESC LIMIT %s;"
+    params.append(limit)
+    cur.execute(query, params)
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return rows
+
+
+def get_analyses_for_generation(limit=10):
+    """Get recent analyses that can be used for content generation."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT a.id, a.post_id, a.full_analysis, a.summary, a.main_topic,
+               p.platform, p.post_url, p.caption, pr.username
+        FROM analyses a
+        JOIN posts p ON a.post_id = p.id
+        JOIN profiles pr ON p.profile_id = pr.id
+        WHERE a.full_analysis IS NOT NULL AND LENGTH(a.full_analysis) > 100
+        ORDER BY a.analyzed_at DESC
+        LIMIT %s;
+    """, (limit,))
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return rows
+
+
+def get_posts_with_analysis_datefilter(limit=50, platform=None, profile_id=None, date_from=None, date_to=None):
+    """Get posts with analysis and date filtering."""
+    conn = get_connection()
+    cur = conn.cursor()
+    query = """
+        SELECT p.*, pr.username, pr.platform as profile_platform,
+               a.summary, a.hook_type, a.engagement_score, a.replicability_score,
+               a.main_topic, a.cta_type, a.full_analysis
+        FROM posts p
+        JOIN profiles pr ON p.profile_id = pr.id
+        LEFT JOIN analyses a ON a.post_id = p.id
+        WHERE 1=1
+    """
+    params = []
+    if platform:
+        query += " AND p.platform = %s"
+        params.append(platform)
+    if profile_id:
+        query += " AND p.profile_id = %s"
+        params.append(profile_id)
+    if date_from:
+        query += " AND (p.published_at >= %s OR p.scraped_at >= %s)"
+        params.extend([date_from, date_from])
+    if date_to:
+        query += " AND (p.published_at <= %s OR p.scraped_at <= %s)"
+        params.extend([date_to, date_to])
+    query += " ORDER BY COALESCE(p.published_at, p.scraped_at) DESC LIMIT %s;"
+    params.append(limit)
+
+    cur.execute(query, params)
     rows = cur.fetchall()
     cur.close()
     conn.close()
