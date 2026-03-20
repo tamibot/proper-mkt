@@ -237,8 +237,13 @@ def run_pipeline_with_db(profiles, max_posts=5):
 
 
 def _analyze_and_store(viewer, db_post_id, item, platform):
-    """Analyze a post/video with Gemini and store the analysis."""
-    from database import insert_analysis
+    """Analyze a post/video with Gemini and store the analysis. Skips if already analyzed."""
+    from database import insert_analysis, has_analysis
+
+    # Skip if already analyzed — avoids redundant Gemini API calls
+    if has_analysis(db_post_id):
+        print(f"  [=] Ya analizado (post_id={db_post_id}), omitiendo.")
+        return None
 
     # Analyze metadata
     item_copy = dict(item)

@@ -562,6 +562,17 @@ def update_news_status(news_id, status):
     conn.close()
 
 
+def has_analysis(post_id):
+    """Return True if the post already has an analysis in the DB."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM analyses WHERE post_id = %s LIMIT 1;", (post_id,))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    return row is not None
+
+
 def update_idea_status(idea_id, new_status):
     """Update the status of a content idea."""
     conn = get_connection()

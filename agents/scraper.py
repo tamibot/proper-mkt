@@ -102,15 +102,40 @@ class ScraperAgent:
                 "--dump-json",
                 "--playlist-items", f"1-{max_videos}",
                 "--no-download",
+                "--sleep-interval", "3",      # 3s entre requests para evitar rate limiting
+                "--retries", "3",             # reintentos ante fallos temporales
+                "--fragment-retries", "3",
+                "--extractor-retries", "3",
+                "--no-warnings",              # suprimir warnings de impersonation (no críticos)
                 profile_url,
             ]
             result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=120
+                cmd, capture_output=True, text=True, timeout=180
             )
 
             if result.returncode != 0:
-                print(f"  [!] Error obteniendo metadata: {result.stderr[:200]}")
-                return {"profile": {"username": username, "platform": "tiktok", "error": result.stderr[:200]}, "videos": []}
+                error_msg = result.stderr[:500]
+                print(f"  [!] Error obteniendo metadata de TikTok @{username}:")
+                print(f"      {error_msg}")
+                # Intentar con cookies del navegador como fallback
+                cmd_fallback = [
+                    YT_DLP_PATH,
+                    "--dump-json",
+                    "--playlist-items", f"1-{max_videos}",
+                    "--no-download",
+                    "--cookies-from-browser", "safari",
+                    "--sleep-interval", "3",
+                    "--retries", "3",
+                    "--no-warnings",
+                    profile_url,
+                ]
+                print(f"  [~] Reintentando con cookies de Safari...")
+                result = subprocess.run(
+                    cmd_fallback, capture_output=True, text=True, timeout=180
+                )
+                if result.returncode != 0:
+                    print(f"  [!] Fallback también falló: {result.stderr[:200]}")
+                    return {"profile": {"username": username, "platform": "tiktok", "error": result.stderr[:200]}, "videos": []}
 
             # Parsear cada línea JSON (una por video)
             for line in result.stdout.strip().split("\n"):
@@ -139,17 +164,21 @@ class ScraperAgent:
                         dl_cmd = [
                             YT_DLP_PATH,
                             "-o", video_path,
+                            "--retries", "3",
+                            "--sleep-interval", "2",
+                            "--no-warnings",
                             video_data.get("webpage_url", profile_url),
                         ]
-                        dl_result = subprocess.run(dl_cmd, capture_output=True, text=True, timeout=60)
+                        dl_result = subprocess.run(dl_cmd, capture_output=True, text=True, timeout=120)
                         if dl_result.returncode == 0:
                             video_info["local_video_path"] = video_path
                             print(f"  [+] Video descargado: {video_data.get('id')}")
                         else:
                             video_info["local_video_path"] = None
-                            print(f"  [!] Error descargando: {dl_result.stderr[:100]}")
+                            print(f"  [!] Error descargando {video_data.get('id')}: {dl_result.stderr[:150]}")
                     else:
                         video_info["local_video_path"] = video_path
+                        print(f"  [=] Video ya descargado: {video_data.get('id')}")
 
                     results.append(video_info)
                 except json.JSONDecodeError:
