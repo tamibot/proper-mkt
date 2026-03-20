@@ -256,6 +256,67 @@
         /* Progress ring */
         .progress-ring { transform: rotate(-90deg); }
         .progress-ring-circle { transition: stroke-dashoffset 0.6s ease; }
+
+        /* Weekly Calendar */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+        .calendar-day { background: #FAFBFC; border: 1px solid #E5E7EB; border-radius: 8px; min-height: 90px; padding: 8px; }
+        .calendar-day-header { font-size: 11px; font-weight: 700; color: #999; text-transform: uppercase; text-align: center; margin-bottom: 6px; }
+        .calendar-item { background: #fff; border: 1px solid #E5E7EB; border-radius: 6px; padding: 6px 8px; margin-bottom: 4px; font-size: 11px; cursor: default; transition: box-shadow 0.15s; }
+        .calendar-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .calendar-item.cal-approved { border-left: 3px solid #3B82F6; }
+        .calendar-item.cal-in_progress { border-left: 3px solid #D97706; }
+        .calendar-item-title { font-weight: 600; color: #1B2A4A; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* Activity Timeline */
+        .timeline { position: relative; padding-left: 24px; }
+        .timeline::before { content: ''; position: absolute; left: 8px; top: 8px; bottom: 8px; width: 2px; background: #E5E7EB; }
+        .timeline-item { position: relative; padding-bottom: 16px; }
+        .timeline-item:last-child { padding-bottom: 0; }
+        .timeline-dot { position: absolute; left: -20px; top: 4px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 2px #E5E7EB; }
+        .timeline-dot.dot-orange { background: #FF7B0F; box-shadow: 0 0 0 2px #FF7B0F; }
+        .timeline-dot.dot-navy { background: #1B2A4A; box-shadow: 0 0 0 2px #1B2A4A; }
+        .timeline-dot.dot-green { background: #22C55E; box-shadow: 0 0 0 2px #22C55E; }
+        .timeline-dot.dot-blue { background: #3B82F6; box-shadow: 0 0 0 2px #3B82F6; }
+        .timeline-label { font-size: 12px; font-weight: 600; color: #1B2A4A; }
+        .timeline-date { font-size: 11px; color: #999; margin-top: 2px; }
+
+        /* Keyboard shortcut hints */
+        .nav-shortcut { margin-left: auto; font-size: 10px; color: #CCC; font-weight: 500; background: #F3F4F6; padding: 1px 5px; border-radius: 4px; font-family: monospace; }
+        .nav-item.active .nav-shortcut { background: #FFE8D1; color: #FF7B0F; }
+
+        /* Sidebar search */
+        .sidebar-search { padding: 8px 10px 4px; }
+        .sidebar-search input { width: 100%; background: #F3F4F6; border: 1px solid #E5E7EB; border-radius: 8px; padding: 7px 10px 7px 30px; font-size: 12px; color: #333; outline: none; font-family: inherit; transition: border-color 0.15s; }
+        .sidebar-search input:focus { border-color: #FF7B0F; background: #fff; }
+        .sidebar-search-wrapper { position: relative; }
+        .sidebar-search-wrapper i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; color: #BBB; }
+
+        /* Gen card improved */
+        .gen-card-improved { border-left: 4px solid transparent; }
+        .gen-card-improved.type-video { border-left-color: #FF7B0F; }
+        .gen-card-improved.type-carousel { border-left-color: #3B82F6; }
+
+        /* Difficulty badges */
+        .badge-diff-facil { background: #D1FAE5; color: #059669; }
+        .badge-diff-medio { background: #FEF3C7; color: #D97706; }
+        .badge-diff-dificil { background: #FEE2E2; color: #DC2626; }
+
+        /* Copy button */
+        .btn-copy { background: #F3F4F6; border: 1px solid #E5E7EB; color: #666; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s; }
+        .btn-copy:hover { background: #E5E7EB; color: #333; }
+
+        /* Export button */
+        .btn-export { background: #EFF6FF; color: #3B82F6; border: 1px solid #DBEAFE; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s; }
+        .btn-export:hover { background: #DBEAFE; border-color: #93C5FD; }
+
+        @media (max-width: 1024px) {
+            .calendar-grid { grid-template-columns: repeat(3, 1fr); }
+            .nav-shortcut { display: none; }
+            .sidebar-search { display: none; }
+        }
+        @media (max-width: 768px) {
+            .calendar-grid { grid-template-columns: 1fr 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -277,37 +338,50 @@
                 <div class="logo-sub">Content Intelligence</div>
             </div>
         </div>
+        <div class="sidebar-search">
+            <div class="sidebar-search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="sidebarSearch" placeholder="Buscar contenido..." oninput="handleSidebarSearch(this.value)">
+            </div>
+        </div>
         <nav class="sidebar-nav">
             <div class="nav-section-label">Principal</div>
             <button class="nav-item active" data-tab="overview" onclick="showTab('overview')">
                 <i class="fas fa-th-large"></i> <span>Dashboard</span>
+                <span class="nav-shortcut">1</span>
             </button>
             <button class="nav-item" data-tab="posts" onclick="showTab('posts')">
                 <i class="fas fa-table"></i> <span>Contenido Analizado</span>
                 <span class="nav-badge" id="navBadgePosts">-</span>
+                <span class="nav-shortcut">2</span>
             </button>
             <button class="nav-item" data-tab="generated" onclick="showTab('generated')">
                 <i class="fas fa-wand-magic-sparkles"></i> <span>Contenido Generado</span>
                 <span class="nav-badge" id="navBadgeGenerated">-</span>
+                <span class="nav-shortcut">3</span>
             </button>
             <div class="nav-divider"></div>
             <div class="nav-section-label">Planificacion</div>
             <button class="nav-item" data-tab="ideas" onclick="showTab('ideas')">
                 <i class="fas fa-lightbulb"></i> <span>Ideas de Contenido</span>
                 <span class="nav-badge" id="navBadgeIdeas">-</span>
+                <span class="nav-shortcut">4</span>
             </button>
             <button class="nav-item" data-tab="news" onclick="showTab('news')">
                 <i class="fas fa-newspaper"></i> <span>Noticias del Sector</span>
                 <span class="nav-badge" id="navBadgeNews">-</span>
+                <span class="nav-shortcut">5</span>
             </button>
             <div class="nav-divider"></div>
             <div class="nav-section-label">Sistema</div>
             <button class="nav-item" data-tab="profiles" onclick="showTab('profiles')">
                 <i class="fas fa-users"></i> <span>Perfiles</span>
                 <span class="nav-badge" id="navBadgeProfiles">-</span>
+                <span class="nav-shortcut">6</span>
             </button>
             <button class="nav-item" data-tab="practices" onclick="showTab('practices')">
                 <i class="fas fa-book-open"></i> <span>Best Practices</span>
+                <span class="nav-shortcut">7</span>
             </button>
             <button class="nav-item" data-tab="runs" onclick="showTab('runs')">
                 <i class="fas fa-history"></i> <span>Pipeline</span>
@@ -402,6 +476,32 @@
                     </div>
                 </div>
 
+                <!-- Activity Timeline -->
+                <div class="card mb-6">
+                    <div class="card-header">
+                        <h3><i class="fas fa-stream" style="color: #FF7B0F; margin-right: 6px;"></i>Actividad Reciente</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline" id="activityTimeline">
+                            <div class="timeline-item">
+                                <div class="timeline-dot dot-orange"></div>
+                                <div class="timeline-label">Pipeline</div>
+                                <div class="timeline-date" id="timelinePipeline">Sin datos</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot dot-navy"></div>
+                                <div class="timeline-label">Contenido Generado</div>
+                                <div class="timeline-date" id="timelineGenerated">Sin datos</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot dot-green"></div>
+                                <div class="timeline-label">Noticias Actualizadas</div>
+                                <div class="timeline-date" id="timelineNews">Sin datos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Quick Actions -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                     <div class="quick-action" onclick="generateContent()">
@@ -454,6 +554,19 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Content Calendar -->
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h3 style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #1B2A4A;">
+                            <span style="font-size: 16px;">&#128197;</span> Calendario Semanal
+                        </h3>
+                        <button onclick="showTab('ideas')" style="font-size: 12px; color: #FF7B0F; background: none; border: none; cursor: pointer; font-weight: 500;">Ver ideas &rarr;</button>
+                    </div>
+                    <div class="card-body" id="weeklyCalendar">
+                        <div style="text-align: center; padding: 20px; color: #999; font-size: 13px;">Cargando calendario...</div>
                     </div>
                 </div>
             </div>
@@ -547,9 +660,14 @@
                             <span class="status-dot" style="background: #22C55E;"></span> Publicadas <span class="count-badge" id="ideasCountPublished">0</span>
                         </button>
                     </div>
-                    <div class="toggle-wrapper">
-                        <button class="toggle" id="toggleSelected" onclick="toggleSelectedOnly()"></button>
-                        <span class="toggle-label">Solo seleccionadas</span>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="toggle-wrapper">
+                            <button class="toggle" id="toggleSelected" onclick="toggleSelectedOnly()"></button>
+                            <span class="toggle-label">Solo seleccionadas</span>
+                        </div>
+                        <button onclick="exportIdeasCSV()" class="btn-export">
+                            <i class="fas fa-download"></i> Exportar CSV
+                        </button>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="ideasGrid">
@@ -921,35 +1039,76 @@
                 return;
             }
 
-            grid.innerHTML = items.map(item => {
+            grid.innerHTML = items.map((item, idx) => {
                 const isScript = item.content_type === 'video_script';
                 const badge = isScript
                     ? '<span class="badge badge-video"><i class="fas fa-video" style="margin-right: 3px;"></i>Guion</span>'
                     : '<span class="badge badge-carousel"><i class="fas fa-images" style="margin-right: 3px;"></i>Carrusel</span>';
-                const diffBadge = item.difficulty ? `<span class="tag-pill">${item.difficulty}</span>` : '';
+                const typeClass = isScript ? 'type-video' : 'type-carousel';
+
+                // Difficulty badge with colors
+                let diffBadge = '';
+                const diff = item.difficulty || '';
+                const diffLower = diff.toLowerCase();
+                if (diffLower.includes('facil') || diffLower.includes('fácil') || diffLower === 'easy') {
+                    diffBadge = `<span class="badge badge-diff-facil">${diff}</span>`;
+                } else if (diffLower.includes('medio') || diffLower === 'medium') {
+                    diffBadge = `<span class="badge badge-diff-medio">${diff}</span>`;
+                } else if (diffLower.includes('dificil') || diffLower.includes('difícil') || diffLower === 'hard') {
+                    diffBadge = `<span class="badge badge-diff-dificil">${diff}</span>`;
+                } else if (diff) {
+                    diffBadge = `<span class="tag-pill">${diff}</span>`;
+                }
+
+                // Also check script_json/carousel_json for difficulty
+                if (!diffBadge) {
+                    let parsedDiff = '';
+                    try {
+                        if (isScript && item.script_json) {
+                            const sj = typeof item.script_json === 'string' ? JSON.parse(item.script_json) : item.script_json;
+                            parsedDiff = sj.nivel_dificultad || '';
+                        }
+                    } catch(e) {}
+                    if (parsedDiff) {
+                        const pdl = parsedDiff.toLowerCase();
+                        if (pdl.includes('facil') || pdl.includes('fácil')) diffBadge = `<span class="badge badge-diff-facil">${parsedDiff}</span>`;
+                        else if (pdl.includes('medio')) diffBadge = `<span class="badge badge-diff-medio">${parsedDiff}</span>`;
+                        else if (pdl.includes('dificil') || pdl.includes('difícil')) diffBadge = `<span class="badge badge-diff-dificil">${parsedDiff}</span>`;
+                        else diffBadge = `<span class="tag-pill">${parsedDiff}</span>`;
+                    }
+                }
+
                 const source = item.source_username ? `Inspirado en @${item.source_username}` : '';
 
                 let preview = '';
+                let hookText = '';
+                let slideCount = 0;
                 if (isScript && item.script_json) {
                     const s = typeof item.script_json === 'string' ? JSON.parse(item.script_json) : item.script_json;
+                    hookText = s.hook?.texto_exacto || '';
                     preview = `<div style="margin-top: 12px;">
-                        ${s.hook ? `<div class="section-block hook" style="padding: 8px 12px;"><span style="font-size: 10px; font-weight: 700; color: #8B5CF6;">HOOK:</span><p style="font-size: 12px; color: #333; margin-top: 2px;">${(s.hook.texto_exacto || '').substring(0, 100)}</p></div>` : ''}
+                        ${hookText ? `<div class="section-block hook" style="padding: 8px 12px;"><span style="font-size: 10px; font-weight: 700; color: #8B5CF6;">HOOK:</span><p style="font-size: 12px; color: #333; margin-top: 2px;">${hookText.substring(0, 100)}${hookText.length > 100 ? '...' : ''}</p></div>` : ''}
                         ${s.duracion_estimada ? `<p style="font-size: 11px; color: #999; margin-top: 6px;"><i class="fas fa-clock" style="margin-right: 4px;"></i>${s.duracion_estimada}</p>` : ''}
                     </div>`;
                 } else if (!isScript && item.carousel_json) {
                     const c = typeof item.carousel_json === 'string' ? JSON.parse(item.carousel_json) : item.carousel_json;
+                    slideCount = (c.slides || []).length;
+                    const firstSlideTitle = (c.slides && c.slides[0]) ? (c.slides[0].titulo_principal || '') : '';
                     preview = `<div style="margin-top: 12px;">
-                        <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px;" class="scroll-area">
-                            ${(c.slides || []).slice(0, 3).map(sl => `<div class="slide-preview" style="padding: 6px 8px;"><span style="font-size: 9px; color: #999;">${sl.numero || ''}.</span><p style="font-size: 10px; font-weight: 600; color: #1B2A4A; margin-top: 1px;">${(sl.titulo_principal || '').substring(0, 30)}</p></div>`).join('')}
-                            ${(c.slides || []).length > 3 ? `<div class="slide-preview" style="display: flex; align-items: center; justify-content: center; color: #999; font-size: 10px; padding: 6px 8px;">+${(c.slides||[]).length - 3}</div>` : ''}
-                        </div>
-                        <p style="font-size: 11px; color: #999; margin-top: 4px;"><i class="fas fa-layer-group" style="margin-right: 4px;"></i>${(c.slides||[]).length} slides</p>
+                        ${firstSlideTitle ? `<div style="background: #EFF6FF; border-left: 3px solid #3B82F6; padding: 8px 12px; border-radius: 0 6px 6px 0;"><span style="font-size: 10px; font-weight: 700; color: #3B82F6;">SLIDE 1:</span><p style="font-size: 12px; color: #333; margin-top: 2px;">${firstSlideTitle.substring(0, 100)}</p></div>` : ''}
+                        <p style="font-size: 11px; color: #999; margin-top: 6px;"><i class="fas fa-layer-group" style="margin-right: 4px;"></i>Slides: ${slideCount}</p>
                     </div>`;
                 }
 
-                return `<div class="gen-card" onclick='showGeneratedDetail(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
+                // Copy button data attribute index
+                const copyBtnId = `copyBtn_${idx}`;
+
+                return `<div class="gen-card gen-card-improved ${typeClass}" onclick='showGeneratedDetail(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                        ${badge} ${diffBadge}
+                        <div style="display: flex; align-items: center; gap: 6px;">${badge} ${diffBadge}</div>
+                        <button class="btn-copy" id="${copyBtnId}" onclick="event.stopPropagation(); copyScript(${idx})" title="Copiar guion completo">
+                            <i class="fas fa-copy"></i> Copiar guion
+                        </button>
                     </div>
                     <h3 style="font-size: 14px; font-weight: 600; color: #1B2A4A; margin-top: 4px;">${item.title || 'Sin titulo'}</h3>
                     <p style="font-size: 12px; color: #999; margin-top: 4px;">${source}</p>
@@ -1304,6 +1463,7 @@
                     if (idea) idea.status = newStatus;
                     updateIdeaCounts();
                     renderIdeas();
+                    renderWeeklyCalendar();
                 } else {
                     showToast('Error al actualizar estado', 'error');
                 }
@@ -1536,6 +1696,175 @@
             generateContent();
         }
 
+        // --- Copy Script to Clipboard ---
+        function copyScript(idx) {
+            const item = allGeneratedItems[idx];
+            if (!item) return;
+            let text = '';
+            if (item.content_type === 'video_script' && item.script_json) {
+                const s = typeof item.script_json === 'string' ? JSON.parse(item.script_json) : item.script_json;
+                text = `HOOK: ${s.hook?.texto_exacto || ''}\n\n`;
+                (s.desarrollo || []).forEach(d => {
+                    text += `[${d.segundo || ''}s] ${d.texto || ''}\n`;
+                    if (d.visual) text += `  Visual: ${d.visual}\n`;
+                    if (d.texto_overlay) text += `  Overlay: ${d.texto_overlay}\n`;
+                    text += '\n';
+                });
+                text += `CTA: ${s.cta?.texto || ''}\n`;
+                if (s.caption) text += `\nCAPTION: ${s.caption}`;
+            } else if (item.carousel_json) {
+                const c = typeof item.carousel_json === 'string' ? JSON.parse(item.carousel_json) : item.carousel_json;
+                (c.slides || []).forEach(sl => {
+                    text += `Slide ${sl.numero || ''}: ${sl.titulo_principal || ''}\n`;
+                    if (sl.subtitulo) text += `  ${sl.subtitulo}\n`;
+                    if (sl.cuerpo) text += `  ${sl.cuerpo}\n`;
+                    text += '\n';
+                });
+                if (c.caption) text += `CAPTION: ${c.caption}`;
+            } else {
+                text = item.raw_text || item.title || '';
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Guion copiado al portapapeles', 'success');
+            }).catch(() => {
+                showToast('Error al copiar', 'error');
+            });
+        }
+
+        // --- Export Ideas to CSV ---
+        function exportIdeasCSV() {
+            const ideas = currentIdeasFilter !== 'all'
+                ? allIdeas.filter(i => (i.status || 'idea') === currentIdeasFilter)
+                : allIdeas;
+
+            if (!ideas.length) {
+                showToast('No hay ideas para exportar', 'info');
+                return;
+            }
+
+            const headers = ['title', 'platform', 'content_type', 'priority', 'status', 'hook_suggestion', 'cta_suggestion'];
+            const csvRows = [headers.join(',')];
+
+            ideas.forEach(idea => {
+                const row = headers.map(h => {
+                    const val = (idea[h] || '').toString().replace(/"/g, '""');
+                    return `"${val}"`;
+                });
+                csvRows.push(row.join(','));
+            });
+
+            const csvContent = csvRows.join('\n');
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `proper_ideas_${new Date().toISOString().slice(0,10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast(`${ideas.length} ideas exportadas a CSV`, 'success');
+        }
+
+        // --- Weekly Calendar ---
+        function renderWeeklyCalendar() {
+            const container = document.getElementById('weeklyCalendar');
+            const scheduledIdeas = allIdeas.filter(i => ['approved', 'in_progress'].includes(i.status || ''));
+
+            if (!scheduledIdeas.length) {
+                container.innerHTML = `<div style="text-align: center; padding: 30px 20px; color: #999;">
+                    <div style="font-size: 28px; margin-bottom: 8px; opacity: 0.4;">&#128197;</div>
+                    <div style="font-size: 13px; font-weight: 500;">Aprueba ideas para verlas en el calendario</div>
+                    <button onclick="showTab('ideas')" class="btn-secondary btn-sm" style="margin-top: 10px;"><i class="fas fa-lightbulb" style="margin-right: 4px;"></i>Ver Ideas</button>
+                </div>`;
+                return;
+            }
+
+            const dayNames = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'];
+            // Distribute ideas across the 7 days
+            const days = [[], [], [], [], [], [], []];
+            scheduledIdeas.forEach((idea, idx) => {
+                days[idx % 7].push(idea);
+            });
+
+            let html = '<div class="calendar-grid">';
+            dayNames.forEach((name, di) => {
+                html += `<div class="calendar-day">
+                    <div class="calendar-day-header">${name}</div>`;
+                days[di].forEach(idea => {
+                    const statusClass = 'cal-' + (idea.status || 'approved');
+                    const platformBadge = idea.platform === 'instagram' ? 'IG' : idea.platform === 'tiktok' ? 'TK' : '--';
+                    const platformColor = idea.platform === 'instagram' ? '#E1306C' : '#000';
+                    html += `<div class="calendar-item ${statusClass}">
+                        <div class="calendar-item-title">${(idea.title || '').substring(0, 25)}${(idea.title || '').length > 25 ? '...' : ''}</div>
+                        <div style="display: flex; align-items: center; gap: 4px; margin-top: 3px;">
+                            <span style="font-size: 9px; font-weight: 700; color: ${platformColor}; background: ${platformColor}15; padding: 1px 4px; border-radius: 3px;">${platformBadge}</span>
+                        </div>
+                    </div>`;
+                });
+                html += '</div>';
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // --- Activity Timeline ---
+        async function loadActivityTimeline() {
+            try {
+                // Pipeline run info
+                const runsRes = await fetch(API + '/api/runs');
+                const runs = await runsRes.json();
+                const lastRun = runs.length ? runs[0] : null;
+                const pipelineEl = document.getElementById('timelinePipeline');
+                if (lastRun) {
+                    const status = lastRun.status === 'completed' ? 'OK' : lastRun.status === 'running' ? 'Ejecutando...' : 'Error';
+                    pipelineEl.textContent = `${fmtDate(lastRun.started_at)} - ${status}`;
+                }
+
+                // Generated content info
+                const genEl = document.getElementById('timelineGenerated');
+                if (allGeneratedItems.length) {
+                    genEl.textContent = fmtDate(allGeneratedItems[0].created_at);
+                }
+
+                // News info
+                const newsEl = document.getElementById('timelineNews');
+                if (allNews.length) {
+                    const latestNews = allNews.reduce((a, b) => {
+                        const da = new Date(a.created_at || a.fetched_at || 0);
+                        const db = new Date(b.created_at || b.fetched_at || 0);
+                        return da > db ? a : b;
+                    });
+                    newsEl.textContent = fmtDate(latestNews.created_at || latestNews.fetched_at || latestNews.published_at);
+                }
+            } catch (e) { console.log('Timeline error:', e); }
+        }
+
+        // --- Keyboard Shortcuts ---
+        document.addEventListener('keydown', function(e) {
+            // Don't fire if user is typing in an input/textarea
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+            const tabMap = { '1': 'overview', '2': 'posts', '3': 'generated', '4': 'ideas', '5': 'news', '6': 'profiles', '7': 'practices' };
+            if (tabMap[e.key]) {
+                e.preventDefault();
+                showTab(tabMap[e.key]);
+            }
+        });
+
+        // --- Sidebar Search (visual placeholder with basic filtering hint) ---
+        function handleSidebarSearch(query) {
+            const q = query.toLowerCase().trim();
+            const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
+            if (!q) {
+                navItems.forEach(item => item.style.display = '');
+                return;
+            }
+            navItems.forEach(item => {
+                const text = (item.textContent || '').toLowerCase();
+                item.style.display = text.includes(q) ? '' : 'none';
+            });
+        }
+
         // --- Trigger Pipeline ---
         async function triggerPipeline() {
             if (!confirm('Ejecutar el pipeline de analisis?')) return;
@@ -1549,14 +1878,14 @@
         }
 
         // --- Init ---
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             loadStats();
             loadProfiles();
             loadPosts();
-            loadIdeas();
+            loadIdeas().then(() => renderWeeklyCalendar());
             loadRuns();
             loadPractices();
-            loadGenerated();
+            loadGenerated().then(() => loadActivityTimeline());
             setInterval(loadStats, 30000);
         });
     </script>

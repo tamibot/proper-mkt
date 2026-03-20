@@ -154,7 +154,9 @@ def api_generate_content():
     """Generate new content (video script or carousel) from existing analyses."""
     try:
         from agents.content_generator import ContentGeneratorAgent
+        from agents.content_validator import ContentValidator
         generator = ContentGeneratorAgent()
+        validator = ContentValidator()
 
         req = request.get_json() or {}
         content_type = req.get("type", "both")
@@ -166,6 +168,9 @@ def api_generate_content():
             return jsonify({"error": "No hay analisis disponibles. Ejecuta el pipeline primero."}), 400
 
         generated = []
+        skipped = []
+        validation_results = []
+
         for analysis in analyses:
             analysis_dict = dict(analysis)
             analysis_text = analysis_dict.get("full_analysis") or analysis_dict.get("summary") or ""
@@ -181,17 +186,36 @@ def api_generate_content():
                 )
                 if result.get("status") == "success":
                     script = result.get("script") or {}
+                    title = script.get("titulo", f"Video basado en @{analysis_dict.get('username', 'unknown')}")
+
+                    # Validate before inserting
+                    vresult = validator.validate_content({
+                        "title": title,
+                        "script_json": script,
+                        "raw_text": result.get("raw", ""),
+                    })
+                    validation_results.append({"title": title, "type": "video_script", **vresult})
+
+                    if vresult["severity"] == "critical":
+                        skipped.append({"title": title, "type": "video_script", "issues": vresult["issues"]})
+                        print(f"[Validator] SKIPPED (critical): {title} — {vresult['issues']}")
+                        continue
+
+                    raw_text = result.get("raw", "")
+                    if vresult["severity"] == "warning":
+                        raw_text += f"\n\n[VALIDATION WARNINGS]: {'; '.join(vresult['issues'])}"
+
                     content_id = insert_generated_content({
                         "content_type": "video_script",
-                        "title": script.get("titulo", f"Video basado en @{analysis_dict.get('username', 'unknown')}"),
+                        "title": title,
                         "platform": script.get("plataforma", analysis_dict.get("platform", "tiktok")),
                         "source_post_id": analysis_dict.get("post_id"),
                         "script_json": json.dumps(script) if script else None,
                         "carousel_json": None,
-                        "raw_text": result.get("raw", ""),
+                        "raw_text": raw_text,
                         "difficulty": script.get("nivel_dificultad", "medio"),
                     })
-                    generated.append({"id": content_id, "type": "video_script", "title": script.get("titulo", "")})
+                    generated.append({"id": content_id, "type": "video_script", "title": title})
 
             # Generate carousel
             if content_type in ("both", "carousel_plan"):
@@ -202,23 +226,86 @@ def api_generate_content():
                 )
                 if result.get("status") == "success":
                     carousel = result.get("carousel") or {}
+                    title = carousel.get("titulo", f"Carrusel basado en @{analysis_dict.get('username', 'unknown')}")
+
+                    # Validate before inserting
+                    vresult = validator.validate_content({
+                        "title": title,
+                        "carousel_json": carousel,
+                        "raw_text": result.get("raw", ""),
+                    })
+                    validation_results.append({"title": title, "type": "carousel_plan", **vresult})
+
+                    if vresult["severity"] == "critical":
+                        skipped.append({"title": title, "type": "carousel_plan", "issues": vresult["issues"]})
+                        print(f"[Validator] SKIPPED (critical): {title} — {vresult['issues']}")
+                        continue
+
+                    raw_text = result.get("raw", "")
+                    if vresult["severity"] == "warning":
+                        raw_text += f"\n\n[VALIDATION WARNINGS]: {'; '.join(vresult['issues'])}"
+
                     content_id = insert_generated_content({
                         "content_type": "carousel_plan",
-                        "title": carousel.get("titulo", f"Carrusel basado en @{analysis_dict.get('username', 'unknown')}"),
+                        "title": title,
                         "platform": "instagram",
                         "source_post_id": analysis_dict.get("post_id"),
                         "script_json": None,
                         "carousel_json": json.dumps(carousel) if carousel else None,
-                        "raw_text": result.get("raw", ""),
+                        "raw_text": raw_text,
                         "difficulty": carousel.get("nivel_dificultad", "medio"),
                     })
-                    generated.append({"id": content_id, "type": "carousel_plan", "title": carousel.get("titulo", "")})
+                    generated.append({"id": content_id, "type": "carousel_plan", "title": title})
 
         return jsonify({
             "status": "success",
             "generated": generated,
-            "message": f"Se generaron {len(generated)} piezas de contenido."
+            "skipped": skipped,
+            "validation": validation_results,
+            "message": f"Se generaron {len(generated)} piezas de contenido. {len(skipped)} omitidas por validación crítica."
         })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/validate-content")
+def api_validate_content():
+    """Validate ALL existing generated_content rows and return a report."""
+    try:
+        from agents.content_validator import ContentValidator
+        validator = ContentValidator()
+
+        content = get_generated_content(limit=1000)
+        report = {"total": len(content), "clean": 0, "warnings": 0, "critical": 0, "details": []}
+
+        for item in content:
+            item_dict = dict(item)
+            content_to_validate = {
+                "title": item_dict.get("title", ""),
+                "raw_text": item_dict.get("raw_text", ""),
+            }
+            # Include JSON fields
+            if item_dict.get("script_json"):
+                content_to_validate["script_json"] = item_dict["script_json"]
+            if item_dict.get("carousel_json"):
+                content_to_validate["carousel_json"] = item_dict["carousel_json"]
+
+            vresult = validator.validate_content(content_to_validate)
+            severity = vresult["severity"]
+            report[severity] = report.get(severity, 0) + 1
+
+            detail = {
+                "id": item_dict.get("id"),
+                "title": item_dict.get("title", ""),
+                "content_type": item_dict.get("content_type", ""),
+                "severity": severity,
+                "is_valid": vresult["is_valid"],
+                "issues": vresult["issues"],
+                "corrected_fields": vresult["corrected_fields"],
+            }
+            report["details"].append(detail)
+
+        return jsonify(report)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
