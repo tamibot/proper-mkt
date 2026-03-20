@@ -16,6 +16,8 @@ from database import (
     get_generated_content, get_analyses_for_generation,
     insert_generated_content, get_posts_with_analysis_datefilter,
     get_news, update_news_status, update_idea_status,
+    insert_suggested_profile, get_suggested_profiles_db,
+    toggle_profile_monitoring,
 )
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
@@ -73,9 +75,13 @@ def api_stats():
             generated = get_generated_content(limit=1000)
             stats["total_scripts"] = sum(1 for g in generated if g.get("content_type") == "video_script")
             stats["total_carousels"] = sum(1 for g in generated if g.get("content_type") == "carousel_plan")
+            stats["total_linkedin_posts"] = sum(1 for g in generated if g.get("content_type") == "linkedin_post")
+            stats["total_blog_articles"] = sum(1 for g in generated if g.get("content_type") == "blog_article")
         except Exception:
             stats["total_scripts"] = 0
             stats["total_carousels"] = 0
+            stats["total_linkedin_posts"] = 0
+            stats["total_blog_articles"] = 0
         return jsonify(stats)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -257,12 +263,221 @@ def api_generate_content():
                     })
                     generated.append({"id": content_id, "type": "carousel_plan", "title": title})
 
+            # Generate LinkedIn post
+            if content_type == "linkedin_post":
+                result = generator.generate_linkedin_post(
+                    analysis_text,
+                    topic=topic,
+                )
+                if result.get("status") == "success":
+                    linkedin_post = result.get("linkedin_post") or {}
+                    title = f"LinkedIn: {linkedin_post.get('tipo', 'post')} | Proper"
+
+                    vresult = validator.validate_content({
+                        "title": title,
+                        "script_json": linkedin_post,
+                        "raw_text": result.get("raw", ""),
+                    })
+                    validation_results.append({"title": title, "type": "linkedin_post", **vresult})
+
+                    if vresult["severity"] == "critical":
+                        skipped.append({"title": title, "type": "linkedin_post", "issues": vresult["issues"]})
+                        continue
+
+                    raw_text = result.get("raw", "")
+                    if vresult["severity"] == "warning":
+                        raw_text += f"\n\n[VALIDATION WARNINGS]: {'; '.join(vresult['issues'])}"
+
+                    content_id = insert_generated_content({
+                        "content_type": "linkedin_post",
+                        "title": title,
+                        "platform": "linkedin",
+                        "source_post_id": analysis_dict.get("post_id"),
+                        "script_json": json.dumps(linkedin_post) if linkedin_post else None,
+                        "carousel_json": None,
+                        "raw_text": raw_text,
+                        "difficulty": "facil",
+                    })
+                    generated.append({"id": content_id, "type": "linkedin_post", "title": title})
+
+            # Generate blog article
+            if content_type == "blog_article":
+                result = generator.generate_blog_article(
+                    topic=topic,
+                )
+                if result.get("status") == "success":
+                    blog = result.get("blog_article") or {}
+                    title = blog.get("title", f"Blog basado en analisis | Proper")
+
+                    vresult = validator.validate_content({
+                        "title": title,
+                        "script_json": blog,
+                        "raw_text": result.get("raw", ""),
+                    })
+                    validation_results.append({"title": title, "type": "blog_article", **vresult})
+
+                    if vresult["severity"] == "critical":
+                        skipped.append({"title": title, "type": "blog_article", "issues": vresult["issues"]})
+                        continue
+
+                    raw_text = result.get("raw", "")
+                    if vresult["severity"] == "warning":
+                        raw_text += f"\n\n[VALIDATION WARNINGS]: {'; '.join(vresult['issues'])}"
+
+                    content_id = insert_generated_content({
+                        "content_type": "blog_article",
+                        "title": title,
+                        "platform": "web",
+                        "source_post_id": analysis_dict.get("post_id"),
+                        "script_json": json.dumps(blog) if blog else None,
+                        "carousel_json": None,
+                        "raw_text": raw_text,
+                        "difficulty": "medio",
+                    })
+                    generated.append({"id": content_id, "type": "blog_article", "title": title})
+
         return jsonify({
             "status": "success",
             "generated": generated,
             "skipped": skipped,
             "validation": validation_results,
             "message": f"Se generaron {len(generated)} piezas de contenido. {len(skipped)} omitidas por validación crítica."
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/generate-linkedin", methods=["POST"])
+def api_generate_linkedin():
+    """Generate a LinkedIn post from a content idea or news item."""
+    try:
+        from agents.content_generator import ContentGeneratorAgent
+        from agents.content_validator import ContentValidator
+        generator = ContentGeneratorAgent()
+        validator = ContentValidator()
+
+        req = request.get_json() or {}
+        topic = req.get("topic")
+        news_id = req.get("news_id")
+        idea_id = req.get("idea_id")
+
+        # Build analysis text from topic, news, or idea
+        analysis_text = topic or ""
+        source_post_id = None
+
+        if news_id:
+            news_items = get_news(limit=1000)
+            news_item = next((n for n in news_items if n.get("id") == int(news_id)), None)
+            if news_item:
+                analysis_text = f"{news_item.get('title', '')}. {news_item.get('summary', '')}"
+        elif idea_id:
+            ideas = get_content_ideas()
+            idea = next((i for i in ideas if i.get("id") == int(idea_id)), None)
+            if idea:
+                analysis_text = f"{idea.get('title', '')}. {idea.get('description', '')}"
+
+        if not analysis_text or len(analysis_text.strip()) < 5:
+            analysis_text = "Inversion inmobiliaria en Peru con Proper"
+
+        result = generator.generate_linkedin_post(analysis_text, topic=topic)
+        if result.get("status") != "success":
+            return jsonify({"error": "No se pudo generar el post de LinkedIn"}), 500
+
+        linkedin_post = result.get("linkedin_post") or {}
+        title = f"LinkedIn: {linkedin_post.get('tipo', 'post')} | Proper"
+
+        vresult = validator.validate_content({
+            "title": title,
+            "script_json": linkedin_post,
+            "raw_text": result.get("raw", ""),
+        })
+
+        if vresult["severity"] == "critical":
+            return jsonify({"error": "Contenido no paso validacion", "issues": vresult["issues"]}), 400
+
+        raw_text = result.get("raw", "")
+        if vresult["severity"] == "warning":
+            raw_text += f"\n\n[VALIDATION WARNINGS]: {'; '.join(vresult['issues'])}"
+
+        content_id = insert_generated_content({
+            "content_type": "linkedin_post",
+            "title": title,
+            "platform": "linkedin",
+            "source_post_id": source_post_id,
+            "script_json": json.dumps(linkedin_post) if linkedin_post else None,
+            "carousel_json": None,
+            "raw_text": raw_text,
+            "difficulty": "facil",
+        })
+
+        return jsonify({
+            "status": "success",
+            "id": content_id,
+            "type": "linkedin_post",
+            "title": title,
+            "linkedin_post": linkedin_post,
+            "validation": vresult,
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/generate-blog", methods=["POST"])
+def api_generate_blog():
+    """Generate a blog article from a news item or topic."""
+    try:
+        from agents.content_generator import ContentGeneratorAgent
+        from agents.content_validator import ContentValidator
+        generator = ContentGeneratorAgent()
+        validator = ContentValidator()
+
+        req = request.get_json() or {}
+        topic = req.get("topic")
+        news_id = req.get("news_id")
+
+        news_item = None
+        if news_id:
+            news_items = get_news(limit=1000)
+            news_item = next((dict(n) for n in news_items if n.get("id") == int(news_id)), None)
+
+        result = generator.generate_blog_article(news_item=news_item, topic=topic)
+        if result.get("status") != "success":
+            return jsonify({"error": "No se pudo generar el articulo de blog"}), 500
+
+        blog = result.get("blog_article") or {}
+        title = blog.get("title", "Articulo de blog | Proper")
+
+        vresult = validator.validate_content({
+            "title": title,
+            "script_json": blog,
+            "raw_text": result.get("raw", ""),
+        })
+
+        if vresult["severity"] == "critical":
+            return jsonify({"error": "Contenido no paso validacion", "issues": vresult["issues"]}), 400
+
+        raw_text = result.get("raw", "")
+        if vresult["severity"] == "warning":
+            raw_text += f"\n\n[VALIDATION WARNINGS]: {'; '.join(vresult['issues'])}"
+
+        content_id = insert_generated_content({
+            "content_type": "blog_article",
+            "title": title,
+            "platform": "web",
+            "source_post_id": None,
+            "script_json": json.dumps(blog) if blog else None,
+            "carousel_json": None,
+            "raw_text": raw_text,
+            "difficulty": "medio",
+        })
+
+        return jsonify({
+            "status": "success",
+            "id": content_id,
+            "type": "blog_article",
+            "title": title,
+            "blog_article": blog,
+            "validation": vresult,
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -389,6 +604,83 @@ def api_update_idea_status(idea_id):
             return jsonify({"error": f"Status debe ser uno de: {', '.join(valid_statuses)}"}), 400
         update_idea_status(idea_id, data["status"])
         return jsonify({"status": "ok", "message": "Estado de idea actualizado"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/suggested-profiles")
+def api_suggested_profiles():
+    """Get suggested profiles with optional platform filter."""
+    try:
+        platform = request.args.get("platform")
+        return jsonify(_serialize(get_suggested_profiles_db(platform=platform)))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/suggested-profiles", methods=["POST"])
+def api_add_suggested_profile():
+    """Add a new suggested profile."""
+    try:
+        data = request.get_json()
+        if not data or "username" not in data or "platform" not in data:
+            return jsonify({"error": "Se requiere username y platform"}), 400
+        profile_data = {
+            "username": data["username"],
+            "platform": data["platform"],
+            "category": data.get("category", ""),
+            "reason": data.get("reason", ""),
+            "priority": data.get("priority", "medium"),
+            "url": data.get("url", ""),
+            "is_monitored": data.get("is_monitored", False),
+        }
+        profile_id = insert_suggested_profile(profile_data)
+        if profile_id:
+            return jsonify({"status": "ok", "id": profile_id, "message": "Perfil sugerido agregado"})
+        else:
+            return jsonify({"status": "exists", "message": "Este perfil ya existe en la lista"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/suggested-profiles/<int:profile_id>/toggle", methods=["PUT"])
+def api_toggle_suggested_profile(profile_id):
+    """Toggle the monitoring status of a suggested profile."""
+    try:
+        data = request.get_json()
+        if data is None or "is_monitored" not in data:
+            return jsonify({"error": "Se requiere is_monitored"}), 400
+        toggle_profile_monitoring(profile_id, data["is_monitored"])
+        return jsonify({"status": "ok", "message": "Estado de monitoreo actualizado"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/seed-suggested-profiles", methods=["POST"])
+def api_seed_suggested_profiles():
+    """Seed suggested profiles from the discovery module into the DB."""
+    try:
+        from agents.profile_discovery import get_suggested_profiles
+        profiles = get_suggested_profiles()
+        inserted = 0
+        for p in profiles:
+            profile_id = insert_suggested_profile({
+                "username": p["username"],
+                "platform": p["platform"],
+                "category": p.get("category", ""),
+                "reason": p.get("reason", ""),
+                "priority": p.get("priority", "medium"),
+                "url": p.get("url", ""),
+                "is_monitored": p.get("is_monitored", False),
+            })
+            if profile_id:
+                inserted += 1
+        return jsonify({
+            "status": "success",
+            "inserted": inserted,
+            "total": len(profiles),
+            "message": f"Se insertaron {inserted} perfiles nuevos de {len(profiles)} sugeridos.",
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

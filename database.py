@@ -162,6 +162,21 @@ def init_db():
         );
     """)
 
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS suggested_profiles (
+            id SERIAL PRIMARY KEY,
+            username VARCHAR(100) NOT NULL,
+            platform VARCHAR(20) NOT NULL,
+            category VARCHAR(50),
+            reason TEXT,
+            priority VARCHAR(20) DEFAULT 'medium',
+            url VARCHAR(500),
+            is_monitored BOOLEAN DEFAULT FALSE,
+            added_at TIMESTAMP DEFAULT NOW(),
+            UNIQUE(username, platform)
+        );
+    """)
+
     # Migrations for existing tables
     cur.execute("""
         ALTER TABLE content_ideas ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'idea';
@@ -485,6 +500,10 @@ def get_dashboard_stats():
     stats["last_run"] = cur.fetchone()
     cur.execute("SELECT COUNT(*) as count FROM sector_news;")
     stats["total_news"] = cur.fetchone()["count"]
+    cur.execute("SELECT COUNT(*) as count FROM generated_content WHERE content_type = 'linkedin_post';")
+    stats["total_linkedin_posts"] = cur.fetchone()["count"]
+    cur.execute("SELECT COUNT(*) as count FROM generated_content WHERE content_type = 'blog_article';")
+    stats["total_blog_articles"] = cur.fetchone()["count"]
     cur.close()
     conn.close()
     return stats
@@ -548,6 +567,56 @@ def update_idea_status(idea_id, new_status):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("UPDATE content_ideas SET status = %s WHERE id = %s;", (new_status, idea_id))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+# --- Suggested Profiles CRUD ---
+
+def insert_suggested_profile(data):
+    """Insert a suggested profile. ON CONFLICT DO NOTHING."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO suggested_profiles (username, platform, category, reason, priority, url, is_monitored)
+        VALUES (%(username)s, %(platform)s, %(category)s, %(reason)s, %(priority)s, %(url)s, %(is_monitored)s)
+        ON CONFLICT (username, platform) DO NOTHING
+        RETURNING id;
+    """, data)
+    row = cur.fetchone()
+    profile_id = row["id"] if row else None
+    conn.commit()
+    cur.close()
+    conn.close()
+    return profile_id
+
+
+def get_suggested_profiles_db(platform=None):
+    """Get suggested profiles with optional platform filter."""
+    conn = get_connection()
+    cur = conn.cursor()
+    query = "SELECT * FROM suggested_profiles WHERE 1=1"
+    params = []
+    if platform:
+        query += " AND platform = %s"
+        params.append(platform)
+    query += " ORDER BY priority ASC, added_at DESC;"
+    cur.execute(query, params)
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return rows
+
+
+def toggle_profile_monitoring(profile_id, is_monitored):
+    """Toggle the monitoring status of a suggested profile."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE suggested_profiles SET is_monitored = %s WHERE id = %s;",
+        (is_monitored, profile_id),
+    )
     conn.commit()
     cur.close()
     conn.close()

@@ -530,6 +530,474 @@ class ContentGeneratorAgent:
             carousel["titulo"] = f"{topic} | Proper"
         return carousel
 
+    def generate_linkedin_post(self, analysis_text, topic=None):
+        """Genera un post de LinkedIn basado en analisis de competidores + contexto Proper."""
+        insights = self._extract_insights(analysis_text)
+        post_type = self._determine_linkedin_type(insights, topic)
+        post = self._build_linkedin_post(post_type, insights, topic)
+
+        return {"status": "success", "linkedin_post": post, "raw": json.dumps(post, ensure_ascii=False, indent=2)}
+
+    def generate_blog_article(self, news_item=None, topic=None):
+        """Genera un articulo de blog para el blog de Proper."""
+        if news_item:
+            text = news_item.get("summary") or news_item.get("title") or ""
+            insights = self._extract_insights(text)
+        else:
+            insights = self._extract_insights(topic or "")
+        article_type = self._determine_blog_type(insights, topic, news_item)
+        article = self._build_blog_article(article_type, insights, topic, news_item)
+
+        return {"status": "success", "blog_article": article, "raw": json.dumps(article, ensure_ascii=False, indent=2)}
+
+    def _determine_linkedin_type(self, insights, topic=None):
+        """Determina el mejor tipo de post de LinkedIn."""
+        if topic:
+            topic_lower = topic.lower()
+            if any(w in topic_lower for w in ["mito", "realidad", "falso"]): return "myth_buster"
+            if any(w in topic_lower for w in ["leccion", "aprendimos", "experiencia"]): return "lesson_learned"
+            if any(w in topic_lower for w in ["dato", "estadist", "numero"]): return "data_insight"
+            if any(w in topic_lower for w in ["mercado", "hoy", "actualiz"]): return "market_update"
+            if any(w in topic_lower for w in ["caso", "historia", "logro"]): return "success_story"
+        if insights.get("has_myth"): return "myth_buster"
+        if insights.get("has_data"): return "data_insight"
+        if insights.get("has_testimonial"): return "success_story"
+        if insights.get("mentions_pension") or insights.get("mentions_rent"): return "market_update"
+        return "thought_leadership"
+
+    def _determine_blog_type(self, insights, topic=None, news_item=None):
+        """Determina el mejor tipo de articulo de blog."""
+        if news_item:
+            return "news_analysis"
+        if topic:
+            topic_lower = topic.lower()
+            if any(w in topic_lower for w in ["guia", "paso", "como", "principiante"]): return "guide"
+            if any(w in topic_lower for w in ["mercado", "reporte", "mensual", "trimestral"]): return "market_report"
+            if any(w in topic_lower for w in ["educa", "aprend", "que es"]): return "educational"
+        if insights.get("has_process"): return "guide"
+        if insights.get("has_data"): return "market_report"
+        return "educational"
+
+    def _build_linkedin_post(self, post_type, insights, topic):
+        """Construye un post de LinkedIn estructurado."""
+        linkedin_library = {
+            "thought_leadership": {
+                "tipo": "thought_leadership",
+                "post_text": (
+                    "El mercado inmobiliario peruano esta en un punto de inflexion.\n\n"
+                    "Mientras muchos siguen viendo los bienes raices como algo exclusivo para grandes capitales, "
+                    "la realidad es que el acceso a la inversion inmobiliaria se esta democratizando.\n\n"
+                    "En Proper llevamos anos trabajando para que cualquier profesional con S/25,000 de ahorro "
+                    "pueda convertirse en inversionista inmobiliario. Y no es un sueno: nuestros inversionistas "
+                    "alcanzan un TIR promedio del 21.8% anual.\n\n"
+                    "Lo que diferencia a quienes construyen patrimonio de quienes no:\n"
+                    "- Toman decisiones basadas en DATA, no en emociones\n"
+                    "- Se asesoran con expertos (nuestra asesoria es 100% gratuita)\n"
+                    "- Aprovechan herramientas como el desembolso postergado para ahorrar hasta S/60,000\n\n"
+                    "El Cap Rate promedio de las propiedades que seleccionamos es 6.9%. "
+                    "Eso supera cualquier plazo fijo o fondo mutuo en el mercado peruano.\n\n"
+                    "La pregunta no es si puedes invertir. La pregunta es: cuanto tiempo mas vas a esperar?\n\n"
+                    "Agenda tu asesoria gratuita en proper.com.pe y da el primer paso."
+                ),
+                "hashtags": ["#InversionInmobiliaria", "#BienesRaicesPeru", "#Proper", "#LibertadFinanciera", "#InvertirEnPeru"],
+                "best_time": "Martes a jueves, entre 7:00-8:30 AM o 12:00-1:00 PM",
+                "engagement_tips": [
+                    "Responde TODOS los comentarios en las primeras 2 horas",
+                    "Haz una pregunta al final para generar conversacion",
+                    "Tagea a profesionales del sector en los comentarios",
+                    "Comparte en grupos relevantes de LinkedIn (inmobiliario, finanzas Peru)",
+                ],
+                "image_suggestion": "Infografia profesional con datos clave: TIR 21.8%, Cap Rate 6.9%, inversion desde S/25,000. Colores Proper (naranja #FF7B0F, navy #1B2A4A).",
+            },
+            "data_insight": {
+                "tipo": "data_insight",
+                "post_text": (
+                    "Un dato que cambio mi perspectiva sobre inversion inmobiliaria en Peru:\n\n"
+                    "El Gross Yield promedio de las propiedades seleccionadas por Proper es 7.4%.\n\n"
+                    "Para ponerlo en contexto:\n"
+                    "- Un plazo fijo en Peru rinde entre 3% y 5% anual\n"
+                    "- Un fondo mutuo conservador rinde entre 5% y 8%\n"
+                    "- Un departamento de inversion bien seleccionado: 7.4% de yield + apreciacion del inmueble\n\n"
+                    "Pero eso no es todo. Cuando sumamos la apreciacion del inmueble a largo plazo, "
+                    "la TIR (Tasa Interna de Retorno) alcanza el 21.8% anual. "
+                    "El ROI total en 5 anos es de 40.2%.\n\n"
+                    "Estos no son numeros teoricos. Son metricas reales calculadas con nuestro Analyzer, "
+                    "una herramienta gratuita que cualquier persona puede usar en proper.com.pe.\n\n"
+                    "La inversion inmobiliaria en Peru ya no es un privilegio de pocos. "
+                    "Con asesoria experta y gratuita, puedes empezar desde S/25,000.\n\n"
+                    "Los datos estan claros. La decision es tuya.\n\n"
+                    "Conoce tu potencial de inversion en proper.com.pe"
+                ),
+                "hashtags": ["#DatosInmobiliarios", "#InversionInteligente", "#Proper", "#ROI", "#FinanzasPersonales"],
+                "best_time": "Miercoles, entre 10:00-11:00 AM",
+                "engagement_tips": [
+                    "Incluye una grafica o tabla con los datos comparativos",
+                    "Pregunta: 'Donde tienes tus ahorros hoy?'",
+                    "Menciona fuentes de datos para mayor credibilidad",
+                    "Invita a calcular su propia rentabilidad con el Analyzer",
+                ],
+                "image_suggestion": "Tabla comparativa limpia: Plazo Fijo vs Fondo Mutuo vs Departamento de Inversion. Destacar la columna de departamento en naranja Proper.",
+            },
+            "lesson_learned": {
+                "tipo": "lesson_learned",
+                "post_text": (
+                    "3 lecciones que aprendimos asesorando a cientos de inversionistas inmobiliarios en Peru:\n\n"
+                    "1. La emocion es el peor consejero.\n"
+                    "El 80% de los inversionistas primerizos quieren comprar el departamento que MAS les gusta. "
+                    "Pero un depa de inversion se elige con datos: Cap Rate, TIR, demanda de alquiler en la zona. "
+                    "En Proper, nuestro Analyzer calcula todo automaticamente.\n\n"
+                    "2. El desembolso postergado es un game changer.\n"
+                    "La mayoria no sabe que puede ahorrarse entre S/24,000 y S/60,000 con condiciones de compra preferentes. "
+                    "Nosotros negociamos estas condiciones directamente con las inmobiliarias.\n\n"
+                    "3. La gestion del alquiler no deberia quitarte el sueno.\n"
+                    "Conseguir inquilino, cobrar renta, resolver emergencias... "
+                    "Con Proper Rentas nos encargamos de TODO. Tu solo recibes depositos cada mes.\n\n"
+                    "Estas lecciones le han ahorrado miles de soles a nuestros inversionistas.\n\n"
+                    "Si estas pensando en invertir, empieza con una asesoria gratuita en proper.com.pe"
+                ),
+                "hashtags": ["#LeccionesDeInversion", "#BienesRaices", "#Proper", "#InversionInmobiliaria", "#AprendizajeFinanciero"],
+                "best_time": "Lunes, entre 8:00-9:00 AM",
+                "engagement_tips": [
+                    "Usa formato de lista numerada para facilitar la lectura",
+                    "Pide en comentarios: 'Cual fue TU mayor leccion invirtiendo?'",
+                    "Responde con datos especificos a cada comentario",
+                    "Comparte anecdotas reales (sin nombres) para humanizar",
+                ],
+                "image_suggestion": "Diseno con los 3 puntos clave en formato de tarjeta. Cada leccion con icono representativo. Branding Proper.",
+            },
+            "market_update": {
+                "tipo": "market_update",
+                "post_text": (
+                    "Lo que esta pasando en el sector inmobiliario en Lima HOY:\n\n"
+                    "El mercado de departamentos de inversion en Peru esta experimentando cambios importantes. "
+                    "La demanda de alquiler sigue creciendo, especialmente en distritos como Miraflores, "
+                    "San Isidro, Jesus Maria y Magdalena.\n\n"
+                    "Que significa esto para los inversionistas?\n\n"
+                    "Mayor demanda de alquiler = menor tiempo de vacancia. "
+                    "Los departamentos bien ubicados se alquilan en promedio en 2-3 semanas.\n\n"
+                    "Los precios de preventa siguen siendo la mejor oportunidad. "
+                    "Comprar en preventa con desembolso postergado te ahorra entre S/24,000 y S/60,000 "
+                    "respecto a comprar un departamento entregado.\n\n"
+                    "Las metricas del mercado se mantienen atractivas:\n"
+                    "- Cap Rate promedio: 6.9%\n"
+                    "- TIR proyectada: 21.8% anual\n"
+                    "- ROI a 5 anos: 40.2%\n\n"
+                    "El mejor momento para invertir siempre es antes de que suban los precios.\n\n"
+                    "Analiza propiedades con datos reales en proper.com.pe"
+                ),
+                "hashtags": ["#MercadoInmobiliario", "#LimaInmobiliaria", "#Proper", "#InversionPeru", "#BienesRaices"],
+                "best_time": "Martes, entre 7:30-8:30 AM",
+                "engagement_tips": [
+                    "Menciona distritos especificos para atraer busquedas locales",
+                    "Pregunta: 'En que zona de Lima te gustaria invertir?'",
+                    "Actualiza con datos frescos cada mes",
+                    "Comparte en grupos de profesionales de Lima",
+                ],
+                "image_suggestion": "Mapa de Lima con zonas destacadas de inversion. Indicadores de precio y rentabilidad por distrito. Estilo profesional con colores Proper.",
+            },
+            "myth_buster": {
+                "tipo": "myth_buster",
+                "post_text": (
+                    "Mito: Solo los ricos pueden invertir en departamentos.\n"
+                    "Realidad: Con S/25,000 de inicial ya puedes empezar.\n\n"
+                    "Este es probablemente el mito mas danino del mercado inmobiliario peruano. "
+                    "Y es hora de romperlo con datos.\n\n"
+                    "Un profesional con ingresos de S/4,000-6,000 mensuales puede acceder a un credito hipotecario "
+                    "para comprar un departamento de inversion. Con el desembolso postergado que negociamos en Proper, "
+                    "no pagas cuotas hasta que te entreguen el departamento.\n\n"
+                    "Cuando el depa esta listo:\n"
+                    "- Proper Rentas consigue el inquilino\n"
+                    "- El inquilino paga la renta\n"
+                    "- La renta cubre la mayor parte de la cuota del banco\n"
+                    "- El depa se paga solo y tu patrimonio crece\n\n"
+                    "Con un Cap Rate de 6.9% y una TIR del 21.8%, los numeros hablan por si solos.\n\n"
+                    "No necesitas ser millonario. Necesitas tomar la decision correcta.\n\n"
+                    "Descubre tu capacidad de inversion con una asesoria gratuita en proper.com.pe"
+                ),
+                "hashtags": ["#MitosInmobiliarios", "#InversionAccesible", "#Proper", "#BienesRaicesPeru", "#EducacionFinanciera"],
+                "best_time": "Jueves, entre 12:00-1:00 PM",
+                "engagement_tips": [
+                    "El formato Mito/Realidad genera alto engagement en LinkedIn",
+                    "Pregunta: 'Que otros mitos sobre inversion inmobiliaria has escuchado?'",
+                    "Usa negritas y lineas cortas para facilitar el scroll",
+                    "Menciona ejemplos concretos con numeros reales",
+                ],
+                "image_suggestion": "Diseno dividido: lado izquierdo 'MITO' en rojo tachado, lado derecho 'REALIDAD' en verde/naranja Proper. Datos clave destacados.",
+            },
+            "success_story": {
+                "tipo": "success_story",
+                "post_text": (
+                    "Hace 1 ano, un joven profesional nos contacto con S/25,000 ahorrados.\n\n"
+                    "No sabia nada de inversiones inmobiliarias. Tenia dudas, miedos y muchas preguntas. "
+                    "Como la mayoria, creia que invertir en departamentos era solo para gente con mucho dinero.\n\n"
+                    "Le asignamos un asesor experto (100% gratuito). Juntos analizaron su perfil de inversionista "
+                    "y encontraron un departamento en preventa con condiciones preferentes.\n\n"
+                    "Los numeros:\n"
+                    "- Cuota inicial: S/25,000\n"
+                    "- Desembolso postergado: ahorro de S/35,000\n"
+                    "- Cap Rate del proyecto: 7.1%\n\n"
+                    "Hoy, 12 meses despues, su departamento ya tiene inquilino. "
+                    "Proper Rentas se encarga de cobrar la renta y administrar todo. "
+                    "El depa se paga solo y su patrimonio crece cada mes.\n\n"
+                    "Lo mas valioso que nos dijo: 'Deberia haberlo hecho antes.'\n\n"
+                    "No dejes pasar mas tiempo. Tu historia puede empezar hoy.\n\n"
+                    "Agenda tu asesoria gratuita en proper.com.pe"
+                ),
+                "hashtags": ["#CasoDeExito", "#InversionInmobiliaria", "#Proper", "#Patrimonio", "#HistoriaReal"],
+                "best_time": "Viernes, entre 9:00-10:00 AM",
+                "engagement_tips": [
+                    "Las historias personales generan el mayor engagement en LinkedIn",
+                    "Pide permiso para etiquetar al inversionista (si es posible)",
+                    "Cierra con pregunta: 'Cual es el primer paso que TU darias?'",
+                    "Agrega un comentario propio con mas detalles para el algoritmo",
+                ],
+                "image_suggestion": "Foto profesional de persona sonriente (con permiso) o imagen aspiracional de departamento moderno. Cita destacada del inversionista.",
+            },
+        }
+
+        post = linkedin_library.get(post_type, linkedin_library["thought_leadership"])
+        if topic:
+            # Prepend custom topic hook if provided
+            post = dict(post)  # shallow copy
+            post["topic_personalizado"] = topic
+        return post
+
+    def _build_blog_article(self, article_type, insights, topic, news_item):
+        """Construye un articulo de blog estructurado."""
+        blog_library = {
+            "news_analysis": {
+                "tipo": "news_analysis",
+                "title": "Analisis: Que significa para los inversionistas peruanos",
+                "meta_description": "Analizamos las ultimas noticias del sector inmobiliario en Peru y como impactan las oportunidades de inversion en departamentos. Descubre que acciones tomar hoy.",
+                "keywords": ["inversion inmobiliaria Peru", "mercado inmobiliario Lima", "analisis sector inmobiliario", "oportunidades inversion departamentos", "Proper inversion"],
+                "content": (
+                    "## El contexto: Que esta pasando en el mercado\n\n"
+                    "El sector inmobiliario peruano continua mostrando senales de dinamismo. "
+                    "Los recientes desarrollos en el mercado presentan tanto desafios como oportunidades "
+                    "para inversionistas que buscan construir patrimonio a traves de bienes raices.\n\n"
+                    "En este analisis, desglosamos los puntos clave y lo que significan para ti como inversionista.\n\n"
+                    "## Los datos que importan\n\n"
+                    "Para entender el impacto real de estos cambios, veamos las metricas actuales del mercado:\n\n"
+                    "- **Cap Rate promedio en propiedades seleccionadas**: 6.9%\n"
+                    "- **TIR proyectada a largo plazo**: 21.8% anual\n"
+                    "- **ROI acumulado en 5 anos**: 40.2%\n"
+                    "- **Gross Yield bruto**: 7.4%\n\n"
+                    "Estas cifras demuestran que, a pesar de los movimientos del mercado, "
+                    "las propiedades bien seleccionadas mantienen su atractivo como vehiculo de inversion.\n\n"
+                    "## Como afecta esto tu estrategia de inversion\n\n"
+                    "### Oportunidad en preventa\n\n"
+                    "Los departamentos en preventa siguen ofreciendo las mejores condiciones de entrada. "
+                    "Con el desembolso postergado, los inversionistas pueden ahorrarse entre S/24,000 y S/60,000 "
+                    "comparado con un proceso de compra tradicional.\n\n"
+                    "### La importancia de la asesoria experta\n\n"
+                    "En un mercado en movimiento, tomar decisiones basadas en datos es mas importante que nunca. "
+                    "El Analyzer de Proper permite evaluar cualquier propiedad con metricas reales: "
+                    "Cap Rate, TIR, ROI y Gross Yield, todo calculado automaticamente.\n\n"
+                    "### Rentas como escudo financiero\n\n"
+                    "Un departamento de inversion genera ingresos pasivos mensuales. "
+                    "Con Proper Rentas, la gestion del inquilino, cobro de renta y administracion "
+                    "del inmueble esta completamente cubierta.\n\n"
+                    "## Conclusion: Que hacer ahora\n\n"
+                    "Los mejores inversionistas no esperan al momento perfecto. "
+                    "Analizan los datos, se asesoran con expertos y toman accion. "
+                    "Con una inversion desde S/25,000, el camino hacia tu primer departamento de inversion "
+                    "es mas accesible de lo que crees.\n\n"
+                ),
+                "cta_section": (
+                    "## Da el primer paso hoy\n\n"
+                    "En Proper te asesoramos de forma **100% gratuita**. Nuestro equipo de expertos "
+                    "te ayuda a encontrar la propiedad ideal segun tu perfil de inversionista.\n\n"
+                    "**[Agenda tu asesoria gratuita en proper.com.pe](https://proper.com.pe)**\n\n"
+                    "Invierte desde S/25,000 | Asesoria GRATIS | El depa se paga solo"
+                ),
+                "social_share_text": "Nuevo analisis en nuestro blog: que significan los ultimos cambios del mercado inmobiliario para los inversionistas en Peru. Datos reales + recomendaciones accionables. Lee el articulo completo en proper.com.pe/blog",
+            },
+            "educational": {
+                "tipo": "educational",
+                "title": "Guia completa: Todo lo que debes saber sobre inversion inmobiliaria en Peru",
+                "meta_description": "Aprende los conceptos fundamentales de inversion inmobiliaria en Peru: Cap Rate, TIR, ROI y como elegir tu primer departamento de inversion. Guia gratuita de Proper.",
+                "keywords": ["como invertir en departamentos Peru", "inversion inmobiliaria principiantes", "Cap Rate Peru", "TIR inversion departamentos", "Proper asesoria"],
+                "content": (
+                    "## Por que invertir en departamentos en Peru\n\n"
+                    "La inversion inmobiliaria es una de las formas mas solidas de construir patrimonio a largo plazo. "
+                    "En Peru, el mercado ofrece oportunidades unicas para inversionistas que buscan "
+                    "generar ingresos pasivos y proteger su dinero de la inflacion.\n\n"
+                    "Consideremos un dato importante: 7 de cada 10 peruanos no tendran acceso a un esquema de pension. "
+                    "Los que si tendran pension, recibiran entre S/750 y S/1,100 al mes. "
+                    "Invertir en departamentos es una alternativa real para asegurar tu futuro financiero.\n\n"
+                    "## Las 4 metricas que todo inversionista debe conocer\n\n"
+                    "### 1. Gross Yield (Rentabilidad Bruta)\n\n"
+                    "Es el porcentaje de retorno bruto anual que genera una propiedad. "
+                    "Se calcula dividiendo la renta anual entre el precio del inmueble. "
+                    "Un buen Gross Yield en Peru esta arriba del 6%. "
+                    "En Proper, el promedio es **7.4%**.\n\n"
+                    "### 2. Cap Rate (Tasa de Capitalizacion)\n\n"
+                    "Similar al Gross Yield pero descuenta los gastos operativos (mantenimiento, seguros, vacancia). "
+                    "Es la metrica mas utilizada por inversionistas profesionales. "
+                    "Un Cap Rate arriba de 5% es considerado bueno. En Proper, el promedio es **6.9%**.\n\n"
+                    "### 3. TIR (Tasa Interna de Retorno)\n\n"
+                    "Considera tanto las rentas como la apreciacion del inmueble a lo largo del tiempo. "
+                    "Es la metrica mas completa para evaluar una inversion. "
+                    "La TIR promedio en propiedades Proper es **21.8% anual**.\n\n"
+                    "### 4. ROI (Retorno sobre la Inversion)\n\n"
+                    "El porcentaje total de retorno sobre tu capital invertido en un periodo determinado. "
+                    "En propiedades seleccionadas por Proper, el ROI a 5 anos es **40.2%**.\n\n"
+                    "## Como empezar a invertir con poco capital\n\n"
+                    "Contrario a lo que muchos creen, no necesitas ser millonario para invertir en departamentos. "
+                    "Con Proper puedes comenzar desde **S/25,000 de cuota inicial**.\n\n"
+                    "El proceso es simple:\n"
+                    "1. Te registras gratuitamente en proper.com.pe\n"
+                    "2. Un asesor experto analiza tu perfil de inversionista\n"
+                    "3. Te recomiendan propiedades con las mejores metricas\n"
+                    "4. Proper gestiona tu credito hipotecario con condiciones preferentes\n"
+                    "5. Con el desembolso postergado, te ahorras entre S/24,000 y S/60,000\n\n"
+                    "## El secreto: El depa se paga solo\n\n"
+                    "Una vez que recibes tu departamento, Proper Rentas se encarga de todo: "
+                    "encontrar inquilino, cobrar la renta y administrar el inmueble. "
+                    "La renta del inquilino cubre la mayor parte de tu cuota hipotecaria, "
+                    "haciendo que el departamento se pague solo mientras tu patrimonio crece.\n\n"
+                ),
+                "cta_section": (
+                    "## Empieza tu camino como inversionista\n\n"
+                    "La asesoria de Proper es **100% gratuita**. No importa si nunca has invertido antes, "
+                    "nuestro equipo te guia paso a paso.\n\n"
+                    "**[Registrate gratis en proper.com.pe](https://proper.com.pe)**\n\n"
+                    "Inversion desde S/25,000 | Asesoria experta GRATIS | Proper Rentas administra todo"
+                ),
+                "social_share_text": "Publicamos una guia completa sobre inversion inmobiliaria en Peru: metricas clave, como empezar con poco capital y por que el depa se paga solo. Leela gratis en proper.com.pe/blog",
+            },
+            "market_report": {
+                "tipo": "market_report",
+                "title": "Reporte del mercado inmobiliario en Lima: metricas y oportunidades",
+                "meta_description": "Reporte actualizado del mercado inmobiliario en Lima, Peru. Cap Rate, TIR, precios por distrito y las mejores oportunidades de inversion en departamentos.",
+                "keywords": ["reporte inmobiliario Lima", "mercado departamentos Peru", "precios inmobiliarios Lima", "mejores distritos inversion", "Proper analisis"],
+                "content": (
+                    "## Panorama general del mercado\n\n"
+                    "El mercado inmobiliario en Lima mantiene su dinamismo con una demanda sostenida "
+                    "de departamentos tanto para vivienda como para inversion. "
+                    "Los distritos con mayor potencial de inversion continuan siendo aquellos con alta "
+                    "demanda de alquiler y buenos fundamentales economicos.\n\n"
+                    "## Metricas clave del periodo\n\n"
+                    "Las propiedades seleccionadas por Proper muestran las siguientes metricas promedio:\n\n"
+                    "| Metrica | Valor |\n"
+                    "|---|---|\n"
+                    "| Gross Yield | 7.4% |\n"
+                    "| Cap Rate | 6.9% |\n"
+                    "| TIR proyectada | 21.8% anual |\n"
+                    "| ROI a 5 anos | 40.2% |\n\n"
+                    "Estas metricas se mantienen competitivas frente a otras alternativas de inversion "
+                    "disponibles en el mercado peruano.\n\n"
+                    "## Oportunidades destacadas\n\n"
+                    "### Departamentos en preventa\n\n"
+                    "La preventa sigue siendo la mejor ventana de oportunidad para inversionistas. "
+                    "Los precios de preventa pueden ser entre 10% y 20% menores que los de entrega inmediata, "
+                    "y con el desembolso postergado que negocia Proper, "
+                    "el ahorro puede alcanzar entre S/24,000 y S/60,000.\n\n"
+                    "### Distritos con mayor potencial\n\n"
+                    "Los distritos con mejor relacion precio-renta para inversion incluyen zonas "
+                    "con alta demanda de alquiler, buena conectividad y servicios. "
+                    "El Analyzer de Proper permite comparar metricas por propiedad "
+                    "para identificar las mejores oportunidades.\n\n"
+                    "## Tendencias a observar\n\n"
+                    "- La demanda de alquiler se mantiene fuerte en distritos bien conectados\n"
+                    "- Los creditos hipotecarios mantienen tasas competitivas\n"
+                    "- La apreciacion de inmuebles en zonas emergentes supera el promedio\n"
+                    "- Los inversionistas priorizan data sobre intuicion al elegir propiedades\n\n"
+                    "## Recomendaciones para inversionistas\n\n"
+                    "1. **Analiza antes de comprar**: Usa el Analyzer gratuito de Proper para evaluar cualquier propiedad\n"
+                    "2. **Aprovecha la preventa**: Las mejores condiciones estan en etapa de preventa\n"
+                    "3. **Considera el desembolso postergado**: Ahorra miles de soles en el proceso\n"
+                    "4. **Delega la gestion**: Proper Rentas administra tu propiedad de forma integral\n\n"
+                ),
+                "cta_section": (
+                    "## Accede a oportunidades exclusivas\n\n"
+                    "En Proper tenemos acceso a ventas privadas y propiedades off-market "
+                    "con condiciones preferentes. La asesoria es **100% gratuita**.\n\n"
+                    "**[Descubre tu proxima inversion en proper.com.pe](https://proper.com.pe)**\n\n"
+                    "Inversion desde S/25,000 | Ventas privadas | Asesoria GRATIS"
+                ),
+                "social_share_text": "Nuevo reporte del mercado inmobiliario en Lima: metricas actualizadas, distritos con mayor potencial y oportunidades de inversion. Consultalo gratis en proper.com.pe/blog",
+            },
+            "guide": {
+                "tipo": "guide",
+                "title": "Paso a paso: Como comprar tu primer departamento de inversion en Peru",
+                "meta_description": "Guia paso a paso para comprar tu primer departamento de inversion en Peru. Desde el ahorro inicial de S/25,000 hasta generar rentas pasivas. Asesoria gratuita con Proper.",
+                "keywords": ["comprar departamento inversion Peru", "primer departamento inversion", "guia inversion inmobiliaria", "como invertir en departamentos", "Proper guia"],
+                "content": (
+                    "## Antes de empezar: Lo que necesitas saber\n\n"
+                    "Comprar tu primer departamento de inversion puede parecer abrumador, "
+                    "pero con la guia correcta es mas simple de lo que imaginas. "
+                    "En esta guia te explicamos cada paso del proceso.\n\n"
+                    "**Requisitos basicos:**\n"
+                    "- Ahorro inicial desde S/25,000\n"
+                    "- Ingresos mensuales estables (formal o independiente)\n"
+                    "- Historial crediticio razonable\n"
+                    "- Ganas de construir patrimonio a largo plazo\n\n"
+                    "## Paso 1: Define tu perfil de inversionista\n\n"
+                    "Antes de ver propiedades, necesitas saber cuanto puedes invertir realmente. "
+                    "Proper ofrece una herramienta gratuita llamada Perfil del Inversionista "
+                    "que analiza tu capacidad de financiamiento y te recomienda opciones ideales.\n\n"
+                    "Registrate gratis en proper.com.pe para acceder a esta herramienta.\n\n"
+                    "## Paso 2: Aprende a leer las metricas\n\n"
+                    "No compres un departamento porque 'se ve bonito'. Aprende a evaluarlo con datos:\n\n"
+                    "- **Cap Rate**: Rentabilidad neta anual (busca arriba de 5%, ideal 6.9%+)\n"
+                    "- **TIR**: Retorno total incluyendo apreciacion (21.8% promedio en Proper)\n"
+                    "- **Gross Yield**: Rentabilidad bruta (7.4% promedio)\n"
+                    "- **ROI**: Retorno total en un periodo (40.2% en 5 anos)\n\n"
+                    "El Analyzer de Proper calcula todo esto automaticamente. Es gratuito.\n\n"
+                    "## Paso 3: Elige la propiedad correcta\n\n"
+                    "Un asesor de Proper te presenta las propiedades que mejor se ajustan a tu perfil. "
+                    "Estas son seleccionadas por su potencial de rentabilidad, "
+                    "ubicacion y demanda de alquiler.\n\n"
+                    "Las propiedades en preventa ofrecen las mejores condiciones: "
+                    "precios mas bajos y acceso al desembolso postergado.\n\n"
+                    "## Paso 4: Gestiona tu credito hipotecario\n\n"
+                    "Proper te acompana en todo el proceso de credito hipotecario. "
+                    "Negociamos condiciones preferentes con los bancos y te ayudamos "
+                    "a aprovechar el desembolso postergado, que te ahorra entre S/24,000 y S/60,000.\n\n"
+                    "## Paso 5: Firma y espera la entrega\n\n"
+                    "Con el desembolso postergado, no empiezas a pagar cuotas del banco "
+                    "hasta que te entreguen el departamento. Esto te da tiempo para prepararte "
+                    "financieramente mientras la inmobiliaria construye.\n\n"
+                    "## Paso 6: Pon tu depa a trabajar\n\n"
+                    "Una vez recibido el departamento, Proper Rentas se encarga de:\n"
+                    "- Encontrar el inquilino ideal\n"
+                    "- Cobrar la renta mensual\n"
+                    "- Administrar el mantenimiento\n"
+                    "- Resolver cualquier incidencia\n\n"
+                    "La renta del inquilino cubre la mayor parte de tu cuota del banco. "
+                    "El depa se paga solo y tu patrimonio crece mes a mes.\n\n"
+                ),
+                "cta_section": (
+                    "## Tu primer paso empieza aqui\n\n"
+                    "No necesitas ser experto. No necesitas ser millonario. "
+                    "Solo necesitas tomar la decision de empezar.\n\n"
+                    "En Proper te asesoramos **100% gratis** en cada paso del camino.\n\n"
+                    "**[Registrate gratis en proper.com.pe](https://proper.com.pe)**\n\n"
+                    "Inversion desde S/25,000 | Asesoria experta GRATIS | El depa se paga solo"
+                ),
+                "social_share_text": "Publicamos la guia definitiva para comprar tu primer departamento de inversion en Peru: paso a paso, desde S/25,000 hasta generar rentas pasivas. Leela en proper.com.pe/blog",
+            },
+        }
+
+        article = blog_library.get(article_type, blog_library["educational"])
+        article = dict(article)  # shallow copy
+
+        if topic:
+            article["topic_personalizado"] = topic
+        if news_item:
+            article["news_source"] = {
+                "title": news_item.get("title", ""),
+                "source_name": news_item.get("source_name", ""),
+                "source_url": news_item.get("source_url", ""),
+            }
+            # Customize title based on news
+            news_title = news_item.get("title", "")
+            if news_title:
+                article["title"] = f"Analisis: {news_title[:80]} y su impacto en la inversion inmobiliaria"
+
+        return article
+
     def generate_content_batch(self, analyses_from_db):
         """Genera contenido basado en los analisis almacenados en la DB."""
         results = []
