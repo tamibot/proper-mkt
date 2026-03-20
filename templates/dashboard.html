@@ -12,7 +12,7 @@
         body { background: #F8F9FC; color: #333333; font-family: 'Inter', system-ui, -apple-system, sans-serif; margin: 0; }
 
         /* Sidebar */
-        .sidebar { width: 240px; background: #FFFFFF; border-right: 1px solid #E5E7EB; height: 100vh; position: fixed; top: 0; left: 0; z-index: 40; display: flex; flex-direction: column; }
+        .sidebar { width: 250px; background: #FFFFFF; border-right: 1px solid #E5E7EB; height: 100vh; position: fixed; top: 0; left: 0; z-index: 40; display: flex; flex-direction: column; }
         .sidebar-logo { padding: 20px 20px 16px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; gap: 10px; }
         .sidebar-logo .logo-icon { width: 36px; height: 36px; background: #FF7B0F; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
         .sidebar-logo .logo-icon svg { width: 20px; height: 20px; }
@@ -23,21 +23,31 @@
         .nav-item:hover { background: #F3F4F6; color: #333; }
         .nav-item.active { background: #FFF3E8; color: #FF7B0F; font-weight: 600; }
         .nav-item i { width: 18px; text-align: center; font-size: 14px; }
+        .nav-item .nav-badge { margin-left: auto; background: #F3F4F6; color: #666; font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 10px; min-width: 24px; text-align: center; }
+        .nav-item.active .nav-badge { background: #FFE8D1; color: #FF7B0F; }
         .nav-divider { height: 1px; background: #E5E7EB; margin: 8px 14px; }
+        .nav-section-label { font-size: 10px; font-weight: 700; color: #BBB; text-transform: uppercase; letter-spacing: 0.8px; padding: 10px 14px 4px; }
 
         /* Main area */
-        .main-area { margin-left: 240px; min-height: 100vh; }
+        .main-area { margin-left: 250px; min-height: 100vh; }
 
         /* Top bar */
         .topbar { background: #FFFFFF; border-bottom: 1px solid #E5E7EB; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 30; }
+        .topbar-left { display: flex; align-items: center; gap: 12px; }
         .topbar-title { font-size: 16px; font-weight: 600; color: #1B2A4A; }
+        .topbar-breadcrumb { font-size: 12px; color: #999; }
+        .topbar-breadcrumb a { color: #FF7B0F; text-decoration: none; }
         .topbar-actions { display: flex; align-items: center; gap: 10px; }
 
         /* Buttons */
         .btn-primary { background: #FF7B0F; color: #fff; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s; }
-        .btn-primary:hover { background: #E86D00; }
+        .btn-primary:hover { background: #E86D00; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,123,15,0.3); }
         .btn-secondary { background: #FFFFFF; color: #1B2A4A; border: 1px solid #E5E7EB; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s; }
         .btn-secondary:hover { background: #F8F9FC; border-color: #D1D5DB; }
+        .btn-sm { padding: 5px 12px; font-size: 12px; border-radius: 6px; }
+        .btn-ghost { background: none; border: none; color: #666; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+        .btn-ghost:hover { background: #F3F4F6; color: #333; }
+        .btn-ghost.active { background: #FFF3E8; color: #FF7B0F; font-weight: 600; }
 
         /* Content */
         .content-area { padding: 24px 28px; }
@@ -48,6 +58,8 @@
         .stat-card .stat-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
         .stat-card .stat-value { font-size: 24px; font-weight: 700; color: #1B2A4A; margin-top: 10px; }
         .stat-card .stat-label { font-size: 12px; color: #999; margin-top: 2px; font-weight: 500; }
+        .stat-card .stat-bar { height: 4px; background: #F3F4F6; border-radius: 2px; margin-top: 10px; overflow: hidden; }
+        .stat-card .stat-bar-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
 
         /* Cards */
         .card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 12px; }
@@ -58,7 +70,7 @@
         /* Table */
         .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .data-table thead th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.5px; background: #FAFBFC; border-bottom: 1px solid #E5E7EB; position: sticky; top: 0; z-index: 5; }
-        .data-table tbody td { padding: 12px 14px; border-bottom: 1px solid #F3F4F6; color: #333; }
+        .data-table tbody td { padding: 10px 14px; border-bottom: 1px solid #F3F4F6; color: #333; }
         .data-table tbody tr { transition: background 0.1s; }
         .data-table tbody tr:hover { background: #FAFBFC; }
         .data-table tbody tr.clickable { cursor: pointer; }
@@ -79,8 +91,28 @@
         .badge-propio { background: #D1FAE5; color: #059669; }
         .badge-competidor { background: #FEE2E2; color: #DC2626; }
 
+        /* Status badges for ideas workflow */
+        .badge-status-idea { background: #F3F4F6; color: #666; }
+        .badge-status-approved { background: #DBEAFE; color: #2563EB; }
+        .badge-status-in_progress { background: #FEF3C7; color: #D97706; }
+        .badge-status-published { background: #D1FAE5; color: #059669; }
+
+        /* News badges */
+        .badge-news-new { background: #DBEAFE; color: #2563EB; }
+        .badge-news-reviewed { background: #FEF3C7; color: #D97706; }
+        .badge-news-used { background: #D1FAE5; color: #059669; }
+        .badge-cat { background: #F3F4F6; color: #666; font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+
         /* Tag pills */
         .tag-pill { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; background: #F3F4F6; color: #666; font-weight: 500; }
+
+        /* Filter tabs */
+        .filter-tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; background: #F3F4F6; border-radius: 10px; padding: 4px; }
+        .filter-tab { padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 500; color: #666; cursor: pointer; border: none; background: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+        .filter-tab:hover { color: #333; }
+        .filter-tab.active { background: #FFFFFF; color: #1B2A4A; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .filter-tab .count-badge { background: #E5E7EB; color: #666; font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 600; }
+        .filter-tab.active .count-badge { background: #FFF3E8; color: #FF7B0F; }
 
         /* Filters bar */
         .filter-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
@@ -91,27 +123,47 @@
         .filter-clear:hover { text-decoration: underline; }
 
         /* Modal */
-        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: #FFFFFF; border-radius: 16px; max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.2s; }
+        .modal-backdrop.show { opacity: 1; }
+        .modal-content { background: #FFFFFF; border-radius: 16px; max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); transform: translateY(10px); transition: transform 0.2s; }
+        .modal-backdrop.show .modal-content { transform: translateY(0); }
         .modal-header { padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: #fff; border-radius: 16px 16px 0 0; z-index: 5; }
         .modal-header h2 { font-size: 16px; font-weight: 700; color: #1B2A4A; }
         .modal-close { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #E5E7EB; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #999; transition: all 0.15s; }
         .modal-close:hover { background: #F3F4F6; color: #333; }
         .modal-body { padding: 24px; }
 
-        /* Section blocks (for generated content detail) */
+        /* Section blocks */
         .section-block { border-left: 3px solid #FF7B0F; padding: 12px 16px; background: #FFF8F2; border-radius: 0 8px 8px 0; margin-bottom: 12px; }
         .section-block.hook { border-left-color: #8B5CF6; background: #F5F3FF; }
         .section-block.cta { border-left-color: #22C55E; background: #F0FDF4; }
         .section-block.dev { border-left-color: #3B82F6; background: #EFF6FF; }
 
-        /* Idea cards */
-        .idea-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; transition: all 0.2s; display: flex; flex-direction: column; }
+        /* Idea cards with workflow borders */
+        .idea-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; transition: all 0.2s; display: flex; flex-direction: column; border-left: 4px solid transparent; }
         .idea-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); border-color: #D1D5DB; }
+        .idea-card.status-approved { border-left-color: #3B82F6; }
+        .idea-card.status-in_progress { border-left-color: #D97706; }
+        .idea-card.status-published { border-left-color: #22C55E; }
+
+        /* Status dropdown */
+        .status-dropdown { position: relative; display: inline-block; }
+        .status-dropdown-btn { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s; }
+        .status-dropdown-btn:hover { filter: brightness(0.95); }
+        .status-dropdown-menu { position: absolute; top: 100%; right: 0; background: #fff; border: 1px solid #E5E7EB; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 4px; min-width: 150px; z-index: 20; display: none; }
+        .status-dropdown-menu.open { display: block; }
+        .status-dropdown-menu button { width: 100%; text-align: left; padding: 8px 12px; border: none; background: none; font-size: 12px; font-weight: 500; color: #333; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; }
+        .status-dropdown-menu button:hover { background: #F3F4F6; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 
         /* Generated content cards */
         .gen-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; }
         .gen-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); border-color: #FF7B0F; }
+
+        /* News cards */
+        .news-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; transition: all 0.2s; }
+        .news-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); border-color: #D1D5DB; }
+        .news-card .news-relevance { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
 
         /* Practice cards */
         .practice-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; border-left: 4px solid #E5E7EB; }
@@ -135,17 +187,48 @@
         .scroll-area::-webkit-scrollbar-track { background: transparent; }
         .scroll-area::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
 
-        /* Loading shimmer */
-        .generating { animation: shimmer 1.5s infinite; background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%); background-size: 200% 100%; }
+        /* Loading skeleton */
+        .skeleton { background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+        .skeleton-text { height: 14px; margin-bottom: 8px; }
+        .skeleton-title { height: 20px; width: 60%; margin-bottom: 12px; }
+        .skeleton-card { height: 120px; border-radius: 12px; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        .generating { animation: shimmer 1.5s infinite; background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%); background-size: 200% 100%; }
 
         .pulse { animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        /* Overview quick action cards */
+        /* Toast notifications */
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
+        .toast { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 10px; padding: 12px 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; color: #1B2A4A; transform: translateX(120%); transition: transform 0.3s ease; min-width: 280px; }
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-left: 4px solid #22C55E; }
+        .toast.error { border-left: 4px solid #EF4444; }
+        .toast.info { border-left: 4px solid #3B82F6; }
+        .toast .toast-icon { font-size: 16px; flex-shrink: 0; }
+        .toast.success .toast-icon { color: #22C55E; }
+        .toast.error .toast-icon { color: #EF4444; }
+        .toast.info .toast-icon { color: #3B82F6; }
+
+        /* Quick action cards */
         .quick-action { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; text-align: center; }
-        .quick-action:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-color: #FF7B0F; }
+        .quick-action:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-color: #FF7B0F; transform: translateY(-2px); }
         .quick-action .qa-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 20px; }
+
+        /* Empty state */
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-state .empty-icon { font-size: 48px; color: #E5E7EB; margin-bottom: 16px; }
+        .empty-state .empty-title { font-size: 15px; font-weight: 600; color: #1B2A4A; margin-bottom: 6px; }
+        .empty-state .empty-desc { font-size: 13px; color: #999; margin-bottom: 16px; }
+
+        /* Toggle switch */
+        .toggle-wrapper { display: flex; align-items: center; gap: 8px; }
+        .toggle { position: relative; width: 36px; height: 20px; background: #D1D5DB; border-radius: 10px; cursor: pointer; transition: background 0.2s; border: none; padding: 0; }
+        .toggle.on { background: #FF7B0F; }
+        .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+        .toggle.on::after { transform: translateX(16px); }
+        .toggle-label { font-size: 12px; color: #666; font-weight: 500; }
 
         /* Hidden utility */
         .hidden { display: none !important; }
@@ -153,7 +236,7 @@
         /* Responsive */
         @media (max-width: 1024px) {
             .sidebar { width: 64px; }
-            .sidebar-logo .logo-text, .sidebar-logo .logo-sub, .nav-item span { display: none; }
+            .sidebar-logo .logo-text, .sidebar-logo .logo-sub, .nav-item span, .nav-item .nav-badge, .nav-section-label { display: none; }
             .sidebar-logo { padding: 16px 14px; justify-content: center; }
             .nav-item { justify-content: center; padding: 10px; }
             .nav-item i { margin: 0; }
@@ -163,10 +246,22 @@
             .sidebar { display: none; }
             .main-area { margin-left: 0; }
             .info-grid { grid-template-columns: 1fr; }
+            .topbar-actions { gap: 6px; }
+            .btn-primary span, .btn-secondary span { display: none; }
         }
+
+        /* Hover preview tooltip */
+        .hover-preview { position: absolute; background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 14px; max-width: 320px; z-index: 50; font-size: 12px; color: #666; line-height: 1.5; pointer-events: none; }
+
+        /* Progress ring */
+        .progress-ring { transform: rotate(-90deg); }
+        .progress-ring-circle { transition: stroke-dashoffset 0.6s ease; }
     </style>
 </head>
 <body>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <!-- Sidebar -->
     <aside class="sidebar">
@@ -183,21 +278,33 @@
             </div>
         </div>
         <nav class="sidebar-nav">
+            <div class="nav-section-label">Principal</div>
             <button class="nav-item active" data-tab="overview" onclick="showTab('overview')">
                 <i class="fas fa-th-large"></i> <span>Dashboard</span>
             </button>
             <button class="nav-item" data-tab="posts" onclick="showTab('posts')">
                 <i class="fas fa-table"></i> <span>Contenido Analizado</span>
+                <span class="nav-badge" id="navBadgePosts">-</span>
             </button>
             <button class="nav-item" data-tab="generated" onclick="showTab('generated')">
                 <i class="fas fa-wand-magic-sparkles"></i> <span>Contenido Generado</span>
-            </button>
-            <button class="nav-item" data-tab="ideas" onclick="showTab('ideas')">
-                <i class="fas fa-lightbulb"></i> <span>Ideas de Contenido</span>
+                <span class="nav-badge" id="navBadgeGenerated">-</span>
             </button>
             <div class="nav-divider"></div>
+            <div class="nav-section-label">Planificacion</div>
+            <button class="nav-item" data-tab="ideas" onclick="showTab('ideas')">
+                <i class="fas fa-lightbulb"></i> <span>Ideas de Contenido</span>
+                <span class="nav-badge" id="navBadgeIdeas">-</span>
+            </button>
+            <button class="nav-item" data-tab="news" onclick="showTab('news')">
+                <i class="fas fa-newspaper"></i> <span>Noticias del Sector</span>
+                <span class="nav-badge" id="navBadgeNews">-</span>
+            </button>
+            <div class="nav-divider"></div>
+            <div class="nav-section-label">Sistema</div>
             <button class="nav-item" data-tab="profiles" onclick="showTab('profiles')">
                 <i class="fas fa-users"></i> <span>Perfiles</span>
+                <span class="nav-badge" id="navBadgeProfiles">-</span>
             </button>
             <button class="nav-item" data-tab="practices" onclick="showTab('practices')">
                 <i class="fas fa-book-open"></i> <span>Best Practices</span>
@@ -215,13 +322,18 @@
     <div class="main-area">
         <!-- Top Bar -->
         <div class="topbar">
-            <div class="topbar-title" id="topbarTitle">Dashboard</div>
+            <div class="topbar-left">
+                <div>
+                    <div class="topbar-title" id="topbarTitle">Dashboard</div>
+                    <div class="topbar-breadcrumb" id="topbarBreadcrumb"><a href="#" onclick="showTab('overview');return false;">Inicio</a> / Dashboard</div>
+                </div>
+            </div>
             <div class="topbar-actions">
                 <button onclick="generateContent()" class="btn-primary" id="btnGenerate">
-                    <i class="fas fa-sparkles"></i> Generar Contenido
+                    <i class="fas fa-sparkles"></i> <span>Generar Contenido</span>
                 </button>
                 <button onclick="triggerPipeline()" class="btn-secondary">
-                    <i class="fas fa-rotate"></i> Ejecutar Pipeline
+                    <i class="fas fa-rotate"></i> <span>Ejecutar Pipeline</span>
                 </button>
             </div>
         </div>
@@ -234,24 +346,36 @@
                 <!-- Stats Grid -->
                 <div id="statsGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: #EFF6FF; color: #3B82F6;"><i class="fas fa-users"></i></div>
+                        <div class="flex items-center justify-between">
+                            <div class="stat-icon" style="background: #EFF6FF; color: #3B82F6;"><i class="fas fa-users"></i></div>
+                        </div>
                         <div class="stat-value" id="statProfiles">-</div>
                         <div class="stat-label">Perfiles</div>
+                        <div class="stat-bar"><div class="stat-bar-fill" style="width: 75%; background: #3B82F6;"></div></div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: #F0FDF4; color: #22C55E;"><i class="fas fa-newspaper"></i></div>
+                        <div class="flex items-center justify-between">
+                            <div class="stat-icon" style="background: #F0FDF4; color: #22C55E;"><i class="fas fa-newspaper"></i></div>
+                        </div>
                         <div class="stat-value" id="statPosts">-</div>
                         <div class="stat-label">Posts Analizados</div>
+                        <div class="stat-bar"><div class="stat-bar-fill" style="width: 60%; background: #22C55E;"></div></div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: #FEF3C7; color: #D97706;"><i class="fas fa-video"></i></div>
+                        <div class="flex items-center justify-between">
+                            <div class="stat-icon" style="background: #FEF3C7; color: #D97706;"><i class="fas fa-video"></i></div>
+                        </div>
                         <div class="stat-value" id="statVideos">-</div>
                         <div class="stat-label">Videos</div>
+                        <div class="stat-bar"><div class="stat-bar-fill" style="width: 45%; background: #D97706;"></div></div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: #F5F3FF; color: #8B5CF6;"><i class="fas fa-brain"></i></div>
+                        <div class="flex items-center justify-between">
+                            <div class="stat-icon" style="background: #F5F3FF; color: #8B5CF6;"><i class="fas fa-brain"></i></div>
+                        </div>
                         <div class="stat-value" id="statAnalyses">-</div>
                         <div class="stat-label">Analisis AI</div>
+                        <div class="stat-bar"><div class="stat-bar-fill" style="width: 80%; background: #8B5CF6;"></div></div>
                     </div>
                 </div>
 
@@ -279,7 +403,7 @@
                 </div>
 
                 <!-- Quick Actions -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                     <div class="quick-action" onclick="generateContent()">
                         <div class="qa-icon" style="background: #FFF3E8; color: #FF7B0F;"><i class="fas fa-sparkles"></i></div>
                         <div style="font-weight: 600; color: #1B2A4A; font-size: 14px;">Generar Contenido</div>
@@ -289,6 +413,11 @@
                         <div class="qa-icon" style="background: #EFF6FF; color: #3B82F6;"><i class="fas fa-rotate"></i></div>
                         <div style="font-weight: 600; color: #1B2A4A; font-size: 14px;">Ejecutar Pipeline</div>
                         <div style="font-size: 12px; color: #999; margin-top: 4px;">Analizar perfiles y contenido nuevo</div>
+                    </div>
+                    <div class="quick-action" onclick="showTab('news'); fetchNewNews();">
+                        <div class="qa-icon" style="background: #F0FDF4; color: #22C55E;"><i class="fas fa-newspaper"></i></div>
+                        <div style="font-weight: 600; color: #1B2A4A; font-size: 14px;">Buscar Noticias</div>
+                        <div style="font-size: 12px; color: #999; margin-top: 4px;">Rastrear noticias del sector inmobiliario</div>
                     </div>
                 </div>
 
@@ -301,7 +430,12 @@
                         </div>
                         <div class="card-body" style="padding: 0;">
                             <div id="recentPostsList" style="max-height: 320px; overflow-y: auto;" class="scroll-area">
-                                <div style="padding: 40px 20px; text-align: center; color: #999; font-size: 13px;">Cargando...</div>
+                                <div class="skeleton-loader" style="padding: 16px 20px;">
+                                    <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                                    <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                                    <div class="skeleton skeleton-text" style="width: 70%; margin-top: 16px;"></div>
+                                    <div class="skeleton skeleton-text" style="width: 50%;"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -312,7 +446,12 @@
                         </div>
                         <div class="card-body" style="padding: 0;">
                             <div id="recentGeneratedList" style="max-height: 320px; overflow-y: auto;" class="scroll-area">
-                                <div style="padding: 40px 20px; text-align: center; color: #999; font-size: 13px;">Cargando...</div>
+                                <div class="skeleton-loader" style="padding: 16px 20px;">
+                                    <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                                    <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                                    <div class="skeleton skeleton-text" style="width: 70%; margin-top: 16px;"></div>
+                                    <div class="skeleton skeleton-text" style="width: 50%;"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -346,8 +485,8 @@
                             <thead>
                                 <tr>
                                     <th>Perfil</th>
-                                    <th>Plataforma</th>
-                                    <th>Link</th>
+                                    <th>Plat.</th>
+                                    <th style="width:32px;">Link</th>
                                     <th>Tipo</th>
                                     <th>Descripcion</th>
                                     <th>Resumen AI</th>
@@ -374,18 +513,102 @@
                         <option value="video_script">Guiones de Video</option>
                         <option value="carousel_plan">Planes de Carrusel</option>
                     </select>
+                    <input type="text" id="filterGeneratedSearch" class="filter-input" placeholder="Buscar por palabra clave..." oninput="filterGeneratedByKeyword()" style="min-width: 200px;">
                     <button onclick="generateContent()" class="btn-primary" style="margin-left: auto;">
                         <i class="fas fa-sparkles"></i> Generar Nuevo
                     </button>
                 </div>
                 <div id="generatedGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div style="text-align: center; color: #999; grid-column: 1/-1; padding: 40px;">Cargando contenido generado...</div>
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="skeleton skeleton-card" style="margin-bottom: 12px;"></div>
+                        <div class="skeleton skeleton-card"></div>
+                    </div>
                 </div>
             </div>
 
             <!-- Tab: Ideas de Contenido -->
             <div id="tab-ideas" class="tab-content hidden">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="ideasGrid"></div>
+                <!-- Status filter tabs -->
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                    <div class="filter-tabs" id="ideasFilterTabs">
+                        <button class="filter-tab active" onclick="filterIdeas('all')" data-filter="all">
+                            Todas <span class="count-badge" id="ideasCountAll">0</span>
+                        </button>
+                        <button class="filter-tab" onclick="filterIdeas('idea')" data-filter="idea">
+                            <span class="status-dot" style="background: #9CA3AF;"></span> Ideas <span class="count-badge" id="ideasCountIdea">0</span>
+                        </button>
+                        <button class="filter-tab" onclick="filterIdeas('approved')" data-filter="approved">
+                            <span class="status-dot" style="background: #3B82F6;"></span> Aprobadas <span class="count-badge" id="ideasCountApproved">0</span>
+                        </button>
+                        <button class="filter-tab" onclick="filterIdeas('in_progress')" data-filter="in_progress">
+                            <span class="status-dot" style="background: #D97706;"></span> En Ejecucion <span class="count-badge" id="ideasCountInProgress">0</span>
+                        </button>
+                        <button class="filter-tab" onclick="filterIdeas('published')" data-filter="published">
+                            <span class="status-dot" style="background: #22C55E;"></span> Publicadas <span class="count-badge" id="ideasCountPublished">0</span>
+                        </button>
+                    </div>
+                    <div class="toggle-wrapper">
+                        <button class="toggle" id="toggleSelected" onclick="toggleSelectedOnly()"></button>
+                        <span class="toggle-label">Solo seleccionadas</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="ideasGrid">
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="skeleton skeleton-card" style="margin-bottom: 12px;"></div>
+                        <div class="skeleton skeleton-card" style="margin-bottom: 12px;"></div>
+                        <div class="skeleton skeleton-card"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Noticias del Sector -->
+            <div id="tab-news" class="tab-content hidden">
+                <!-- Source logos strip -->
+                <div style="background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 14px 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                    <span style="font-size: 11px; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Fuentes:</span>
+                    <span style="font-size: 12px; color: #1B2A4A; font-weight: 600;">📊 McKinsey</span>
+                    <span style="font-size: 12px; color: #1B2A4A; font-weight: 600;">📈 Deloitte</span>
+                    <span style="font-size: 12px; color: #1B2A4A; font-weight: 600;">🏦 BBVA Research</span>
+                    <span style="font-size: 12px; color: #1B2A4A; font-weight: 600;">💼 Forbes</span>
+                    <span style="font-size: 12px; color: #1B2A4A; font-weight: 600;">📰 Gestión</span>
+                    <span style="font-size: 12px; color: #1B2A4A; font-weight: 600;">🌐 Google News</span>
+                    <span style="font-size: 12px; color: #1B2A4A; font-weight: 600;">🚀 TechCrunch</span>
+                    <span style="font-size: 12px; color: #999; font-size: 11px;">+ más portales</span>
+                </div>
+
+                <div class="filter-bar">
+                    <select id="filterNewsCategory" onchange="filterNewsList()" class="filter-select">
+                        <option value="">Todas las categorías</option>
+                        <option value="mercado">🏠 Mercado Inmobiliario</option>
+                        <option value="financiamiento">🏦 Financiamiento</option>
+                        <option value="proptech">🤖 Proptech</option>
+                        <option value="regulación">⚖️ Regulación</option>
+                        <option value="inversión">💰 Inversión</option>
+                        <option value="construcción">🏗️ Construcción</option>
+                        <option value="consultoría">📊 Consultoría</option>
+                        <option value="economía">🌍 Economía</option>
+                    </select>
+                    <select id="filterNewsStatus" onchange="filterNewsList()" class="filter-select">
+                        <option value="">Todos los estados</option>
+                        <option value="new">🆕 Nuevas</option>
+                        <option value="reviewed">👁️ Revisadas</option>
+                        <option value="used">✅ Usadas</option>
+                    </select>
+                    <div style="margin-left: auto; display: flex; gap: 8px; align-items: center;">
+                        <span id="newsCount" style="font-size: 12px; color: #999;"></span>
+                        <button onclick="fetchNewNews()" class="btn-primary" id="btnFetchNews">
+                            <i class="fas fa-sync-alt"></i> Buscar Noticias
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="newsGrid">
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-icon"><i class="fas fa-newspaper"></i></div>
+                        <div class="empty-title">No hay noticias cargadas</div>
+                        <div class="empty-desc">Buscamos en McKinsey, Deloitte, BBVA Research, Forbes, Gestión, Google News y más portales especializados.</div>
+                        <button onclick="fetchNewNews()" class="btn-primary"><i class="fas fa-sync-alt"></i> Buscar Noticias</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Tab: Perfiles -->
@@ -460,10 +683,33 @@
             posts: 'Contenido Analizado',
             generated: 'Contenido Generado',
             ideas: 'Ideas de Contenido',
+            news: 'Noticias del Sector',
             profiles: 'Perfiles',
             practices: 'Best Practices',
             runs: 'Pipeline'
         };
+
+        // --- State ---
+        let allIdeas = [];
+        let currentIdeasFilter = 'all';
+        let showSelectedOnly = false;
+        let allNews = [];
+        let allGeneratedItems = [];
+
+        // --- Toast Notifications ---
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${icons[type] || icons.info} toast-icon"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.add('show'));
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
 
         // --- Utilities ---
         function showTab(tab) {
@@ -473,6 +719,8 @@
             const btn = document.querySelector(`.nav-item[data-tab="${tab}"]`);
             if (btn) btn.classList.add('active');
             document.getElementById('topbarTitle').textContent = tabTitles[tab] || 'Dashboard';
+            document.getElementById('topbarBreadcrumb').innerHTML = `<a href="#" onclick="showTab('overview');return false;">Inicio</a> / ${tabTitles[tab] || 'Dashboard'}`;
+            if (tab === 'news' && allNews.length === 0) loadNews();
         }
 
         function clearDateFilters() {
@@ -482,11 +730,17 @@
         }
 
         function openModal(title, html) {
+            const modal = document.getElementById('detailModal');
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalContent').innerHTML = html;
-            document.getElementById('detailModal').classList.remove('hidden');
+            modal.classList.remove('hidden');
+            requestAnimationFrame(() => modal.classList.add('show'));
         }
-        function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
+        function closeModal() {
+            const modal = document.getElementById('detailModal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
         document.getElementById('detailModal').addEventListener('click', function(e) {
             if (e.target === this) closeModal();
         });
@@ -507,13 +761,20 @@
                 document.getElementById('statScripts').textContent = d.total_scripts || 0;
                 document.getElementById('statCarousels').textContent = d.total_carousels || 0;
                 document.getElementById('statEngagement').textContent = d.avg_engagement || '-';
+
+                // Update nav badges
+                document.getElementById('navBadgePosts').textContent = d.total_posts || 0;
+                document.getElementById('navBadgeGenerated').textContent = (d.total_scripts || 0) + (d.total_carousels || 0);
+                document.getElementById('navBadgeIdeas').textContent = d.total_ideas || 0;
+                document.getElementById('navBadgeProfiles').textContent = d.total_profiles || 0;
+
                 if (d.last_run) {
                     document.getElementById('lastUpdate').textContent = 'Ultimo: ' + new Date(d.last_run.started_at).toLocaleString('es-MX');
                 }
             } catch (e) { console.error('Stats error:', e); }
         }
 
-        // --- Load Posts with Date Filter ---
+        // --- Load Posts ---
         async function loadPosts() {
             try {
                 const platform = document.getElementById('filterPlatform').value;
@@ -531,7 +792,11 @@
                 const tbody = document.getElementById('postsTable');
 
                 if (!posts.length) {
-                    tbody.innerHTML = '<tr><td colspan="11" style="padding: 40px 14px; text-align: center; color: #999;">No hay posts. Ejecuta el pipeline o ajusta los filtros.</td></tr>';
+                    tbody.innerHTML = `<tr><td colspan="11" class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+                        <div class="empty-title">No hay posts</div>
+                        <div class="empty-desc">Ejecuta el pipeline o ajusta los filtros para ver contenido analizado.</div>
+                    </td></tr>`;
                     return;
                 }
 
@@ -542,26 +807,25 @@
                     const tb = p.is_video
                         ? '<span class="badge badge-video">Video</span>'
                         : '<span class="badge badge-img">Img</span>';
-                    const caption = (p.caption || '').substring(0, 80) + ((p.caption||'').length > 80 ? '...' : '');
-                    const summary = (p.summary || '-').substring(0, 100) + ((p.summary||'').length > 100 ? '...' : '');
-                    const link = p.post_url ? `<a href="${p.post_url}" target="_blank" style="color: #FF7B0F;"><i class="fas fa-external-link-alt"></i></a>` : '-';
+                    const caption = (p.caption || '').substring(0, 60) + ((p.caption||'').length > 60 ? '...' : '');
+                    const summary = (p.summary || '-').substring(0, 80) + ((p.summary||'').length > 80 ? '...' : '');
+                    const link = p.post_url ? `<a href="${p.post_url}" target="_blank" style="color: #FF7B0F;" onclick="event.stopPropagation()"><i class="fas fa-external-link-alt"></i></a>` : '-';
 
                     return `<tr class="clickable" onclick="showPostDetail(${JSON.stringify(p).replace(/"/g, '&quot;')})">
-                        <td style="font-weight: 600; color: #1B2A4A;">@${p.username || ''}</td>
+                        <td style="font-weight: 600; color: #1B2A4A; white-space: nowrap;">@${p.username || ''}</td>
                         <td>${pb}</td>
                         <td>${link}</td>
                         <td>${tb}</td>
-                        <td style="color: #666; font-size: 12px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${caption}</td>
-                        <td style="color: #666; font-size: 12px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${summary}</td>
+                        <td style="color: #666; font-size: 12px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${(p.caption||'').replace(/"/g, '&quot;')}">${caption}</td>
+                        <td style="color: #666; font-size: 12px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${(p.summary||'').replace(/"/g, '&quot;')}">${summary}</td>
                         <td>${fmt(p.likes)}</td>
                         <td>${fmt(p.comments)}</td>
                         <td>${fmt(p.views)}</td>
                         <td style="font-size: 12px;">${p.hook_type || '-'}</td>
-                        <td style="font-size: 12px; color: #999;">${fmtDate(p.published_at || p.scraped_at)}</td>
+                        <td style="font-size: 12px; color: #999; white-space: nowrap;">${fmtDate(p.published_at || p.scraped_at)}</td>
                     </tr>`;
                 }).join('');
 
-                // Update recent posts on overview
                 updateRecentPosts(posts.slice(0, 6));
             } catch (e) { console.error('Posts error:', e); }
         }
@@ -569,14 +833,18 @@
         function updateRecentPosts(posts) {
             const container = document.getElementById('recentPostsList');
             if (!posts.length) {
-                container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: #999; font-size: 13px;">No hay posts recientes.</div>';
+                container.innerHTML = `<div class="empty-state" style="padding: 40px 20px;">
+                    <div class="empty-icon" style="font-size: 32px;"><i class="fas fa-inbox"></i></div>
+                    <div class="empty-title">No hay posts recientes</div>
+                    <div class="empty-desc">Ejecuta el pipeline para analizar contenido.</div>
+                </div>`;
                 return;
             }
             container.innerHTML = posts.map(p => {
                 const pb = p.platform === 'instagram'
                     ? '<span class="badge badge-ig" style="font-size: 10px; padding: 1px 6px;">IG</span>'
                     : '<span class="badge badge-tk" style="font-size: 10px; padding: 1px 6px;">TK</span>';
-                return `<div style="display: flex; align-items: center; gap: 12px; padding: 10px 20px; border-bottom: 1px solid #F3F4F6; cursor: pointer;" onclick="showPostDetail(${JSON.stringify(p).replace(/"/g, '&quot;')})">
+                return `<div style="display: flex; align-items: center; gap: 12px; padding: 10px 20px; border-bottom: 1px solid #F3F4F6; cursor: pointer; transition: background 0.1s;" onmouseover="this.style.background='#FAFBFC'" onmouseout="this.style.background=''" onclick="showPostDetail(${JSON.stringify(p).replace(/"/g, '&quot;')})">
                     <div style="flex: 1; min-width: 0;">
                         <div style="font-size: 13px; font-weight: 600; color: #1B2A4A;">@${p.username || ''} ${pb}</div>
                         <div style="font-size: 12px; color: #666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${(p.caption || p.summary || 'Sin caption').substring(0, 60)}</div>
@@ -602,7 +870,7 @@
                             ${p.post_url ? `<p><a href="${p.post_url}" target="_blank" style="color: #FF7B0F; text-decoration: none; font-weight: 500;">Ver post original <i class="fas fa-external-link-alt" style="font-size: 11px;"></i></a></p>` : ''}
                         </div>
                         <h3 style="font-size: 14px; font-weight: 600; color: #1B2A4A; margin: 16px 0 8px;">Caption</h3>
-                        <div style="font-size: 13px; color: #666; background: #F8F9FC; border-radius: 8px; padding: 12px; border: 1px solid #E5E7EB;">${p.caption || 'Sin caption'}</div>
+                        <div style="font-size: 13px; color: #666; background: #F8F9FC; border-radius: 8px; padding: 12px; border: 1px solid #E5E7EB; max-height: 200px; overflow-y: auto;" class="scroll-area">${p.caption || 'Sin caption'}</div>
                     </div>
                     <div>
                         <h3 style="font-size: 14px; font-weight: 600; color: #1B2A4A; margin-bottom: 12px;">Analisis AI</h3>
@@ -620,79 +888,92 @@
                 if (type) url += '&type=' + type;
                 const res = await fetch(url);
                 const items = await res.json();
-                const grid = document.getElementById('generatedGrid');
-
-                if (!items.length) {
-                    grid.innerHTML = `<div style="text-align: center; color: #999; grid-column: 1/-1; padding: 60px 20px;">
-                        <i class="fas fa-sparkles" style="font-size: 36px; color: #E5E7EB; display: block; margin-bottom: 16px;"></i>
-                        <p style="font-size: 14px; font-weight: 500;">No hay contenido generado aun.</p>
-                        <p style="font-size: 12px; margin-top: 6px;">Haz clic en "Generar Contenido" para crear guiones y carruseles.</p>
-                    </div>`;
-                    return;
-                }
-
-                grid.innerHTML = items.map(item => {
-                    const isScript = item.content_type === 'video_script';
-                    const badge = isScript
-                        ? '<span class="badge badge-video"><i class="fas fa-video" style="margin-right: 3px;"></i>Guion Video</span>'
-                        : '<span class="badge badge-carousel"><i class="fas fa-images" style="margin-right: 3px;"></i>Carrusel</span>';
-                    const diffBadge = item.difficulty
-                        ? `<span class="tag-pill">${item.difficulty}</span>`
-                        : '';
-                    const source = item.source_username ? `Inspirado en @${item.source_username}` : '';
-
-                    let preview = '';
-                    if (isScript && item.script_json) {
-                        const s = typeof item.script_json === 'string' ? JSON.parse(item.script_json) : item.script_json;
-                        preview = `
-                            <div style="margin-top: 12px;">
-                                ${s.hook ? `<div class="section-block hook"><span style="font-size: 11px; font-weight: 700; color: #8B5CF6;">HOOK:</span><p style="font-size: 13px; color: #333; margin-top: 4px;">${s.hook.texto_exacto || ''}</p></div>` : ''}
-                                ${s.duracion_estimada ? `<p style="font-size: 12px; color: #999; margin-top: 6px;"><i class="fas fa-clock" style="margin-right: 4px;"></i>${s.duracion_estimada}</p>` : ''}
-                            </div>`;
-                    } else if (!isScript && item.carousel_json) {
-                        const c = typeof item.carousel_json === 'string' ? JSON.parse(item.carousel_json) : item.carousel_json;
-                        preview = `
-                            <div style="margin-top: 12px;">
-                                <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;" class="scroll-area">
-                                    ${(c.slides || []).slice(0, 4).map(sl => `
-                                        <div class="slide-preview">
-                                            <span style="font-size: 10px; color: #999;">${sl.numero || ''}. ${sl.tipo || ''}</span>
-                                            <p style="font-size: 11px; font-weight: 600; color: #1B2A4A; margin-top: 2px;">${sl.titulo_principal || ''}</p>
-                                        </div>
-                                    `).join('')}
-                                    ${(c.slides || []).length > 4 ? `<div class="slide-preview" style="display: flex; align-items: center; justify-content: center; color: #999; font-size: 11px;">+${(c.slides||[]).length - 4} mas</div>` : ''}
-                                </div>
-                                <p style="font-size: 11px; color: #999; margin-top: 4px;"><i class="fas fa-layer-group" style="margin-right: 4px;"></i>${(c.slides||[]).length} slides</p>
-                            </div>`;
-                    }
-
-                    return `<div class="gen-card" onclick='showGeneratedDetail(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                            ${badge} ${diffBadge}
-                        </div>
-                        <h3 style="font-size: 14px; font-weight: 600; color: #1B2A4A; margin-top: 4px;">${item.title || 'Sin titulo'}</h3>
-                        <p style="font-size: 12px; color: #999; margin-top: 4px;">${source}</p>
-                        <p style="font-size: 11px; color: #BBB; margin-top: 2px;">${fmtDate(item.created_at)}</p>
-                        ${preview}
-                    </div>`;
-                }).join('');
-
-                // Update recent generated on overview
+                allGeneratedItems = items;
+                renderGeneratedItems(items);
                 updateRecentGenerated(items.slice(0, 5));
             } catch (e) { console.error('Generated error:', e); }
+        }
+
+        function filterGeneratedByKeyword() {
+            const keyword = document.getElementById('filterGeneratedSearch').value.toLowerCase().trim();
+            if (!keyword) {
+                renderGeneratedItems(allGeneratedItems);
+                return;
+            }
+            const filtered = allGeneratedItems.filter(item =>
+                (item.title || '').toLowerCase().includes(keyword) ||
+                (item.raw_text || '').toLowerCase().includes(keyword) ||
+                (item.source_username || '').toLowerCase().includes(keyword)
+            );
+            renderGeneratedItems(filtered);
+        }
+
+        function renderGeneratedItems(items) {
+            const grid = document.getElementById('generatedGrid');
+
+            if (!items.length) {
+                grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
+                    <div class="empty-icon"><i class="fas fa-sparkles"></i></div>
+                    <div class="empty-title">No hay contenido generado</div>
+                    <div class="empty-desc">Haz clic en "Generar Contenido" para crear guiones y carruseles con IA.</div>
+                    <button onclick="generateContent()" class="btn-primary"><i class="fas fa-sparkles"></i> Generar Contenido</button>
+                </div>`;
+                return;
+            }
+
+            grid.innerHTML = items.map(item => {
+                const isScript = item.content_type === 'video_script';
+                const badge = isScript
+                    ? '<span class="badge badge-video"><i class="fas fa-video" style="margin-right: 3px;"></i>Guion</span>'
+                    : '<span class="badge badge-carousel"><i class="fas fa-images" style="margin-right: 3px;"></i>Carrusel</span>';
+                const diffBadge = item.difficulty ? `<span class="tag-pill">${item.difficulty}</span>` : '';
+                const source = item.source_username ? `Inspirado en @${item.source_username}` : '';
+
+                let preview = '';
+                if (isScript && item.script_json) {
+                    const s = typeof item.script_json === 'string' ? JSON.parse(item.script_json) : item.script_json;
+                    preview = `<div style="margin-top: 12px;">
+                        ${s.hook ? `<div class="section-block hook" style="padding: 8px 12px;"><span style="font-size: 10px; font-weight: 700; color: #8B5CF6;">HOOK:</span><p style="font-size: 12px; color: #333; margin-top: 2px;">${(s.hook.texto_exacto || '').substring(0, 100)}</p></div>` : ''}
+                        ${s.duracion_estimada ? `<p style="font-size: 11px; color: #999; margin-top: 6px;"><i class="fas fa-clock" style="margin-right: 4px;"></i>${s.duracion_estimada}</p>` : ''}
+                    </div>`;
+                } else if (!isScript && item.carousel_json) {
+                    const c = typeof item.carousel_json === 'string' ? JSON.parse(item.carousel_json) : item.carousel_json;
+                    preview = `<div style="margin-top: 12px;">
+                        <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px;" class="scroll-area">
+                            ${(c.slides || []).slice(0, 3).map(sl => `<div class="slide-preview" style="padding: 6px 8px;"><span style="font-size: 9px; color: #999;">${sl.numero || ''}.</span><p style="font-size: 10px; font-weight: 600; color: #1B2A4A; margin-top: 1px;">${(sl.titulo_principal || '').substring(0, 30)}</p></div>`).join('')}
+                            ${(c.slides || []).length > 3 ? `<div class="slide-preview" style="display: flex; align-items: center; justify-content: center; color: #999; font-size: 10px; padding: 6px 8px;">+${(c.slides||[]).length - 3}</div>` : ''}
+                        </div>
+                        <p style="font-size: 11px; color: #999; margin-top: 4px;"><i class="fas fa-layer-group" style="margin-right: 4px;"></i>${(c.slides||[]).length} slides</p>
+                    </div>`;
+                }
+
+                return `<div class="gen-card" onclick='showGeneratedDetail(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        ${badge} ${diffBadge}
+                    </div>
+                    <h3 style="font-size: 14px; font-weight: 600; color: #1B2A4A; margin-top: 4px;">${item.title || 'Sin titulo'}</h3>
+                    <p style="font-size: 12px; color: #999; margin-top: 4px;">${source}</p>
+                    <p style="font-size: 11px; color: #BBB; margin-top: 2px;">${fmtDate(item.created_at)}</p>
+                    ${preview}
+                </div>`;
+            }).join('');
         }
 
         function updateRecentGenerated(items) {
             const container = document.getElementById('recentGeneratedList');
             if (!items.length) {
-                container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: #999; font-size: 13px;">No hay contenido generado.</div>';
+                container.innerHTML = `<div class="empty-state" style="padding: 40px 20px;">
+                    <div class="empty-icon" style="font-size: 32px;"><i class="fas fa-sparkles"></i></div>
+                    <div class="empty-title">No hay contenido generado</div>
+                    <div class="empty-desc">Genera tu primer contenido con IA.</div>
+                </div>`;
                 return;
             }
             container.innerHTML = items.map(item => {
                 const isScript = item.content_type === 'video_script';
                 const icon = isScript ? 'fa-video' : 'fa-images';
                 const iconColor = isScript ? '#EF4444' : '#6366F1';
-                return `<div style="display: flex; align-items: center; gap: 12px; padding: 10px 20px; border-bottom: 1px solid #F3F4F6; cursor: pointer;" onclick='showGeneratedDetail(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
+                return `<div style="display: flex; align-items: center; gap: 12px; padding: 10px 20px; border-bottom: 1px solid #F3F4F6; cursor: pointer; transition: background 0.1s;" onmouseover="this.style.background='#FAFBFC'" onmouseout="this.style.background=''" onclick='showGeneratedDetail(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
                     <div style="width: 32px; height: 32px; border-radius: 8px; background: ${isScript ? '#FEE2E2' : '#E0E7FF'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                         <i class="fas ${icon}" style="color: ${iconColor}; font-size: 12px;"></i>
                     </div>
@@ -718,13 +999,11 @@
                             <div class="info-cell"><div class="label">Duracion</div><div class="value">${s.duracion_estimada || '-'}</div></div>
                             <div class="info-cell"><div class="label">Dificultad</div><div class="value">${s.nivel_dificultad || '-'}</div></div>
                         </div>
-
                         <div class="section-block hook" style="padding: 16px 20px;">
                             <h4 style="font-size: 12px; font-weight: 700; color: #8B5CF6; margin-bottom: 8px;"><i class="fas fa-bolt" style="margin-right: 4px;"></i>HOOK (0-3 seg)</h4>
                             <p style="font-size: 16px; font-weight: 600; color: #1B2A4A;">"${s.hook?.texto_exacto || ''}"</p>
                             <p style="font-size: 12px; color: #999; margin-top: 6px;">Tipo: ${s.hook?.tipo || '-'} | Visual: ${s.hook?.visual || '-'}</p>
                         </div>
-
                         <div>
                             <h4 style="font-size: 12px; font-weight: 700; color: #3B82F6; margin-bottom: 12px;"><i class="fas fa-film" style="margin-right: 4px;"></i>DESARROLLO</h4>
                             ${(s.desarrollo || []).map(d => `
@@ -736,22 +1015,18 @@
                                 </div>
                             `).join('')}
                         </div>
-
                         <div class="section-block cta" style="padding: 16px 20px;">
                             <h4 style="font-size: 12px; font-weight: 700; color: #22C55E; margin-bottom: 8px;"><i class="fas fa-bullhorn" style="margin-right: 4px;"></i>CTA</h4>
                             <p style="font-size: 14px; font-weight: 600; color: #1B2A4A;">"${s.cta?.texto || ''}"</p>
                             <p style="font-size: 12px; color: #999; margin-top: 4px;">Accion: ${s.cta?.accion || '-'}</p>
                         </div>
-
                         <div style="background: #F8F9FC; border: 1px solid #E5E7EB; border-radius: 8px; padding: 16px;">
                             <h4 style="font-size: 12px; font-weight: 700; color: #D97706; margin-bottom: 8px;"><i class="fas fa-camera" style="margin-right: 4px;"></i>TOMAS NECESARIAS</h4>
                             <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;">${(s.tomas_necesarias || []).map(t => `<li style="font-size: 13px; display: flex; align-items: flex-start; gap: 8px;"><i class="fas fa-check" style="color: #22C55E; margin-top: 3px; font-size: 11px;"></i>${t}</li>`).join('')}</ul>
                         </div>
-
                         ${s.equipamiento ? `<p style="font-size: 13px;"><span style="color: #999;">Equipamiento:</span> ${s.equipamiento}</p>` : ''}
                         ${s.musica_sugerida ? `<p style="font-size: 13px;"><span style="color: #999;">Musica:</span> ${s.musica_sugerida}</p>` : ''}
                         ${s.tips_produccion ? `<p style="font-size: 13px;"><span style="color: #999;">Tips:</span> ${s.tips_produccion}</p>` : ''}
-
                         <div style="background: #F8F9FC; border: 1px solid #E5E7EB; border-radius: 8px; padding: 16px;">
                             <h4 style="font-size: 12px; font-weight: 700; color: #EC4899; margin-bottom: 8px;"><i class="fas fa-pen" style="margin-right: 4px;"></i>CAPTION</h4>
                             <p style="font-size: 13px; white-space: pre-wrap; color: #333;">${s.caption || ''}</p>
@@ -771,7 +1046,6 @@
                             <div class="info-cell"><div class="label">Objetivo</div><div class="value">${c.objetivo || '-'}</div></div>
                             <div class="info-cell"><div class="label">Slides</div><div class="value">${c.total_slides || (c.slides||[]).length}</div></div>
                         </div>
-
                         <h4 style="font-size: 12px; font-weight: 700; color: #6366F1;"><i class="fas fa-images" style="margin-right: 4px;"></i>SLIDES DEL CARRUSEL</h4>
                         <div style="display: flex; flex-direction: column; gap: 10px;">
                             ${(c.slides || []).map(sl => `
@@ -790,13 +1064,11 @@
                                 </div>
                             `).join('')}
                         </div>
-
                         <div style="background: #F8F9FC; border: 1px solid #E5E7EB; border-radius: 8px; padding: 16px;">
                             <h4 style="font-size: 12px; font-weight: 700; color: #EC4899; margin-bottom: 8px;"><i class="fas fa-pen" style="margin-right: 4px;"></i>CAPTION</h4>
                             <p style="font-size: 13px; white-space: pre-wrap; color: #333;">${c.caption || ''}</p>
                             <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px;">${(c.hashtags || []).map(h => `<span style="color: #3B82F6; font-size: 12px;">#${h}</span>`).join(' ')}</div>
                         </div>
-
                         ${c.mejor_hora ? `<p style="font-size: 13px;"><span style="color: #999;">Mejor hora:</span> ${c.mejor_hora}</p>` : ''}
                         ${c.tips_diseno ? `<p style="font-size: 13px;"><span style="color: #999;">Tips diseno:</span> ${c.tips_diseno}</p>` : ''}
                     </div>`;
@@ -813,7 +1085,7 @@
             const topic = prompt('Tema especifico? (dejar vacio para auto-generar basado en analisis):');
             const btn = document.getElementById('btnGenerate');
             const origHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Generando...</span>';
             btn.disabled = true;
             btn.style.opacity = '0.7';
 
@@ -827,15 +1099,15 @@
                 });
                 const data = await res.json();
                 if (data.error) {
-                    alert('Error: ' + data.error);
+                    showToast('Error: ' + data.error, 'error');
                 } else {
-                    alert(data.message || 'Contenido generado!');
+                    showToast(data.message || 'Contenido generado exitosamente!', 'success');
                     loadGenerated();
                     loadStats();
                     showTab('generated');
                 }
             } catch (e) {
-                alert('Error: ' + e.message);
+                showToast('Error: ' + e.message, 'error');
             } finally {
                 btn.innerHTML = origHTML;
                 btn.disabled = false;
@@ -857,7 +1129,11 @@
                 });
 
                 if (!profiles.length) {
-                    tbody.innerHTML = '<tr><td colspan="8" style="padding: 40px 14px; text-align: center; color: #999;">No hay perfiles.</td></tr>';
+                    tbody.innerHTML = `<tr><td colspan="8" class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-users"></i></div>
+                        <div class="empty-title">No hay perfiles</div>
+                        <div class="empty-desc">Agrega perfiles para comenzar a analizar contenido.</div>
+                    </td></tr>`;
                     return;
                 }
                 tbody.innerHTML = profiles.map(p => {
@@ -881,56 +1157,159 @@
             } catch (e) { console.error('Profiles error:', e); }
         }
 
-        // --- Load Ideas ---
+        // --- Load Ideas with Workflow ---
         async function loadIdeas() {
             try {
                 const res = await fetch(API + '/api/ideas');
                 const ideas = await res.json();
-                const grid = document.getElementById('ideasGrid');
-                if (!ideas.length) {
-                    grid.innerHTML = '<div style="text-align: center; color: #999; grid-column: 1/-1; padding: 60px 20px;">No hay ideas aun.</div>';
-                    return;
-                }
-                grid.innerHTML = ideas.map(idea => {
-                    const priorityMap = {
-                        high: { label: 'Alta', cls: 'badge-alta' },
-                        medium: { label: 'Media', cls: 'badge-media' },
-                        low: { label: 'Baja', cls: 'badge-baja' }
-                    };
-                    const pr = priorityMap[idea.priority] || priorityMap.medium;
-                    const platformBadge = idea.platform === 'instagram'
-                        ? '<span class="badge badge-ig" style="font-size: 10px; padding: 2px 8px;">IG</span>'
-                        : idea.platform === 'tiktok'
-                        ? '<span class="badge badge-tk" style="font-size: 10px; padding: 2px 8px;">TK</span>'
-                        : '<span class="tag-pill">Multi</span>';
-                    const contentType = idea.content_type === 'video'
-                        ? '<span class="badge badge-video" style="font-size: 10px;">Video</span>'
-                        : idea.content_type === 'carousel'
-                        ? '<span class="badge badge-carousel" style="font-size: 10px;">Carousel</span>'
-                        : '';
-                    const tags = (idea.tags || []).map(t => `<span class="tag-pill">${t}</span>`).join(' ');
-
-                    return `<div class="idea-card">
-                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap;">
-                            ${platformBadge}
-                            ${contentType}
-                            <span class="badge ${pr.cls}">${pr.label}</span>
-                            ${idea.status ? `<span class="tag-pill" style="margin-left: auto;">${idea.status}</span>` : ''}
-                        </div>
-                        <h3 style="font-size: 15px; font-weight: 700; color: #1B2A4A; margin-bottom: 6px;">${idea.title}</h3>
-                        <p style="font-size: 12px; color: #666; line-height: 1.5; margin-bottom: 10px;">${idea.description || ''}</p>
-                        ${idea.hook_suggestion ? `<div style="background: #F5F3FF; border-left: 3px solid #8B5CF6; padding: 8px 12px; border-radius: 0 6px 6px 0; margin-bottom: 8px;">
-                            <span style="font-size: 11px; font-weight: 600; color: #8B5CF6;">Hook:</span>
-                            <p style="font-size: 12px; color: #333; margin-top: 2px;">${idea.hook_suggestion}</p>
-                        </div>` : ''}
-                        ${idea.cta_suggestion ? `<div style="background: #EFF6FF; border-left: 3px solid #3B82F6; padding: 8px 12px; border-radius: 0 6px 6px 0; margin-bottom: 10px;">
-                            <span style="font-size: 11px; font-weight: 600; color: #3B82F6;">CTA:</span>
-                            <p style="font-size: 12px; color: #333; margin-top: 2px;">${idea.cta_suggestion}</p>
-                        </div>` : ''}
-                        <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: auto;">${tags}</div>
-                    </div>`;
-                }).join('');
+                allIdeas = ideas;
+                updateIdeaCounts();
+                renderIdeas();
             } catch (e) { console.error('Ideas error:', e); }
+        }
+
+        function updateIdeaCounts() {
+            const counts = { all: allIdeas.length, idea: 0, approved: 0, in_progress: 0, published: 0 };
+            allIdeas.forEach(i => {
+                const s = i.status || 'idea';
+                if (counts[s] !== undefined) counts[s]++;
+            });
+            document.getElementById('ideasCountAll').textContent = counts.all;
+            document.getElementById('ideasCountIdea').textContent = counts.idea;
+            document.getElementById('ideasCountApproved').textContent = counts.approved;
+            document.getElementById('ideasCountInProgress').textContent = counts.in_progress;
+            document.getElementById('ideasCountPublished').textContent = counts.published;
+        }
+
+        function filterIdeas(status) {
+            currentIdeasFilter = status;
+            document.querySelectorAll('#ideasFilterTabs .filter-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.filter === status);
+            });
+            renderIdeas();
+        }
+
+        function toggleSelectedOnly() {
+            showSelectedOnly = !showSelectedOnly;
+            document.getElementById('toggleSelected').classList.toggle('on', showSelectedOnly);
+            renderIdeas();
+        }
+
+        function renderIdeas() {
+            let filtered = allIdeas;
+
+            if (currentIdeasFilter !== 'all') {
+                filtered = filtered.filter(i => (i.status || 'idea') === currentIdeasFilter);
+            }
+
+            if (showSelectedOnly) {
+                filtered = filtered.filter(i => ['approved', 'in_progress'].includes(i.status || ''));
+            }
+
+            const grid = document.getElementById('ideasGrid');
+            if (!filtered.length) {
+                grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
+                    <div class="empty-icon"><i class="fas fa-lightbulb"></i></div>
+                    <div class="empty-title">No hay ideas ${currentIdeasFilter !== 'all' ? 'con este estado' : ''}</div>
+                    <div class="empty-desc">Las ideas se generan automaticamente al analizar contenido.</div>
+                </div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(idea => {
+                const priorityMap = {
+                    high: { label: 'Alta', cls: 'badge-alta' },
+                    medium: { label: 'Media', cls: 'badge-media' },
+                    low: { label: 'Baja', cls: 'badge-baja' }
+                };
+                const pr = priorityMap[idea.priority] || priorityMap.medium;
+                const platformBadge = idea.platform === 'instagram'
+                    ? '<span class="badge badge-ig" style="font-size: 10px; padding: 2px 8px;">IG</span>'
+                    : idea.platform === 'tiktok'
+                    ? '<span class="badge badge-tk" style="font-size: 10px; padding: 2px 8px;">TK</span>'
+                    : '<span class="tag-pill">Multi</span>';
+                const contentType = idea.content_type === 'video'
+                    ? '<span class="badge badge-video" style="font-size: 10px;">Video</span>'
+                    : idea.content_type === 'carousel'
+                    ? '<span class="badge badge-carousel" style="font-size: 10px;">Carousel</span>'
+                    : '';
+                const tags = (idea.tags || []).map(t => `<span class="tag-pill">${t}</span>`).join(' ');
+                const status = idea.status || 'idea';
+                const statusClass = `status-${status}`;
+
+                const statusColors = { idea: '#9CA3AF', approved: '#3B82F6', in_progress: '#D97706', published: '#22C55E' };
+                const statusLabels = { idea: 'Idea', approved: 'Aprobada', in_progress: 'En Ejecucion', published: 'Publicada' };
+                const statusBgColors = { idea: '#F3F4F6', approved: '#DBEAFE', in_progress: '#FEF3C7', published: '#D1FAE5' };
+
+                return `<div class="idea-card ${statusClass}">
+                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap;">
+                        ${platformBadge}
+                        ${contentType}
+                        <span class="badge ${pr.cls}">${pr.label}</span>
+                        <div class="status-dropdown" style="margin-left: auto;">
+                            <button class="status-dropdown-btn" style="background: ${statusBgColors[status]}; color: ${statusColors[status]};" onclick="event.stopPropagation(); toggleStatusMenu(this)">
+                                <span class="status-dot" style="background: ${statusColors[status]};"></span>
+                                ${statusLabels[status]}
+                                <i class="fas fa-chevron-down" style="font-size: 9px; margin-left: 2px;"></i>
+                            </button>
+                            <div class="status-dropdown-menu">
+                                <button onclick="event.stopPropagation(); updateIdeaStatus(${idea.id}, 'idea')"><span class="status-dot" style="background: #9CA3AF;"></span> Idea</button>
+                                <button onclick="event.stopPropagation(); updateIdeaStatus(${idea.id}, 'approved')"><span class="status-dot" style="background: #3B82F6;"></span> Aprobada</button>
+                                <button onclick="event.stopPropagation(); updateIdeaStatus(${idea.id}, 'in_progress')"><span class="status-dot" style="background: #D97706;"></span> En Ejecucion</button>
+                                <button onclick="event.stopPropagation(); updateIdeaStatus(${idea.id}, 'published')"><span class="status-dot" style="background: #22C55E;"></span> Publicada</button>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 style="font-size: 15px; font-weight: 700; color: #1B2A4A; margin-bottom: 6px;">${idea.title}</h3>
+                    <p style="font-size: 12px; color: #666; line-height: 1.5; margin-bottom: 10px;">${idea.description || ''}</p>
+                    ${idea.hook_suggestion ? `<div style="background: #F5F3FF; border-left: 3px solid #8B5CF6; padding: 8px 12px; border-radius: 0 6px 6px 0; margin-bottom: 8px;">
+                        <span style="font-size: 11px; font-weight: 600; color: #8B5CF6;">Hook:</span>
+                        <p style="font-size: 12px; color: #333; margin-top: 2px;">${idea.hook_suggestion}</p>
+                    </div>` : ''}
+                    ${idea.cta_suggestion ? `<div style="background: #EFF6FF; border-left: 3px solid #3B82F6; padding: 8px 12px; border-radius: 0 6px 6px 0; margin-bottom: 10px;">
+                        <span style="font-size: 11px; font-weight: 600; color: #3B82F6;">CTA:</span>
+                        <p style="font-size: 12px; color: #333; margin-top: 2px;">${idea.cta_suggestion}</p>
+                    </div>` : ''}
+                    <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: auto;">${tags}</div>
+                    ${status === 'published' ? '<div style="margin-top: 10px; display: flex; align-items: center; gap: 4px; color: #22C55E; font-size: 12px; font-weight: 600;"><i class="fas fa-check-circle"></i> Publicada</div>' : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function toggleStatusMenu(btn) {
+            // Close all other open menus
+            document.querySelectorAll('.status-dropdown-menu.open').forEach(m => {
+                if (m !== btn.nextElementSibling) m.classList.remove('open');
+            });
+            btn.nextElementSibling.classList.toggle('open');
+        }
+
+        // Close status menus when clicking outside
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.status-dropdown-menu.open').forEach(m => m.classList.remove('open'));
+        });
+
+        async function updateIdeaStatus(ideaId, newStatus) {
+            try {
+                const res = await fetch(`${API}/api/ideas/${ideaId}/status`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({status: newStatus})
+                });
+                if (res.ok) {
+                    const statusLabels = { idea: 'Idea', approved: 'Aprobada', in_progress: 'En Ejecucion', published: 'Publicada' };
+                    showToast(`Estado actualizado a "${statusLabels[newStatus]}"`, 'success');
+                    // Update local state
+                    const idea = allIdeas.find(i => i.id === ideaId);
+                    if (idea) idea.status = newStatus;
+                    updateIdeaCounts();
+                    renderIdeas();
+                } else {
+                    showToast('Error al actualizar estado', 'error');
+                }
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
         }
 
         // --- Load Runs ---
@@ -940,7 +1319,11 @@
                 const runs = await res.json();
                 const tbody = document.getElementById('runsTable');
                 if (!runs.length) {
-                    tbody.innerHTML = '<tr><td colspan="8" style="padding: 40px 14px; text-align: center; color: #999;">No hay ejecuciones.</td></tr>';
+                    tbody.innerHTML = `<tr><td colspan="8" class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-history"></i></div>
+                        <div class="empty-title">No hay ejecuciones</div>
+                        <div class="empty-desc">Ejecuta el pipeline para comenzar.</div>
+                    </td></tr>`;
                     return;
                 }
                 tbody.innerHTML = runs.map(r => {
@@ -970,7 +1353,11 @@
                 const practices = await res.json();
                 const grid = document.getElementById('practicesGrid');
                 if (!practices.length) {
-                    grid.innerHTML = '<div style="text-align: center; color: #999; grid-column: 1/-1; padding: 60px 20px;">No hay best practices.</div>';
+                    grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-icon"><i class="fas fa-book-open"></i></div>
+                        <div class="empty-title">No hay best practices</div>
+                        <div class="empty-desc">Las mejores practicas se generan automaticamente al analizar contenido.</div>
+                    </div>`;
                     return;
                 }
                 const colors = { content_mix:'#3B82F6', hooks:'#8B5CF6', posting_frequency:'#22C55E', posting_times:'#D97706', hashtags:'#EC4899', production:'#06B6D4', engagement:'#EF4444', compliance:'#FF7B0F', competitors:'#6366F1' };
@@ -991,15 +1378,174 @@
             } catch (e) { console.error('Practices error:', e); }
         }
 
+        // --- News Section ---
+        async function loadNews() {
+            try {
+                const res = await fetch(API + '/api/news');
+                if (!res.ok) {
+                    console.log('News API not available yet');
+                    return;
+                }
+                const data = await res.json();
+                allNews = Array.isArray(data) ? data : (data.news || []);
+                document.getElementById('navBadgeNews').textContent = allNews.length;
+                filterNewsList();
+            } catch (e) { console.log('News not available:', e.message); }
+        }
+
+        async function fetchNewNews() {
+            const btn = document.getElementById('btnFetchNews');
+            const origHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+
+            try {
+                const res = await fetch(API + '/api/fetch-news', { method: 'POST' });
+                if (res.ok) {
+                    const data = await res.json();
+                    showToast(data.message || 'Noticias actualizadas!', 'success');
+                    await loadNews();
+                } else {
+                    showToast('El endpoint de noticias no esta disponible aun', 'info');
+                }
+            } catch (e) {
+                showToast('Noticias: endpoint no disponible', 'info');
+            } finally {
+                btn.innerHTML = origHTML;
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        }
+
+        function filterNewsList() {
+            const category = document.getElementById('filterNewsCategory').value.toLowerCase();
+            const status = document.getElementById('filterNewsStatus').value;
+
+            let filtered = allNews;
+            if (category) filtered = filtered.filter(n => (n.category || '').toLowerCase().includes(category));
+            if (status) filtered = filtered.filter(n => n.status === status);
+
+            renderNews(filtered);
+        }
+
+        function renderNews(items) {
+            const grid = document.getElementById('newsGrid');
+            const countEl = document.getElementById('newsCount');
+            if (countEl) countEl.textContent = items.length ? `${items.length} noticias` : '';
+
+            if (!items || !items.length) {
+                grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
+                    <div class="empty-icon"><i class="fas fa-newspaper"></i></div>
+                    <div class="empty-title">No hay noticias</div>
+                    <div class="empty-desc">Buscamos en McKinsey, Deloitte, BBVA Research, Forbes, Gestión, Google News y más.</div>
+                    <button onclick="fetchNewNews()" class="btn-primary"><i class="fas fa-sync-alt"></i> Buscar Noticias</button>
+                </div>`;
+                return;
+            }
+
+            const categoryIcons = {
+                'mercado': '🏠', 'financiamiento': '🏦', 'proptech': '🤖',
+                'regulación': '⚖️', 'inversión': '💰', 'construcción': '🏗️',
+                'consultoría': '📊', 'economía': '🌍', 'general': '📰'
+            };
+            const sourceColors = {
+                'McKinsey': '#0033A1', 'Deloitte': '#86BC25', 'BBVA Research': '#004481',
+                'Forbes Real Estate': '#B00000', 'Forbes': '#B00000', 'Gestión': '#D4272E',
+                'Semana Económica': '#1A5276', 'Global Property Guide': '#2E86C1',
+                'TechCrunch Proptech': '#0A9E01', 'Google News': '#4285F4'
+            };
+
+            grid.innerHTML = items.map(news => {
+                const statusBadges = {
+                    'new': '<span class="badge badge-news-new">🆕 Nueva</span>',
+                    'reviewed': '<span class="badge badge-news-reviewed">👁️ Revisada</span>',
+                    'used': '<span class="badge badge-news-used">✅ Usada</span>'
+                };
+                const relevance = Math.round((news.relevance_score || 0) * 100);
+                const relevanceColor = relevance >= 70 ? '#22C55E' : relevance >= 40 ? '#D97706' : '#9CA3AF';
+                const catIcon = categoryIcons[news.category] || '📰';
+                const sourceName = news.source_name || news.source || 'Fuente';
+                const srcColor = sourceColors[sourceName] || '#6B7280';
+                const sourceUrl = news.source_url || '#';
+
+                return `<div class="news-card" style="position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: ${srcColor};"></div>
+                    <div style="display: flex; align-items: start; gap: 14px; padding-top: 6px;">
+                        <div class="news-relevance" style="background: ${relevanceColor}15; color: ${relevanceColor};">${relevance}%</div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
+                                <span style="font-size: 11px; font-weight: 700; color: ${srcColor}; background: ${srcColor}10; padding: 2px 8px; border-radius: 4px; border: 1px solid ${srcColor}30;">${sourceName}</span>
+                                ${statusBadges[news.status] || statusBadges['new']}
+                                ${news.category ? `<span class="badge-cat">${catIcon} ${news.category}</span>` : ''}
+                            </div>
+                            <a href="${sourceUrl}" target="_blank" rel="noopener" style="text-decoration: none; display: block; margin-bottom: 6px;">
+                                <h3 style="font-size: 14px; font-weight: 700; color: #1B2A4A; line-height: 1.4; transition: color 0.2s;" onmouseover="this.style.color='#FF7B0F'" onmouseout="this.style.color='#1B2A4A'">
+                                    ${news.title || 'Sin titulo'} <i class="fas fa-external-link-alt" style="font-size: 10px; color: #CCC; margin-left: 4px;"></i>
+                                </h3>
+                            </a>
+                            <p style="font-size: 12px; color: #666; line-height: 1.5; margin-bottom: 8px;">${(news.summary || '').substring(0, 250)}${(news.summary||'').length > 250 ? '...' : ''}</p>
+                            ${news.content_potential ? `
+                            <div style="background: #FFF7ED; border-left: 3px solid #FF7B0F; padding: 8px 12px; border-radius: 0 6px 6px 0; margin-bottom: 10px;">
+                                <span style="font-size: 10px; font-weight: 700; color: #FF7B0F; text-transform: uppercase; letter-spacing: 0.5px;">💡 Idea para Proper</span>
+                                <p style="font-size: 11px; color: #92400E; margin-top: 3px; line-height: 1.4;">${news.content_potential}</p>
+                            </div>` : ''}
+                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                                <div style="display: flex; align-items: center; gap: 12px; font-size: 11px; color: #999;">
+                                    ${news.published_at ? `<span><i class="fas fa-calendar" style="margin-right: 3px;"></i>${fmtDate(news.published_at)}</span>` : ''}
+                                    <a href="${sourceUrl}" target="_blank" rel="noopener" style="color: #FF7B0F; text-decoration: none; font-weight: 600;">
+                                        <i class="fas fa-external-link-alt" style="margin-right: 3px;"></i>Ver artículo
+                                    </a>
+                                </div>
+                                <div style="display: flex; gap: 6px;">
+                                    <select onchange="updateNewsStatus(${news.id}, this.value)" class="filter-select" style="padding: 4px 8px; font-size: 11px; min-width: auto;">
+                                        <option value="new" ${news.status === 'new' ? 'selected' : ''}>Nueva</option>
+                                        <option value="reviewed" ${news.status === 'reviewed' ? 'selected' : ''}>Revisada</option>
+                                        <option value="used" ${news.status === 'used' ? 'selected' : ''}>Usada</option>
+                                    </select>
+                                    <button onclick="createContentFromNews(${news.id}, '${(news.title||'').replace(/'/g, "\\'")}')" class="btn-sm btn-primary" style="white-space: nowrap;">
+                                        <i class="fas fa-pen"></i> Crear contenido
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        async function updateNewsStatus(newsId, status) {
+            try {
+                const res = await fetch(API + '/api/news/status', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({news_id: newsId, status: status})
+                });
+                if (res.ok) {
+                    const n = allNews.find(x => x.id === newsId);
+                    if (n) n.status = status;
+                    showToast('Estado de noticia actualizado', 'success');
+                }
+            } catch (e) {
+                showToast('Error al actualizar estado', 'error');
+            }
+        }
+
+        function createContentFromNews(newsId, title) {
+            showTab('generated');
+            generateContent();
+        }
+
         // --- Trigger Pipeline ---
         async function triggerPipeline() {
             if (!confirm('Ejecutar el pipeline de analisis?')) return;
             try {
+                showToast('Pipeline iniciado...', 'info');
                 const res = await fetch(API + '/api/trigger-pipeline', { method: 'POST' });
                 const data = await res.json();
-                alert(data.message || 'Pipeline iniciado');
+                showToast(data.message || 'Pipeline ejecutandose', 'success');
                 setTimeout(() => { loadStats(); loadRuns(); }, 5000);
-            } catch (e) { alert('Error: ' + e.message); }
+            } catch (e) { showToast('Error: ' + e.message, 'error'); }
         }
 
         // --- Init ---

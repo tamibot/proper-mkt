@@ -20,6 +20,17 @@ def scheduled_pipeline():
         print(f"[Scheduler] Error en pipeline: {e}")
 
 
+def scheduled_news_fetch():
+    """Tarea programada que busca noticias del sector."""
+    print(f"[Scheduler] Ejecutando búsqueda de noticias...")
+    try:
+        from agents.news_agent import fetch_news
+        results = fetch_news()
+        print(f"[Scheduler] Noticias encontradas: {len(results)}")
+    except Exception as e:
+        print(f"[Scheduler] Error en búsqueda de noticias: {e}")
+
+
 def start_scheduler():
     """Inicia el scheduler con la tarea diaria."""
     scheduler = BackgroundScheduler()
@@ -31,6 +42,14 @@ def start_scheduler():
         id="daily_pipeline",
         replace_existing=True,
     )
+    scheduler.add_job(
+        scheduled_news_fetch,
+        trigger="interval",
+        days=3,
+        id="news_fetch",
+        replace_existing=True,
+    )
     scheduler.start()
     print(f"[Scheduler] Pipeline programado para las {SCHEDULER_HOUR:02d}:{SCHEDULER_MINUTE:02d} diariamente.")
+    print(f"[Scheduler] Búsqueda de noticias programada cada 3 días.")
     return scheduler

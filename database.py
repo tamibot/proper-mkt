@@ -130,6 +130,23 @@ def init_db():
     """)
 
     cur.execute("""
+        CREATE TABLE IF NOT EXISTS sector_news (
+            id SERIAL PRIMARY KEY,
+            title VARCHAR(500) NOT NULL,
+            summary TEXT,
+            source_name VARCHAR(255),
+            source_url TEXT,
+            category VARCHAR(100),
+            relevance_score FLOAT DEFAULT 0.5,
+            content_potential TEXT,
+            published_at TIMESTAMP,
+            fetched_at TIMESTAMP DEFAULT NOW(),
+            status VARCHAR(20) DEFAULT 'new',
+            UNIQUE(source_url)
+        );
+    """)
+
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS generated_content (
             id SERIAL PRIMARY KEY,
             content_type VARCHAR(50) NOT NULL,
@@ -143,6 +160,11 @@ def init_db():
             difficulty VARCHAR(20),
             created_at TIMESTAMP DEFAULT NOW()
         );
+    """)
+
+    # Migrations for existing tables
+    cur.execute("""
+        ALTER TABLE content_ideas ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'idea';
     """)
 
     conn.commit()
@@ -461,6 +483,71 @@ def get_dashboard_stats():
     stats["avg_engagement"] = round(row["avg"], 2) if row["avg"] else 0
     cur.execute("SELECT * FROM pipeline_runs ORDER BY started_at DESC LIMIT 1;")
     stats["last_run"] = cur.fetchone()
+    cur.execute("SELECT COUNT(*) as count FROM sector_news;")
+    stats["total_news"] = cur.fetchone()["count"]
     cur.close()
     conn.close()
     return stats
+
+
+# --- Sector News CRUD ---
+
+def insert_news(data):
+    """Insert a news item. ON CONFLICT DO NOTHING for source_url."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO sector_news (title, summary, source_name, source_url, category,
+                                 relevance_score, content_potential, published_at)
+        VALUES (%(title)s, %(summary)s, %(source_name)s, %(source_url)s, %(category)s,
+                %(relevance_score)s, %(content_potential)s, %(published_at)s)
+        ON CONFLICT (source_url) DO NOTHING
+        RETURNING id;
+    """, data)
+    row = cur.fetchone()
+    news_id = row["id"] if row else None
+    conn.commit()
+    cur.close()
+    conn.close()
+    return news_id
+
+
+def get_news(limit=50, status=None, category=None):
+    """Get news items with optional filters."""
+    conn = get_connection()
+    cur = conn.cursor()
+    query = "SELECT * FROM sector_news WHERE 1=1"
+    params = []
+    if status:
+        query += " AND status = %s"
+        params.append(status)
+    if category:
+        query += " AND category = %s"
+        params.append(category)
+    query += " ORDER BY fetched_at DESC LIMIT %s;"
+    params.append(limit)
+    cur.execute(query, params)
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return rows
+
+
+def update_news_status(news_id, status):
+    """Update the status of a news item."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE sector_news SET status = %s WHERE id = %s;", (status, news_id))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+def update_idea_status(idea_id, new_status):
+    """Update the status of a content idea."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE content_ideas SET status = %s WHERE id = %s;", (new_status, idea_id))
+    conn.commit()
+    cur.close()
+    conn.close()

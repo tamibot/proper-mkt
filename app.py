@@ -15,6 +15,7 @@ from database import (
     get_content_ideas, get_pipeline_runs, get_dashboard_stats,
     get_generated_content, get_analyses_for_generation,
     insert_generated_content, get_posts_with_analysis_datefilter,
+    get_news, update_news_status, update_idea_status,
 )
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
@@ -236,6 +237,71 @@ def api_trigger():
         )
         thread.start()
         return jsonify({"status": "Pipeline iniciado", "message": "El pipeline se esta ejecutando en segundo plano."})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/news")
+def api_news():
+    """Get sector news with optional filters."""
+    try:
+        status = request.args.get("status")
+        category = request.args.get("category")
+        limit = int(request.args.get("limit", 50))
+        return jsonify(_serialize(get_news(limit=limit, status=status, category=category)))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/news/status", methods=["POST"])
+def api_update_news_status():
+    """Update news item status."""
+    try:
+        data = request.get_json()
+        if not data or "news_id" not in data or "status" not in data:
+            return jsonify({"error": "Se requiere news_id y status"}), 400
+        update_news_status(data["news_id"], data["status"])
+        return jsonify({"status": "ok", "message": "Estado actualizado"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/fetch-news", methods=["POST"])
+def api_fetch_news():
+    """Trigger manual news fetch."""
+    try:
+        from agents.news_agent import fetch_news
+        import threading
+        results = {"news": []}
+
+        def _run():
+            results["news"] = fetch_news()
+
+        thread = threading.Thread(target=_run, daemon=True)
+        thread.start()
+        thread.join(timeout=60)  # Wait up to 60 seconds
+
+        return jsonify({
+            "status": "success",
+            "count": len(results["news"]),
+            "message": f"Se encontraron {len(results['news'])} noticias nuevas.",
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/ideas/<int:idea_id>/status", methods=["PUT"])
+def api_update_idea_status(idea_id):
+    """Update content idea status."""
+    try:
+        data = request.get_json()
+        if not data or "status" not in data:
+            return jsonify({"error": "Se requiere status"}), 400
+        valid_statuses = ["idea", "approved", "in_progress", "published"]
+        if data["status"] not in valid_statuses:
+            return jsonify({"error": f"Status debe ser uno de: {', '.join(valid_statuses)}"}), 400
+        update_idea_status(idea_id, data["status"])
+        return jsonify({"status": "ok", "message": "Estado de idea actualizado"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
