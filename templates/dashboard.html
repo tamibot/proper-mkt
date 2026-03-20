@@ -91,6 +91,19 @@
         .badge-propio { background: #D1FAE5; color: #059669; }
         .badge-competidor { background: #FEE2E2; color: #DC2626; }
 
+        .badge-li { background: #0A66C2; color: #fff; }
+        .badge-cat-competidor { background: #FEE2E2; color: #DC2626; }
+        .badge-cat-educador { background: #DBEAFE; color: #2563EB; }
+        .badge-cat-proptech { background: #EDE9FE; color: #7C3AED; }
+        .badge-cat-inmobiliaria { background: #FFEDD5; color: #EA580C; }
+        .badge-cat-finanzas { background: #D1FAE5; color: #059669; }
+        .suggested-card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 16px; transition: all 0.2s; }
+        .suggested-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); transform: translateY(-1px); }
+        .priority-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .priority-high { background: #EF4444; }
+        .priority-medium { background: #F59E0B; }
+        .priority-low { background: #6B7280; }
+
         /* Status badges for ideas workflow */
         .badge-status-idea { background: #F3F4F6; color: #666; }
         .badge-status-approved { background: #DBEAFE; color: #2563EB; }
@@ -295,6 +308,13 @@
         .gen-card-improved { border-left: 4px solid transparent; }
         .gen-card-improved.type-video { border-left-color: #FF7B0F; }
         .gen-card-improved.type-carousel { border-left-color: #3B82F6; }
+        .gen-card-improved.type-linkedin { border-left-color: #7C3AED; }
+        .gen-card-improved.type-blog { border-left-color: #059669; }
+
+        /* LinkedIn badge */
+        .badge-linkedin { background: #E8F0FE; color: #0A66C2; }
+        /* Blog badge */
+        .badge-blog { background: #D1FAE5; color: #059669; }
 
         /* Difficulty badges */
         .badge-diff-facil { background: #D1FAE5; color: #059669; }
@@ -453,7 +473,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                     <div class="stat-card">
                         <div class="stat-icon" style="background: #FFF3E8; color: #FF7B0F;"><i class="fas fa-lightbulb"></i></div>
                         <div class="stat-value" id="statIdeas">-</div>
@@ -470,7 +490,17 @@
                         <div class="stat-label">Carruseles</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: #D1FAE5; color: #059669;"><i class="fas fa-chart-line"></i></div>
+                        <div class="stat-icon" style="background: #E8F0FE; color: #0A66C2;"><i class="fab fa-linkedin"></i></div>
+                        <div class="stat-value" id="statLinkedin">-</div>
+                        <div class="stat-label">LinkedIn</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #D1FAE5; color: #059669;"><i class="fas fa-blog"></i></div>
+                        <div class="stat-value" id="statBlogs">-</div>
+                        <div class="stat-label">Blog</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #F3F4F6; color: #6B7280;"><i class="fas fa-chart-line"></i></div>
                         <div class="stat-value" id="statEngagement">-</div>
                         <div class="stat-label">Avg Engagement</div>
                     </div>
@@ -507,7 +537,7 @@
                     <div class="quick-action" onclick="generateContent()">
                         <div class="qa-icon" style="background: #FFF3E8; color: #FF7B0F;"><i class="fas fa-sparkles"></i></div>
                         <div style="font-weight: 600; color: #1B2A4A; font-size: 14px;">Generar Contenido</div>
-                        <div style="font-size: 12px; color: #999; margin-top: 4px;">Crear guiones y carruseles con IA</div>
+                        <div style="font-size: 12px; color: #999; margin-top: 4px;">Crear guiones, carruseles, posts y blogs con IA</div>
                     </div>
                     <div class="quick-action" onclick="triggerPipeline()">
                         <div class="qa-icon" style="background: #EFF6FF; color: #3B82F6;"><i class="fas fa-rotate"></i></div>
@@ -620,16 +650,39 @@
 
             <!-- Tab: Contenido Generado -->
             <div id="tab-generated" class="tab-content hidden">
+                <!-- Format filter tabs -->
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                    <div class="filter-tabs" id="generatedFilterTabs">
+                        <button class="filter-tab active" onclick="filterGeneratedByType('all')" data-gfilter="all">
+                            Todos <span class="count-badge" id="genCountAll">0</span>
+                        </button>
+                        <button class="filter-tab" onclick="filterGeneratedByType('video_script')" data-gfilter="video_script">
+                            <i class="fas fa-video" style="font-size: 11px;"></i> Videos <span class="count-badge" id="genCountVideos">0</span>
+                        </button>
+                        <button class="filter-tab" onclick="filterGeneratedByType('carousel_plan')" data-gfilter="carousel_plan">
+                            <i class="fas fa-images" style="font-size: 11px;"></i> Carruseles <span class="count-badge" id="genCountCarousels">0</span>
+                        </button>
+                        <button class="filter-tab" onclick="filterGeneratedByType('linkedin_post')" data-gfilter="linkedin_post">
+                            <i class="fab fa-linkedin" style="font-size: 11px;"></i> LinkedIn <span class="count-badge" id="genCountLinkedin">0</span>
+                        </button>
+                        <button class="filter-tab" onclick="filterGeneratedByType('blog_article')" data-gfilter="blog_article">
+                            <i class="fas fa-blog" style="font-size: 11px;"></i> Blog <span class="count-badge" id="genCountBlog">0</span>
+                        </button>
+                    </div>
+                </div>
                 <div class="filter-bar">
-                    <select id="filterContentType" onchange="loadGenerated()" class="filter-select">
-                        <option value="">Todo el contenido</option>
-                        <option value="video_script">Guiones de Video</option>
-                        <option value="carousel_plan">Planes de Carrusel</option>
-                    </select>
                     <input type="text" id="filterGeneratedSearch" class="filter-input" placeholder="Buscar por palabra clave..." oninput="filterGeneratedByKeyword()" style="min-width: 200px;">
-                    <button onclick="generateContent()" class="btn-primary" style="margin-left: auto;">
-                        <i class="fas fa-sparkles"></i> Generar Nuevo
-                    </button>
+                    <div style="margin-left: auto; display: flex; gap: 8px;">
+                        <button onclick="generateLinkedIn()" class="btn-secondary btn-sm">
+                            <i class="fab fa-linkedin"></i> Generar LinkedIn
+                        </button>
+                        <button onclick="generateBlog()" class="btn-secondary btn-sm" style="border-color: #D1FAE5; color: #059669;">
+                            <i class="fas fa-blog"></i> Generar Blog
+                        </button>
+                        <button onclick="generateContent()" class="btn-primary">
+                            <i class="fas fa-sparkles"></i> Generar Nuevo
+                        </button>
+                    </div>
                 </div>
                 <div id="generatedGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div class="empty-state" style="grid-column: 1/-1;">
@@ -750,6 +803,102 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- Suggested Profiles Section -->
+                <div style="margin-top: 24px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                        <h2 style="font-size: 18px; font-weight: 700; color: #1B2A4A; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-search" style="color: #FF7B0F;"></i> Perfiles Sugeridos para Monitorear
+                            <span class="nav-badge" id="suggestedCount" style="font-size: 11px;">0</span>
+                        </h2>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="seedSuggestedProfiles()" class="btn-secondary btn-sm" id="btnSeedProfiles">
+                                <i class="fas fa-download"></i> Buscar mas perfiles
+                            </button>
+                            <button onclick="document.getElementById('addProfileForm').classList.toggle('hidden')" class="btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> Agregar perfil
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Add Profile Form -->
+                    <div id="addProfileForm" class="card hidden" style="margin-bottom: 16px;">
+                        <div class="card-body">
+                            <h3 style="font-size: 14px; font-weight: 600; color: #1B2A4A; margin-bottom: 12px;">Agregar Perfil Sugerido</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; align-items: end;">
+                                <div>
+                                    <label class="filter-label">Username</label>
+                                    <input type="text" id="newSuggestedUsername" placeholder="@username" class="filter-input" style="width: 100%;">
+                                </div>
+                                <div>
+                                    <label class="filter-label">Plataforma</label>
+                                    <select id="newSuggestedPlatform" class="filter-select" style="width: 100%;">
+                                        <option value="instagram">Instagram</option>
+                                        <option value="tiktok">TikTok</option>
+                                        <option value="linkedin">LinkedIn</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="filter-label">Categoria</label>
+                                    <select id="newSuggestedCategory" class="filter-select" style="width: 100%;">
+                                        <option value="competidor">Competidor</option>
+                                        <option value="educador">Educador</option>
+                                        <option value="proptech">Proptech</option>
+                                        <option value="inmobiliaria">Inmobiliaria</option>
+                                        <option value="finanzas">Finanzas</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="filter-label">Prioridad</label>
+                                    <select id="newSuggestedPriority" class="filter-select" style="width: 100%;">
+                                        <option value="high">Alta</option>
+                                        <option value="medium" selected>Media</option>
+                                        <option value="low">Baja</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-top: 12px; align-items: end;">
+                                <div>
+                                    <label class="filter-label">URL del perfil</label>
+                                    <input type="text" id="newSuggestedUrl" placeholder="https://..." class="filter-input" style="width: 100%;">
+                                </div>
+                                <div>
+                                    <label class="filter-label">Razon</label>
+                                    <input type="text" id="newSuggestedReason" placeholder="Por que monitorear este perfil..." class="filter-input" style="width: 100%;">
+                                </div>
+                            </div>
+                            <div style="margin-top: 12px; display: flex; gap: 8px;">
+                                <button onclick="addSuggestedProfile()" class="btn-primary btn-sm"><i class="fas fa-check"></i> Guardar</button>
+                                <button onclick="document.getElementById('addProfileForm').classList.add('hidden')" class="btn-ghost btn-sm">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Platform Filter Tabs -->
+                    <div class="filter-tabs" id="suggestedPlatformTabs">
+                        <button class="filter-tab active" onclick="filterSuggestedProfiles('all', this)">
+                            Todos <span class="count-badge" id="sugCountAll">0</span>
+                        </button>
+                        <button class="filter-tab" onclick="filterSuggestedProfiles('instagram', this)">
+                            <i class="fab fa-instagram"></i> Instagram <span class="count-badge" id="sugCountIG">0</span>
+                        </button>
+                        <button class="filter-tab" onclick="filterSuggestedProfiles('tiktok', this)">
+                            <i class="fab fa-tiktok"></i> TikTok <span class="count-badge" id="sugCountTK">0</span>
+                        </button>
+                        <button class="filter-tab" onclick="filterSuggestedProfiles('linkedin', this)">
+                            <i class="fab fa-linkedin"></i> LinkedIn <span class="count-badge" id="sugCountLI">0</span>
+                        </button>
+                    </div>
+
+                    <!-- Suggested Profiles Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="suggestedProfilesGrid">
+                        <div class="empty-state" style="grid-column: 1/-1;">
+                            <div class="empty-icon"><i class="fas fa-search"></i></div>
+                            <div class="empty-title">No hay perfiles sugeridos</div>
+                            <div class="empty-desc">Haz clic en "Buscar mas perfiles" para cargar sugerencias.</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Tab: Best Practices -->
@@ -813,6 +962,7 @@
         let showSelectedOnly = false;
         let allNews = [];
         let allGeneratedItems = [];
+        let currentGeneratedFilter = 'all';
 
         // --- Toast Notifications ---
         function showToast(message, type = 'info') {
@@ -839,6 +989,7 @@
             document.getElementById('topbarTitle').textContent = tabTitles[tab] || 'Dashboard';
             document.getElementById('topbarBreadcrumb').innerHTML = `<a href="#" onclick="showTab('overview');return false;">Inicio</a> / ${tabTitles[tab] || 'Dashboard'}`;
             if (tab === 'news' && allNews.length === 0) loadNews();
+            if (tab === 'profiles' && allSuggestedProfiles.length === 0) loadSuggestedProfiles();
         }
 
         function clearDateFilters() {
@@ -878,11 +1029,13 @@
                 document.getElementById('statIdeas').textContent = d.total_ideas || 0;
                 document.getElementById('statScripts').textContent = d.total_scripts || 0;
                 document.getElementById('statCarousels').textContent = d.total_carousels || 0;
+                document.getElementById('statLinkedin').textContent = d.total_linkedin || 0;
+                document.getElementById('statBlogs').textContent = d.total_blogs || 0;
                 document.getElementById('statEngagement').textContent = d.avg_engagement || '-';
 
                 // Update nav badges
                 document.getElementById('navBadgePosts').textContent = d.total_posts || 0;
-                document.getElementById('navBadgeGenerated').textContent = (d.total_scripts || 0) + (d.total_carousels || 0);
+                document.getElementById('navBadgeGenerated').textContent = (d.total_scripts || 0) + (d.total_carousels || 0) + (d.total_linkedin || 0) + (d.total_blogs || 0);
                 document.getElementById('navBadgeIdeas').textContent = d.total_ideas || 0;
                 document.getElementById('navBadgeProfiles').textContent = d.total_profiles || 0;
 
@@ -1001,29 +1154,54 @@
         // --- Load Generated Content ---
         async function loadGenerated() {
             try {
-                const type = document.getElementById('filterContentType').value;
                 let url = API + '/api/generated-content?limit=50';
-                if (type) url += '&type=' + type;
                 const res = await fetch(url);
                 const items = await res.json();
                 allGeneratedItems = items;
-                renderGeneratedItems(items);
+                updateGeneratedCounts();
+                applyGeneratedFilters();
                 updateRecentGenerated(items.slice(0, 5));
             } catch (e) { console.error('Generated error:', e); }
         }
 
-        function filterGeneratedByKeyword() {
-            const keyword = document.getElementById('filterGeneratedSearch').value.toLowerCase().trim();
-            if (!keyword) {
-                renderGeneratedItems(allGeneratedItems);
-                return;
+        function updateGeneratedCounts() {
+            const counts = { all: allGeneratedItems.length, video_script: 0, carousel_plan: 0, linkedin_post: 0, blog_article: 0 };
+            allGeneratedItems.forEach(i => {
+                if (counts[i.content_type] !== undefined) counts[i.content_type]++;
+            });
+            document.getElementById('genCountAll').textContent = counts.all;
+            document.getElementById('genCountVideos').textContent = counts.video_script;
+            document.getElementById('genCountCarousels').textContent = counts.carousel_plan;
+            document.getElementById('genCountLinkedin').textContent = counts.linkedin_post;
+            document.getElementById('genCountBlog').textContent = counts.blog_article;
+        }
+
+        function filterGeneratedByType(type) {
+            currentGeneratedFilter = type;
+            document.querySelectorAll('#generatedFilterTabs .filter-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.gfilter === type);
+            });
+            applyGeneratedFilters();
+        }
+
+        function applyGeneratedFilters() {
+            let filtered = allGeneratedItems;
+            if (currentGeneratedFilter !== 'all') {
+                filtered = filtered.filter(i => i.content_type === currentGeneratedFilter);
             }
-            const filtered = allGeneratedItems.filter(item =>
-                (item.title || '').toLowerCase().includes(keyword) ||
-                (item.raw_text || '').toLowerCase().includes(keyword) ||
-                (item.source_username || '').toLowerCase().includes(keyword)
-            );
+            const keyword = document.getElementById('filterGeneratedSearch').value.toLowerCase().trim();
+            if (keyword) {
+                filtered = filtered.filter(item =>
+                    (item.title || '').toLowerCase().includes(keyword) ||
+                    (item.raw_text || '').toLowerCase().includes(keyword) ||
+                    (item.source_username || '').toLowerCase().includes(keyword)
+                );
+            }
             renderGeneratedItems(filtered);
+        }
+
+        function filterGeneratedByKeyword() {
+            applyGeneratedFilters();
         }
 
         function renderGeneratedItems(items) {
@@ -1041,10 +1219,23 @@
 
             grid.innerHTML = items.map((item, idx) => {
                 const isScript = item.content_type === 'video_script';
-                const badge = isScript
-                    ? '<span class="badge badge-video"><i class="fas fa-video" style="margin-right: 3px;"></i>Guion</span>'
-                    : '<span class="badge badge-carousel"><i class="fas fa-images" style="margin-right: 3px;"></i>Carrusel</span>';
-                const typeClass = isScript ? 'type-video' : 'type-carousel';
+                const isLinkedin = item.content_type === 'linkedin_post';
+                const isBlog = item.content_type === 'blog_article';
+
+                let badge, typeClass;
+                if (isLinkedin) {
+                    badge = '<span class="badge badge-linkedin"><i class="fab fa-linkedin" style="margin-right: 3px;"></i>LinkedIn</span>';
+                    typeClass = 'type-linkedin';
+                } else if (isBlog) {
+                    badge = '<span class="badge badge-blog"><i class="fas fa-blog" style="margin-right: 3px;"></i>Blog</span>';
+                    typeClass = 'type-blog';
+                } else if (isScript) {
+                    badge = '<span class="badge badge-video"><i class="fas fa-video" style="margin-right: 3px;"></i>Guion</span>';
+                    typeClass = 'type-video';
+                } else {
+                    badge = '<span class="badge badge-carousel"><i class="fas fa-images" style="margin-right: 3px;"></i>Carrusel</span>';
+                    typeClass = 'type-carousel';
+                }
 
                 // Difficulty badge with colors
                 let diffBadge = '';
@@ -1083,14 +1274,41 @@
                 let preview = '';
                 let hookText = '';
                 let slideCount = 0;
-                if (isScript && item.script_json) {
+                if (isLinkedin) {
+                    const lj = item.linkedin_json ? (typeof item.linkedin_json === 'string' ? JSON.parse(item.linkedin_json) : item.linkedin_json) : null;
+                    const postText = lj?.post_text || item.raw_text || '';
+                    const hashtags = lj?.hashtags || [];
+                    const bestTime = lj?.mejor_hora || '';
+                    preview = `<div style="margin-top: 12px;">
+                        <div style="background: #F0F5FF; border-left: 3px solid #0A66C2; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+                            <p style="font-size: 12px; color: #333;">${postText.substring(0, 150)}${postText.length > 150 ? '...' : ''}</p>
+                        </div>
+                        ${hashtags.length ? `<div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px;">${hashtags.map(h => `<span class="tag-pill">#${h}</span>`).join(' ')}</div>` : ''}
+                        ${bestTime ? `<p style="font-size: 11px; color: #999; margin-top: 6px;"><i class="fas fa-clock" style="margin-right: 4px;"></i>Mejor hora: ${bestTime}</p>` : ''}
+                    </div>`;
+                } else if (isBlog) {
+                    const bj = item.blog_json ? (typeof item.blog_json === 'string' ? JSON.parse(item.blog_json) : item.blog_json) : null;
+                    const metaDesc = bj?.meta_description || '';
+                    const wordCount = bj?.word_count || '';
+                    const keywords = bj?.seo_keywords || [];
+                    const socialText = bj?.social_share_text || '';
+                    preview = `<div style="margin-top: 12px;">
+                        ${metaDesc ? `<div style="background: #F0FDF4; border-left: 3px solid #059669; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+                            <span style="font-size: 10px; font-weight: 700; color: #059669;">META:</span>
+                            <p style="font-size: 12px; color: #333; margin-top: 2px;">${metaDesc.substring(0, 120)}${metaDesc.length > 120 ? '...' : ''}</p>
+                        </div>` : ''}
+                        ${wordCount ? `<p style="font-size: 11px; color: #999; margin-top: 6px;"><i class="fas fa-file-word" style="margin-right: 3px;"></i>${wordCount} palabras</p>` : ''}
+                        ${keywords.length ? `<div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px;">${keywords.map(k => `<span class="tag-pill">${k}</span>`).join(' ')}</div>` : ''}
+                        ${socialText ? `<p style="font-size: 11px; color: #0A66C2; margin-top: 6px;"><i class="fab fa-linkedin" style="margin-right: 3px;"></i>${socialText.substring(0, 80)}...</p>` : ''}
+                    </div>`;
+                } else if (isScript && item.script_json) {
                     const s = typeof item.script_json === 'string' ? JSON.parse(item.script_json) : item.script_json;
                     hookText = s.hook?.texto_exacto || '';
                     preview = `<div style="margin-top: 12px;">
                         ${hookText ? `<div class="section-block hook" style="padding: 8px 12px;"><span style="font-size: 10px; font-weight: 700; color: #8B5CF6;">HOOK:</span><p style="font-size: 12px; color: #333; margin-top: 2px;">${hookText.substring(0, 100)}${hookText.length > 100 ? '...' : ''}</p></div>` : ''}
                         ${s.duracion_estimada ? `<p style="font-size: 11px; color: #999; margin-top: 6px;"><i class="fas fa-clock" style="margin-right: 4px;"></i>${s.duracion_estimada}</p>` : ''}
                     </div>`;
-                } else if (!isScript && item.carousel_json) {
+                } else if (!isScript && !isLinkedin && !isBlog && item.carousel_json) {
                     const c = typeof item.carousel_json === 'string' ? JSON.parse(item.carousel_json) : item.carousel_json;
                     slideCount = (c.slides || []).length;
                     const firstSlideTitle = (c.slides && c.slides[0]) ? (c.slides[0].titulo_principal || '') : '';
@@ -1100,14 +1318,15 @@
                     </div>`;
                 }
 
-                // Copy button data attribute index
+                // Copy button - contextual label
                 const copyBtnId = `copyBtn_${idx}`;
+                const copyLabel = isLinkedin ? 'Copiar post' : isBlog ? 'Copiar articulo' : 'Copiar guion';
 
                 return `<div class="gen-card gen-card-improved ${typeClass}" onclick='showGeneratedDetail(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                         <div style="display: flex; align-items: center; gap: 6px;">${badge} ${diffBadge}</div>
-                        <button class="btn-copy" id="${copyBtnId}" onclick="event.stopPropagation(); copyScript(${idx})" title="Copiar guion completo">
-                            <i class="fas fa-copy"></i> Copiar guion
+                        <button class="btn-copy" id="${copyBtnId}" onclick="event.stopPropagation(); copyScript(${idx})" title="${copyLabel}">
+                            <i class="fas fa-copy"></i> ${copyLabel}
                         </button>
                     </div>
                     <h3 style="font-size: 14px; font-weight: 600; color: #1B2A4A; margin-top: 4px;">${item.title || 'Sin titulo'}</h3>
@@ -1129,16 +1348,21 @@
                 return;
             }
             container.innerHTML = items.map(item => {
-                const isScript = item.content_type === 'video_script';
-                const icon = isScript ? 'fa-video' : 'fa-images';
-                const iconColor = isScript ? '#EF4444' : '#6366F1';
+                const typeMap = {
+                    'video_script': { icon: 'fa-video', color: '#EF4444', bg: '#FEE2E2', label: 'Guion de Video' },
+                    'carousel_plan': { icon: 'fa-images', color: '#6366F1', bg: '#E0E7FF', label: 'Plan de Carrusel' },
+                    'linkedin_post': { icon: 'fa-linkedin', color: '#0A66C2', bg: '#E8F0FE', label: 'Post LinkedIn', fab: true },
+                    'blog_article': { icon: 'fa-blog', color: '#059669', bg: '#D1FAE5', label: 'Articulo Blog' }
+                };
+                const t = typeMap[item.content_type] || typeMap['video_script'];
+                const iconPrefix = t.fab ? 'fab' : 'fas';
                 return `<div style="display: flex; align-items: center; gap: 12px; padding: 10px 20px; border-bottom: 1px solid #F3F4F6; cursor: pointer; transition: background 0.1s;" onmouseover="this.style.background='#FAFBFC'" onmouseout="this.style.background=''" onclick='showGeneratedDetail(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
-                    <div style="width: 32px; height: 32px; border-radius: 8px; background: ${isScript ? '#FEE2E2' : '#E0E7FF'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                        <i class="fas ${icon}" style="color: ${iconColor}; font-size: 12px;"></i>
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: ${t.bg}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="${iconPrefix} ${t.icon}" style="color: ${t.color}; font-size: 12px;"></i>
                     </div>
                     <div style="flex: 1; min-width: 0;">
                         <div style="font-size: 13px; font-weight: 600; color: #1B2A4A; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title || 'Sin titulo'}</div>
-                        <div style="font-size: 11px; color: #999;">${isScript ? 'Guion de Video' : 'Plan de Carrusel'} &middot; ${fmtDate(item.created_at)}</div>
+                        <div style="font-size: 11px; color: #999;">${t.label} &middot; ${fmtDate(item.created_at)}</div>
                     </div>
                 </div>`;
             }).join('');
@@ -1146,9 +1370,67 @@
 
         function showGeneratedDetail(item) {
             const isScript = item.content_type === 'video_script';
+            const isLinkedin = item.content_type === 'linkedin_post';
+            const isBlog = item.content_type === 'blog_article';
             let html = '';
 
-            if (isScript) {
+            if (isLinkedin) {
+                const lj = item.linkedin_json ? (typeof item.linkedin_json === 'string' ? JSON.parse(item.linkedin_json) : item.linkedin_json) : null;
+                if (lj) {
+                    html = `
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div class="info-grid">
+                            <div class="info-cell"><div class="label">Tipo</div><div class="value">Post LinkedIn</div></div>
+                            <div class="info-cell"><div class="label">Mejor Hora</div><div class="value">${lj.mejor_hora || '-'}</div></div>
+                            <div class="info-cell"><div class="label">Tono</div><div class="value">${lj.tone || '-'}</div></div>
+                        </div>
+                        <div style="background: #F0F5FF; border: 1px solid #D6E4FF; border-radius: 10px; padding: 20px;">
+                            <h4 style="font-size: 12px; font-weight: 700; color: #0A66C2; margin-bottom: 10px;"><i class="fab fa-linkedin" style="margin-right: 4px;"></i>TEXTO DEL POST</h4>
+                            <p style="font-size: 14px; color: #333; white-space: pre-wrap; line-height: 1.6;">${lj.post_text || item.raw_text || ''}</p>
+                        </div>
+                        ${(lj.hashtags || []).length ? `<div style="display: flex; flex-wrap: wrap; gap: 6px;">${lj.hashtags.map(h => '<span style="color: #0A66C2; font-size: 13px; font-weight: 500;">#' + h + '</span>').join(' ')}</div>` : ''}
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="navigator.clipboard.writeText(${JSON.stringify(lj.post_text || item.raw_text || '').replace(/</g, '\\u003c')}).then(() => showToast('Post copiado!', 'success'))" class="btn-primary"><i class="fas fa-copy" style="margin-right: 4px;"></i>Copiar Post Completo</button>
+                        </div>
+                    </div>`;
+                } else {
+                    html = '<div style="white-space: pre-wrap; font-size: 13px; color: #333;">' + (item.raw_text || 'Sin contenido') + '</div>';
+                }
+            } else if (isBlog) {
+                const bj = item.blog_json ? (typeof item.blog_json === 'string' ? JSON.parse(item.blog_json) : item.blog_json) : null;
+                if (bj) {
+                    html = `
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div class="info-grid">
+                            <div class="info-cell"><div class="label">Palabras</div><div class="value">${bj.word_count || '-'}</div></div>
+                            <div class="info-cell"><div class="label">Tiempo Lectura</div><div class="value">${bj.reading_time || '-'}</div></div>
+                            <div class="info-cell"><div class="label">Categoria</div><div class="value">${bj.category || '-'}</div></div>
+                        </div>
+                        ${bj.meta_description ? `<div style="background: #F0FDF4; border-left: 3px solid #059669; padding: 12px 16px; border-radius: 0 8px 8px 0;">
+                            <span style="font-size: 11px; font-weight: 700; color: #059669;">META DESCRIPTION</span>
+                            <p style="font-size: 13px; color: #333; margin-top: 4px;">${bj.meta_description}</p>
+                        </div>` : ''}
+                        <div style="background: #F8F9FC; border: 1px solid #E5E7EB; border-radius: 10px; padding: 20px;">
+                            <h4 style="font-size: 12px; font-weight: 700; color: #059669; margin-bottom: 10px;"><i class="fas fa-blog" style="margin-right: 4px;"></i>CONTENIDO DEL ARTICULO</h4>
+                            <div style="font-size: 14px; color: #333; white-space: pre-wrap; line-height: 1.7; max-height: 400px; overflow-y: auto;" class="scroll-area">${bj.article_content || bj.body || item.raw_text || ''}</div>
+                        </div>
+                        ${(bj.seo_keywords || []).length ? `<div>
+                            <h4 style="font-size: 12px; font-weight: 700; color: #D97706; margin-bottom: 8px;"><i class="fas fa-key" style="margin-right: 4px;"></i>SEO KEYWORDS</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">${bj.seo_keywords.map(k => '<span class="tag-pill">' + k + '</span>').join(' ')}</div>
+                        </div>` : ''}
+                        ${bj.social_share_text ? `<div style="background: #F0F5FF; border-left: 3px solid #0A66C2; padding: 12px 16px; border-radius: 0 8px 8px 0;">
+                            <span style="font-size: 11px; font-weight: 700; color: #0A66C2;"><i class="fab fa-linkedin" style="margin-right: 4px;"></i>TEXTO PARA LINKEDIN</span>
+                            <p style="font-size: 13px; color: #333; margin-top: 4px;">${bj.social_share_text}</p>
+                        </div>` : ''}
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="navigator.clipboard.writeText(${JSON.stringify(bj.article_content || bj.body || item.raw_text || '').replace(/</g, '\\u003c')}).then(() => showToast('Articulo copiado!', 'success'))" class="btn-primary" style="background: #059669;"><i class="fas fa-copy" style="margin-right: 4px;"></i>Copiar Articulo</button>
+                            ${bj.social_share_text ? `<button onclick="navigator.clipboard.writeText(${JSON.stringify(bj.social_share_text).replace(/</g, '\\u003c')}).then(() => showToast('Texto LinkedIn copiado!', 'success'))" class="btn-secondary"><i class="fab fa-linkedin" style="margin-right: 4px;"></i>Copiar Texto LinkedIn</button>` : ''}
+                        </div>
+                    </div>`;
+                } else {
+                    html = '<div style="white-space: pre-wrap; font-size: 13px; color: #333;">' + (item.raw_text || 'Sin contenido') + '</div>';
+                }
+            } else if (isScript) {
                 const s = item.script_json ? (typeof item.script_json === 'string' ? JSON.parse(item.script_json) : item.script_json) : null;
                 if (s) {
                     html = `
@@ -1274,6 +1556,76 @@
             }
         }
 
+        // --- Generate LinkedIn Post ---
+        async function generateLinkedIn(newsId) {
+            const topic = newsId ? null : prompt('Tema para el post de LinkedIn? (dejar vacio para auto-generar):');
+            const btn = document.getElementById('btnGenerate');
+            const origHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Generando LinkedIn...</span>';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            try {
+                const body = {};
+                if (topic) body.topic = topic;
+                if (newsId) body.news_id = newsId;
+                const res = await fetch(API + '/api/generate-linkedin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                const data = await res.json();
+                if (data.error) {
+                    showToast('Error: ' + data.error, 'error');
+                } else {
+                    showToast(data.message || 'Post LinkedIn generado!', 'success');
+                    loadGenerated();
+                    loadStats();
+                    showTab('generated');
+                }
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            } finally {
+                btn.innerHTML = origHTML;
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        }
+
+        // --- Generate Blog Article ---
+        async function generateBlog(newsId) {
+            const topic = newsId ? null : prompt('Tema para el articulo de blog? (dejar vacio para auto-generar):');
+            const btn = document.getElementById('btnGenerate');
+            const origHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Generando Blog...</span>';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            try {
+                const body = {};
+                if (topic) body.topic = topic;
+                if (newsId) body.news_id = newsId;
+                const res = await fetch(API + '/api/generate-blog', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                const data = await res.json();
+                if (data.error) {
+                    showToast('Error: ' + data.error, 'error');
+                } else {
+                    showToast(data.message || 'Articulo de blog generado!', 'success');
+                    loadGenerated();
+                    loadStats();
+                    showTab('generated');
+                }
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            } finally {
+                btn.innerHTML = origHTML;
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        }
+
         // --- Load Profiles ---
         async function loadProfiles() {
             try {
@@ -1314,6 +1666,154 @@
                     </tr>`;
                 }).join('');
             } catch (e) { console.error('Profiles error:', e); }
+        }
+
+        // --- Suggested Profiles ---
+        let allSuggestedProfiles = [];
+        let currentSuggestedFilter = 'all';
+
+        async function loadSuggestedProfiles() {
+            try {
+                const res = await fetch(API + '/api/suggested-profiles');
+                const profiles = await res.json();
+                allSuggestedProfiles = profiles;
+                updateSuggestedCounts();
+                renderSuggestedProfiles(profiles);
+            } catch (e) { console.error('Suggested profiles error:', e); }
+        }
+
+        function updateSuggestedCounts() {
+            const all = allSuggestedProfiles.length;
+            const ig = allSuggestedProfiles.filter(p => p.platform === 'instagram').length;
+            const tk = allSuggestedProfiles.filter(p => p.platform === 'tiktok').length;
+            const li = allSuggestedProfiles.filter(p => p.platform === 'linkedin').length;
+            document.getElementById('sugCountAll').textContent = all;
+            document.getElementById('sugCountIG').textContent = ig;
+            document.getElementById('sugCountTK').textContent = tk;
+            document.getElementById('sugCountLI').textContent = li;
+            document.getElementById('suggestedCount').textContent = all;
+        }
+
+        function filterSuggestedProfiles(platform, btn) {
+            currentSuggestedFilter = platform;
+            document.querySelectorAll('#suggestedPlatformTabs .filter-tab').forEach(t => t.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            const filtered = platform === 'all'
+                ? allSuggestedProfiles
+                : allSuggestedProfiles.filter(p => p.platform === platform);
+            renderSuggestedProfiles(filtered);
+        }
+
+        function renderSuggestedProfiles(profiles) {
+            const grid = document.getElementById('suggestedProfilesGrid');
+            if (!profiles.length) {
+                grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
+                    <div class="empty-icon"><i class="fas fa-search"></i></div>
+                    <div class="empty-title">No hay perfiles sugeridos</div>
+                    <div class="empty-desc">Haz clic en "Buscar mas perfiles" para cargar sugerencias.</div>
+                </div>`;
+                return;
+            }
+
+            const platformBadge = (p) => {
+                if (p === 'instagram') return '<span class="badge badge-ig"><i class="fab fa-instagram"></i> IG</span>';
+                if (p === 'tiktok') return '<span class="badge badge-tk"><i class="fab fa-tiktok"></i> TK</span>';
+                return '<span class="badge badge-li"><i class="fab fa-linkedin"></i> LI</span>';
+            };
+
+            const catBadge = (c) => `<span class="badge badge-cat-${c || 'educador'}">${c || '-'}</span>`;
+
+            const priorityLabel = (pr) => {
+                const cls = pr === 'high' ? 'priority-high' : pr === 'low' ? 'priority-low' : 'priority-medium';
+                const label = pr === 'high' ? 'Alta' : pr === 'low' ? 'Baja' : 'Media';
+                return `<span class="priority-dot ${cls}"></span> ${label}`;
+            };
+
+            grid.innerHTML = profiles.map(p => `
+                <div class="suggested-card">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-weight: 700; color: #1B2A4A; font-size: 14px;">@${p.username}</span>
+                            ${platformBadge(p.platform)}
+                        </div>
+                        ${catBadge(p.category)}
+                    </div>
+                    <p style="font-size: 12px; color: #666; margin-bottom: 10px; line-height: 1.4;">${p.reason || ''}</p>
+                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px;">
+                        <span style="color: #999;">${priorityLabel(p.priority)}</span>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            ${p.url ? `<a href="${p.url}" target="_blank" class="btn-ghost btn-sm" style="font-size: 11px;"><i class="fas fa-external-link-alt"></i> Ver perfil</a>` : ''}
+                            <button onclick="toggleSuggestedMonitoring(${p.id}, ${!p.is_monitored})"
+                                class="${p.is_monitored ? 'btn-secondary' : 'btn-primary'} btn-sm"
+                                style="font-size: 11px;">
+                                <i class="fas ${p.is_monitored ? 'fa-check-circle' : 'fa-plus-circle'}"></i>
+                                ${p.is_monitored ? 'Monitoreando' : 'Agregar a monitoreo'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function toggleSuggestedMonitoring(id, newState) {
+            try {
+                const res = await fetch(API + '/api/suggested-profiles/' + id + '/toggle', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ is_monitored: newState }),
+                });
+                const data = await res.json();
+                if (data.status === 'ok') {
+                    showToast(newState ? 'Perfil agregado a monitoreo' : 'Perfil removido de monitoreo', 'success');
+                    loadSuggestedProfiles();
+                } else {
+                    showToast(data.error || 'Error al actualizar', 'error');
+                }
+            } catch (e) { showToast('Error: ' + e.message, 'error'); }
+        }
+
+        async function seedSuggestedProfiles() {
+            const btn = document.getElementById('btnSeedProfiles');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+            try {
+                const res = await fetch(API + '/api/seed-suggested-profiles', { method: 'POST' });
+                const data = await res.json();
+                showToast(data.message || 'Perfiles cargados', 'success');
+                loadSuggestedProfiles();
+            } catch (e) { showToast('Error: ' + e.message, 'error'); }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-download"></i> Buscar mas perfiles';
+        }
+
+        async function addSuggestedProfile() {
+            const username = document.getElementById('newSuggestedUsername').value.replace('@', '').trim();
+            const platform = document.getElementById('newSuggestedPlatform').value;
+            const category = document.getElementById('newSuggestedCategory').value;
+            const priority = document.getElementById('newSuggestedPriority').value;
+            const url = document.getElementById('newSuggestedUrl').value.trim();
+            const reason = document.getElementById('newSuggestedReason').value.trim();
+
+            if (!username) { showToast('Username es requerido', 'error'); return; }
+
+            try {
+                const res = await fetch(API + '/api/suggested-profiles', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, platform, category, priority, url, reason }),
+                });
+                const data = await res.json();
+                if (data.status === 'ok') {
+                    showToast('Perfil sugerido agregado', 'success');
+                    document.getElementById('newSuggestedUsername').value = '';
+                    document.getElementById('newSuggestedUrl').value = '';
+                    document.getElementById('newSuggestedReason').value = '';
+                    document.getElementById('addProfileForm').classList.add('hidden');
+                    loadSuggestedProfiles();
+                } else {
+                    showToast(data.message || 'Este perfil ya existe', 'info');
+                }
+            } catch (e) { showToast('Error: ' + e.message, 'error'); }
         }
 
         // --- Load Ideas with Workflow ---
@@ -1666,6 +2166,12 @@
                                     <button onclick="createContentFromNews(${news.id}, '${(news.title||'').replace(/'/g, "\\'")}')" class="btn-sm btn-primary" style="white-space: nowrap;">
                                         <i class="fas fa-pen"></i> Crear contenido
                                     </button>
+                                    <button onclick="event.stopPropagation(); generateBlog(${news.id})" class="btn-sm btn-secondary" style="white-space: nowrap; border-color: #D1FAE5; color: #059669;" title="Generar articulo de blog">
+                                        📝 Blog
+                                    </button>
+                                    <button onclick="event.stopPropagation(); generateLinkedIn(${news.id})" class="btn-sm btn-secondary" style="white-space: nowrap; border-color: #D6E4FF; color: #0A66C2;" title="Generar post LinkedIn">
+                                        💼 LinkedIn
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1701,7 +2207,26 @@
             const item = allGeneratedItems[idx];
             if (!item) return;
             let text = '';
-            if (item.content_type === 'video_script' && item.script_json) {
+            if (item.content_type === 'linkedin_post') {
+                const lj = item.linkedin_json ? (typeof item.linkedin_json === 'string' ? JSON.parse(item.linkedin_json) : item.linkedin_json) : null;
+                if (lj) {
+                    text = lj.post_text || item.raw_text || '';
+                    if (lj.hashtags && lj.hashtags.length) text += '\n\n' + lj.hashtags.map(h => '#' + h).join(' ');
+                } else {
+                    text = item.raw_text || item.title || '';
+                }
+                navigator.clipboard.writeText(text).then(() => showToast('Post LinkedIn copiado al portapapeles', 'success')).catch(() => showToast('Error al copiar', 'error'));
+                return;
+            } else if (item.content_type === 'blog_article') {
+                const bj = item.blog_json ? (typeof item.blog_json === 'string' ? JSON.parse(item.blog_json) : item.blog_json) : null;
+                if (bj) {
+                    text = (bj.article_content || bj.body || item.raw_text || '');
+                } else {
+                    text = item.raw_text || item.title || '';
+                }
+                navigator.clipboard.writeText(text).then(() => showToast('Articulo copiado al portapapeles', 'success')).catch(() => showToast('Error al copiar', 'error'));
+                return;
+            } else if (item.content_type === 'video_script' && item.script_json) {
                 const s = typeof item.script_json === 'string' ? JSON.parse(item.script_json) : item.script_json;
                 text = `HOOK: ${s.hook?.texto_exacto || ''}\n\n`;
                 (s.desarrollo || []).forEach(d => {
